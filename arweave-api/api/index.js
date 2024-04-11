@@ -11,7 +11,7 @@ app.get("/", (req, res) => {
 
 app.post("/", async (req, res) => {
   const getIrys = async () => {
-    const key = JSON.parse(fs.readFileSync("../wallet.json").toString());
+    const key = JSON.parse(fs.readFileSync("wallet.json").toString());
     const irys = new Irys({
       network: "mainnet",
       token: "arweave",
