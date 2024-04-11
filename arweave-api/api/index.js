@@ -39,6 +39,7 @@ app.post("/", async (req, res) => {
     const url = await uploadData(dataToUpload);
     res.json({ url });
   } catch (e) {
+    console.error("Error uploading data to Arweave: ", e);
     res.status(500).send("Error uploading data to Arweave");
   }
 });
