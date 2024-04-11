@@ -1,6 +1,7 @@
 const express = require("express");
 const Irys = require("@irys/sdk");
 const fs = require("fs");
+const path = require("path");
 
 const app = express();
 app.use(express.json());
@@ -11,7 +12,8 @@ app.get("/", (req, res) => {
 
 app.post("/", async (req, res) => {
   const getIrys = async () => {
-    const key = JSON.parse(fs.readFileSync("wallet.json").toString());
+    let wallet = path.join(process.cwd(), "wallet.json");
+    const key = JSON.parse(fs.readFileSync(wallet).toString());
     const irys = new Irys({
       network: "mainnet",
       token: "arweave",
