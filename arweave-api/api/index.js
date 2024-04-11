@@ -12,7 +12,7 @@ app.get("/", (req, res) => {
 
 app.post("/", async (req, res) => {
   const getIrys = async () => {
-    const wallet = {
+    const key = {
       kty: "RSA",
       n: "9Qek2j1339I0QXj6AhqUYAqvTN3A0zF6HrSWLS09P1QZi8ECoBneFvYgRrG627bLp8rcI0-vDm0VhX56Wu7LHTRmx7xVTgr9-JzrsaHKS8uF8h5nMVYGRvbLZqbye_TGIW3IUtvAcOkXAaWBMYdrl1V1-5RaILXvS2G8WlPhfa64_LfR1Ts17qN-GzoZn-U67UTgHQY8HpzzIhQAAmPTThC8OhaH4G_RG8wyitD8jSfJUSOybQJ1ahDhwz1uNqngj_oRLeSG3dMKv2APUWzHew7V4LvVgqWYzdq83tNck0CV-bNzT2Uodzh2p_WkjoJsYHnxTUcQtupW-ffI0xFkykA4Vgdvgsj8cOHbNi9MTCSgt0i6UYl2CaV94NfXKpoDK-Av4hjZyj5Jvkx2oEkfhx9JW7t1zAUBtprm3gwOrwGKCPs-X2xPdPf2m0ePtsCBc7m42jO6aXqoqQrZv4Lhrp6yc4aovfOzHbWPkvLLNUUSeuZcRwOFVRIuZFAQm-o9LHKsBwjaGhK3ZeOtxX1hGfrwyy5sr7qrWSEo00X-uJDaiXArZZ2SO7NBDQsQ03UrNMIScAP-sALjAa5SODHf2XCIc2Bm0b0FeUlUhP-an7WA0_tJ0GceK6WoCB3O8MyrhfbZlInfy2UK3yee-jsNntirkiqZ7oKZtjfubWwdJDk",
       e: "AQAB",
@@ -23,7 +23,6 @@ app.post("/", async (req, res) => {
       dq: "vJsXKWnofMw3NktN58EYZCo5I9f_ZMgGsoLRvjVk5yWLof5xjeVwAB8Cb_x4dcekbt-uQFZlLV6VHXSwMh0p2auv196XwKX6M1EpefAfeC-WF-YOUAr9R_W9fYs0_mBW9LMNuil7qNaH0E4Q6wAwf8OBN0_RfmmFSh4G4pvv15xM42oRH8MOOyqHgDb1ArSwLT15PsGombFkQpZdcd6z6lDcfWKFqtoC1Qk3Uzh7m3XlPb1FXCIb3B3lrMhwJ-8fSwSmak0JFjskHy5QDiR_OsLhaF7t5KaYBTnCBMUz-Yy4DYNZnIFngyj1gSmwQxwX9ll_pbLV6jxmg29ICiGycQ",
       qi: "RWrLdWusF6M-s_yCvVF3u0tRLDO2HbfnhvOfANEJOb47mm4f3AjfLj2bC9tMCBPLeyFeHczW48GBZhHFc8dZQm_j1RucNcx3zk0v_gvY6Uzq2EEbPcWwi0upp9bI2zPKxQxI2GR70rOW8_4F_Cmjm7TaIcmJ9mmNsW8jqEyRDik68uRfc7a9_wvilHvX8jHl-jiPnve4DpUUiGDU0ssnn5zM9Zhgwrhju0zglQ-lSf2IvjBCAvlmRej_GPuJhp5kIKonsJOBwNl8Bta9x_hvGhmyQRVBPBKU9y_ljljdacM03sAbc7H_6q_bqJfIq5W7pNpBDq3BrKRJ4uXhlyPRSQ",
     };
-    const key = JSON.parse(wallet.toString());
     const irys = new Irys({
       network: "mainnet",
       token: "arweave",
