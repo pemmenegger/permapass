@@ -2,26 +2,32 @@ import { Link } from "expo-router";
 import { Button, Text, View } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { W3mButton } from "@web3modal/wagmi-react-native";
-import { useContractRead, erc721ABI, useNetwork, useContractWrite } from "wagmi";
-import { mainnet, polygon, arbitrum, hardhat } from "viem/chains";
+import { useBalance, useContractRead, useNetwork, useSwitchNetwork } from "wagmi";
+import { mainnet, polygon, arbitrum, hardhat, sepolia, goerli } from "viem/chains";
 import { deployments } from "../../contracts/PermaPassRegistry";
 import { useAccount } from "wagmi";
+import { writeContract } from "@wagmi/core";
+import { switchNetwork } from "@wagmi/core";
+import { readContract } from "@wagmi/core";
+import { watchContractEvent } from "@wagmi/core";
+import { useEffect, useState } from "react";
+import { uploadNFTPassportMetadata } from "../../lib/arweave";
+import QRCode from "react-native-qrcode-svg";
 
 export default function Page() {
   const { tokenURI } = useLocalSearchParams();
   const { address, isConnecting, isDisconnected } = useAccount();
+  // const {  } = useBalance();
+  const { chain, chains } = useNetwork();
+  const [passportMetadataURL, setPassportMetadataURL] = useState<string | undefined>();
 
-  const network = useNetwork();
-
-  const { data, isError, isLoading, isSuccess } = useContractRead({
-    chainId: hardhat.id,
-    address: deployments[hardhat.id].address,
-    abi: deployments[hardhat.id].abi,
-    functionName: "tokenURI",
-    args: [BigInt(0)],
-  });
-
-  // TODO mint nft
+  // const { data, isError, isLoading, isSuccess } = useContractRead({
+  //   chainId: hardhat.id,
+  //   address: deployments[hardhat.id].address,
+  //   abi: deployments[hardhat.id].abi,
+  //   functionName: "tokenURI",
+  //   args: [BigInt(0)],
+  // });
 
   const mintNFT = async () => {
     if (!address) {
@@ -32,12 +38,42 @@ export default function Page() {
       console.error("No token URI");
       return;
     }
-    const {
-      data: mintData,
-      isError: mintIsError,
-      isLoading: mintIsLoading,
-      isSuccess: mintIsSuccess,
-    } = useContractWrite({
+
+    const unwatch = watchContractEvent(
+      {
+        chainId: hardhat.id,
+        address: deployments[hardhat.id].address,
+        abi: deployments[hardhat.id].abi,
+        eventName: "Mint",
+      },
+      async (logs) => {
+        logs.forEach(async (log) => {
+          console.log("MINT: event detected");
+          console.log(log);
+
+          if (log.args.to === address) {
+            console.log("MINT: Correct address");
+            const url = await uploadNFTPassportMetadata({
+              chainId: hardhat.id,
+              address: deployments[hardhat.id].address,
+              tokenId: log.args.tokenId!,
+            });
+            console.log(url);
+            if (!url) {
+              console.error("No URL returned from Arweave");
+              return;
+            }
+            setPassportMetadataURL(url);
+
+            unwatch?.();
+            console.log("Unwatching...");
+          }
+        });
+      }
+    );
+
+    console.log("Minting NFT with tokenURI", tokenURI);
+    const result = await writeContract({
       chainId: hardhat.id,
       address: deployments[hardhat.id].address,
       abi: deployments[hardhat.id].abi,
@@ -45,31 +81,45 @@ export default function Page() {
       args: [address, tokenURI as string],
     });
 
-    if (mintIsError) {
-      console.error("Error minting NFT");
-    }
-    if (mintIsLoading) {
-      console.log("Minting NFT");
-    }
-    if (mintIsSuccess) {
-      console.log("NFT minted");
-    }
+    console.log(result);
   };
 
-  // TODO upload nft passport data to arweave
+  // const readNFT = async () => {
+  //   const result = await readContract({
+  //     chainId: hardhat.id,
+  //     address: deployments[hardhat.id].address,
+  //     abi: deployments[hardhat.id].abi,
+  //     functionName: "tokenURI",
+  //     args: [BigInt(0)],
+  //   });
 
-  // TODO generate qr code to arweave link
+  //   console.log(result);
+  // };
+
+  const switchNetworkInternal = async (chainId: number) => {
+    const result = await switchNetwork({ chainId: chainId });
+    console.log(result);
+  };
 
   return (
     <View>
-      <Text>Network ID: {network?.chain?.name}</Text>
-      <Text>Read Screen</Text>
-      <Text>TokenURI: {tokenURI}</Text>
+      {chain && <Text>Connected to {chain.name}</Text>}
+      {/* {chains && <Text>Available chains: {chains.map((chain) => chain.name)}</Text>} */}
+
       <W3mButton />
-      {isLoading && <Text>Loading</Text>}
+      {/* {isLoading && <Text>Loading</Text>}
       {isSuccess && <Text>Response: {data?.toString()}</Text>}
-      {isError && <Text>Error reading contract</Text>}
+      {isError && <Text>Error reading contract</Text>} */}
       <Button onPress={mintNFT} title="Mint NFT" />
+      {passportMetadataURL && <Text>Token URI: {passportMetadataURL}</Text>}
+      {passportMetadataURL && (
+        <View>
+          <Text>QR Code</Text>
+          <QRCode value={passportMetadataURL} />
+        </View>
+      )}
+      {/* <Button onPress={() => switchNetworkInternal(sepolia.id)} title="Switch to Sepolia" />
+      <Button onPress={() => switchNetworkInternal(hardhat.id)} title="Switch to Hardhat" /> */}
     </View>
   );
 }

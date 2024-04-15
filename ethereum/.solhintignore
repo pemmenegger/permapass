@@ -4,7 +4,6 @@ artifacts/
 cache/
 coverage/
 node_modules/
-typechain/
 scripts/
 tasks/
 test/

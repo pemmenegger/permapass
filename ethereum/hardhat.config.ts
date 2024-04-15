@@ -36,6 +36,7 @@ const config: HardhatUserConfig = {
 					balance: "10000000000000000000000",
 				},
 			],
+			chainId: 31337,
 		},
 		sepolia: {
 			url: `https://eth-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY}`,

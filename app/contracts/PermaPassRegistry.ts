@@ -1,6 +1,6 @@
 export const deployments = {
   31337: {
-    address: "0x0b0Cf687B22Da60C47b9B438343a47d362170b42",
+    address: "0xEB0c10ADbB2982A99bcf90F1F787732db1e2c174",
     abi: [
       {
         inputs: [
@@ -218,6 +218,31 @@ export const deployments = {
           },
         ],
         name: "MetadataUpdate",
+        type: "event",
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: "address",
+            name: "to",
+            type: "address",
+          },
+          {
+            indexed: true,
+            internalType: "string",
+            name: "uri",
+            type: "string",
+          },
+          {
+            indexed: false,
+            internalType: "uint256",
+            name: "tokenId",
+            type: "uint256",
+          },
+        ],
+        name: "Mint",
         type: "event",
       },
       {

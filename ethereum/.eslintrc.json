@@ -14,5 +14,5 @@
 		"@typescript-eslint/no-unused-vars": "warn",
 		"@typescript-eslint/no-explicit-any": "warn"
 	},
-	"ignorePatterns": ["node_modules", "coverage", "deployments", "artifacts", "cache", "typechain-types"]
+	"ignorePatterns": ["node_modules", "coverage", "deployments", "artifacts", "cache"]
 }

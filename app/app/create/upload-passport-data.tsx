@@ -3,46 +3,20 @@ import { defaultStyles } from "../../styles";
 import { TextScreen } from "../../components/TextScreen";
 import { useState } from "react";
 import { NavigationButton } from "../../components/NavigationButton";
+import { uploadPassportData } from "../../lib/arweave";
 
 export default function Page() {
-  const apiUrl = process.env.EXPO_PUBLIC_ARWEAVE_API_URL;
-  const [responseContent, setResponseContent] = useState("");
   const [responseURL, setResponseURL] = useState("");
   const [name, setName] = useState("");
+  const [condition, setCondition] = useState("good");
 
   async function onPress() {
-    if (!apiUrl) {
-      console.error("API URL is not set");
+    const url = await uploadPassportData({ name, condition });
+    if (!url) {
+      console.error("No URL returned from Arweave");
       return;
     }
-
-    try {
-      const response = await fetch(apiUrl, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: name,
-        }),
-      });
-      const data = await response.json();
-
-      if (data && data.url) {
-        setResponseURL(data.url);
-        const urlResponse = await fetch(data.url);
-        const urlData = await urlResponse.text();
-        setResponseContent(urlData);
-      } else {
-        setResponseURL("");
-        setResponseContent("No URL found in the response");
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      setResponseURL("");
-      setResponseContent(`Error fetching data: ${error}`);
-    }
+    setResponseURL(url);
   }
 
   return (
@@ -61,8 +35,6 @@ export default function Page() {
       </TouchableOpacity>
       <Text>Response - Arweave link:</Text>
       <Text>{responseURL}</Text>
-      <Text>Response - Arweave content:</Text>
-      <Text>{responseContent}</Text>
       <NavigationButton
         to="/create/mint-nft"
         params={{
