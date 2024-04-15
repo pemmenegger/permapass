@@ -1,3 +1,4 @@
 .DS_Store
 
 arweave-api/node_modules
+app/.env

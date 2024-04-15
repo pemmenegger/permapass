@@ -33,3 +33,6 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
+
+contracts/*/solcInputs
+contracts/*/.chainId
