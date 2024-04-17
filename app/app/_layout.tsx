@@ -1,4 +1,9 @@
 import "@walletconnect/react-native-compat";
+import "@sinonjs/text-encoding";
+import "react-native-get-random-values";
+import "@ethersproject/shims";
+import "cross-fetch/polyfill";
+
 import { StatusBar } from "expo-status-bar";
 import { WagmiConfig } from "wagmi";
 import { mainnet, polygon, arbitrum, sepolia, goerli } from "viem/chains";
