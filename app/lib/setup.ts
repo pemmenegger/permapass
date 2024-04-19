@@ -11,7 +11,7 @@ import { DIDManager } from "@veramo/did-manager";
 import { KeyManager } from "@veramo/key-manager";
 
 // This plugin allows us to create and manage `did:peer` DIDs (used by DIDManager)
-import { PeerDIDProvider } from "@veramo/did-provider-peer";
+import { EthrDIDProvider } from "@veramo/did-provider-ethr";
 
 // A key management system that uses a local database to store keys (used by KeyManager)
 import { KeyManagementSystem, SecretBox } from "@veramo/kms-local";
@@ -22,20 +22,15 @@ import { Entities, KeyStore, DIDStore, migrations, PrivateKeyStore } from "@vera
 // TypeORM is installed with '@veramo/data-store'
 import { DataSource } from "typeorm";
 
-// Core interfaces
-import { IResolver } from "@veramo/core";
-
-// Core DID resolver plugin. This plugin orchestrates different DID resolver drivers to resolve the corresponding DID Documents for the given DIDs.
-// This plugin implements `IResolver`
-import { DIDResolverPlugin } from "@veramo/did-resolver";
-
 // the did:peer resolver package
-import { getResolver as peerDidResolver } from "@veramo/did-provider-peer";
+// import { getResolver as peerDidResolver } from "@veramo/did-provider-peer";
 
 // This plugin allows us to issue and verify W3C Verifiable Credentials with JWT proof format
 import { CredentialPlugin, ICredentialIssuer, ICredentialVerifier } from "@veramo/credential-w3c";
 
 // CONSTANTS
+const ALCHEMY_API_KEY = process.env.EXPO_PUBLIC_ALCHEMY_API_KEY;
+if (!ALCHEMY_API_KEY) throw new Error("ALCHEMY_API_KEY is required");
 
 // This is a raw X25519 private key, provided as an example.
 // You can run `npx @veramo/cli config create-secret-key` in a terminal to generate a new key.
@@ -55,7 +50,7 @@ let dbConnection = new DataSource({
 
 // Veramo agent setup
 export const agent = createAgent<
-  IDIDManager & IKeyManager & IDataStore & IDataStoreORM & IResolver & ICredentialIssuer & ICredentialVerifier
+  IDIDManager & IKeyManager & IDataStore & IDataStoreORM & ICredentialIssuer & ICredentialVerifier
 >({
   plugins: [
     new KeyManager({
@@ -66,15 +61,14 @@ export const agent = createAgent<
     }),
     new DIDManager({
       store: new DIDStore(dbConnection),
-      defaultProvider: "did:peer",
+      defaultProvider: "did:ethr:sepolia",
       providers: {
-        "did:peer": new PeerDIDProvider({
+        "did:ethr:sepolia": new EthrDIDProvider({
           defaultKms: "local",
+          network: "sepolia",
+          rpcUrl: `https://eth-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY}`,
         }),
       },
-    }),
-    new DIDResolverPlugin({
-      ...peerDidResolver(), // and set it up to support `did:peer`
     }),
     new CredentialPlugin(),
   ],

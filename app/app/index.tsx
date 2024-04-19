@@ -19,28 +19,15 @@ import { agent } from "../lib/setup";
 // import some data types:
 import { IIdentifier } from "@veramo/core";
 import { DIDResolutionResult } from "@veramo/core";
-import { VerifiableCredential } from "@veramo/core";
-import { IVerifyResult } from "@veramo/core";
 
 export default function Page() {
   const [identifiers, setIdentifiers] = useState<IIdentifier[]>([]);
   const [resolutionResult, setResolutionResult] = useState<DIDResolutionResult | undefined>();
-  const [credential, setCredential] = useState<VerifiableCredential | undefined>();
-  const [verificationResult, setVerificationResult] = useState<IVerifyResult | undefined>();
 
   // Add the new identifier to state
   const createIdentifier = async () => {
     const _id = await agent.didManagerCreate({
-      provider: "did:peer",
-      options: {
-        num_algo: 2,
-        service: {
-          id: "1",
-          type: "DIDCommMessaging",
-          serviceEndpoint: "did:web:dev-didcomm-mediator.herokuapp.com",
-          description: "for messaging",
-        },
-      },
+      provider: "did:ethr:sepolia",
     });
     setIdentifiers((s) => s.concat([_id]));
   };
@@ -60,35 +47,23 @@ export default function Page() {
 
   // Resolve a DID
   const resolveDID = async (did: string) => {
-    const result = await agent.resolveDid({ didUrl: did });
+    console.log("TODO - Resolving DID:", did);
+    // const result = await agent.resolveDid({ didUrl: did });
+    // console.log(JSON.stringify(result, null, 2));
+    // setResolutionResult(result);
+  };
+
+  const addService = async (did: string) => {
+    const result = await agent.didManagerAddService({
+      did,
+      service: {
+        id: "1",
+        type: "DIDCommMessaging",
+        serviceEndpoint: "did:web:dev-didcomm-mediator.herokuapp.com",
+        description: "for messaging",
+      },
+    });
     console.log(JSON.stringify(result, null, 2));
-    setResolutionResult(result);
-  };
-
-  const createCredential = async () => {
-    if (identifiers[0].did) {
-      const verifiableCredential = await agent.createVerifiableCredential({
-        credential: {
-          issuer: { id: identifiers[0].did },
-          issuanceDate: new Date().toISOString(),
-          credentialSubject: {
-            id: "did:web:community.veramo.io",
-            you: "Rock",
-          },
-        },
-        save: false,
-        proofFormat: "jwt",
-      });
-
-      setCredential(verifiableCredential);
-    }
-  };
-
-  const verifyCredential = async () => {
-    if (credential) {
-      const result = await agent.verifyCredential({ credential });
-      setVerificationResult(result);
-    }
   };
 
   return (
@@ -100,7 +75,10 @@ export default function Page() {
           <View style={{ marginBottom: 50, marginTop: 20 }}>
             {identifiers && identifiers.length > 0 ? (
               identifiers.map((id: IIdentifier) => (
-                <Button key={id.did} onPress={() => resolveDID(id.did)} title={id.did} />
+                <View key={id.did}>
+                  <Button onPress={() => resolveDID(id.did)} title={id.did} />
+                  <Button onPress={() => addService(id.did)} title={"Add Service"} />
+                </View>
               ))
             ) : (
               <Text>No identifiers created yet</Text>
@@ -114,18 +92,6 @@ export default function Page() {
               <Text>tap on a DID to resolve it</Text>
             )}
           </View>
-        </View>
-        <View style={{ padding: 20 }}>
-          <Button
-            title={"Create Credential"}
-            disabled={!identifiers || identifiers.length === 0}
-            onPress={() => createCredential()}
-          />
-          <Text style={{ fontSize: 10 }}>{JSON.stringify(credential, null, 2)}</Text>
-        </View>
-        <View style={{ padding: 20 }}>
-          <Button title={"Verify Credential"} onPress={() => verifyCredential()} disabled={!credential} />
-          <Text style={{ fontSize: 10 }}>{JSON.stringify(verificationResult, null, 2)}</Text>
         </View>
       </ScrollView>
     </SafeAreaView>
