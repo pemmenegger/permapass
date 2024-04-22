@@ -31,22 +31,23 @@
 import React, { useEffect, useState } from "react";
 import { SafeAreaView, ScrollView, View, Text, Button } from "react-native";
 import { W3mButton } from "@web3modal/wagmi-react-native";
-import { useNetwork } from "wagmi";
 
-// Import the agent from our earlier setup
-import { agent } from "../lib/setup";
 // import some data types:
 import { IIdentifier } from "@veramo/core";
 import { DIDResolutionResult } from "@veramo/core";
+import { useAgent } from "../lib/hooks/useAgent";
 
 export default function Page() {
-  const { chain, chains } = useNetwork();
-
   const [identifiers, setIdentifiers] = useState<IIdentifier[]>([]);
   const [resolutionResult, setResolutionResult] = useState<DIDResolutionResult | undefined>();
+  const agent = useAgent();
 
   // Add the new identifier to state
   const createIdentifier = async () => {
+    if (!agent) {
+      console.log("Agent not initialized");
+      return;
+    }
     console.log("Creating identifier...");
     const _id = await agent.didManagerCreate();
     console.log("Created identifier:", _id);
@@ -55,6 +56,10 @@ export default function Page() {
 
   // Check for existing identifers on load and set them to state
   useEffect(() => {
+    if (!agent) {
+      console.log("Agent not initialized");
+      return;
+    }
     const getIdentifiers = async () => {
       const _ids = await agent.didManagerFind();
       setIdentifiers(_ids);
@@ -68,6 +73,10 @@ export default function Page() {
 
   // Resolve a DID
   const resolveDID = async (did: string) => {
+    if (!agent) {
+      console.log("Agent not initialized");
+      return;
+    }
     console.log(`Resolving ${did}...`);
     const result = await agent.resolveDid({ didUrl: did });
     console.log(JSON.stringify(result, null, 2));
@@ -76,6 +85,10 @@ export default function Page() {
   };
 
   const addService = async (did: string) => {
+    if (!agent) {
+      console.log("Agent not initialized");
+      return;
+    }
     console.log(`Adding service to ${did}...`);
     const result = await agent.didManagerAddService({
       did,
@@ -92,30 +105,35 @@ export default function Page() {
     <SafeAreaView>
       <ScrollView>
         <View style={{ padding: 20 }}>
-          {chain && <Text>Connected to {chain.name}</Text>}
           <W3mButton />
-          <Text style={{ fontSize: 30, fontWeight: "bold" }}>Identifiers</Text>
-          <Button onPress={() => createIdentifier()} title={"Create Identifier"} />
-          <View style={{ marginBottom: 50, marginTop: 20 }}>
-            {identifiers && identifiers.length > 0 ? (
-              identifiers.map((id: IIdentifier) => (
-                <View key={id.did}>
-                  <Button onPress={() => resolveDID(id.did)} title={id.did} />
-                  <Button onPress={() => addService(id.did)} title={"Add Service"} />
-                </View>
-              ))
-            ) : (
-              <Text>No identifiers created yet</Text>
-            )}
-          </View>
-          <Text style={{ fontSize: 30, fontWeight: "bold" }}>Resolved DID document:</Text>
-          <View style={{ marginBottom: 50, marginTop: 20 }}>
-            {resolutionResult ? (
-              <Text>{JSON.stringify(resolutionResult.didDocument, null, 2)}</Text>
-            ) : (
-              <Text>tap on a DID to resolve it</Text>
-            )}
-          </View>
+          {agent ? (
+            <View>
+              <Text style={{ fontSize: 30, fontWeight: "bold" }}>Identifiers</Text>
+              <Button onPress={() => createIdentifier()} title={"Create Identifier"} />
+              <View style={{ marginBottom: 50, marginTop: 20 }}>
+                {identifiers && identifiers.length > 0 ? (
+                  identifiers.map((id: IIdentifier) => (
+                    <View key={id.did}>
+                      <Button onPress={() => resolveDID(id.did)} title={id.did} />
+                      <Button onPress={() => addService(id.did)} title={"Add Service"} />
+                    </View>
+                  ))
+                ) : (
+                  <Text>No identifiers created yet</Text>
+                )}
+              </View>
+              <Text style={{ fontSize: 30, fontWeight: "bold" }}>Resolved DID document:</Text>
+              <View style={{ marginBottom: 50, marginTop: 20 }}>
+                {resolutionResult ? (
+                  <Text>{JSON.stringify(resolutionResult.didDocument, null, 2)}</Text>
+                ) : (
+                  <Text>tap on a DID to resolve it</Text>
+                )}
+              </View>
+            </View>
+          ) : (
+            <Text>Agent not initialized</Text>
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>
