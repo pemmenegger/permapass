@@ -1,18 +1,37 @@
 // import { View } from "react-native";
-// import { Link } from "expo-router";
+// import { Link, Stack } from "expo-router";
 // import { NavigationButton } from "../components/NavigationButton";
+// import { W3mButton } from "@web3modal/wagmi-react-native";
 
 // export default function Page() {
 //   return (
-//     <View>
-//       <NavigationButton to="/create/upload-passport-data">Create</NavigationButton>
-//       <NavigationButton to="/read">Read</NavigationButton>
+//     <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+//       <Stack.Screen
+//         options={{
+//           // https://reactnavigation.org/docs/headers#setting-the-header-title
+//           title: "My home",
+//           // https://reactnavigation.org/docs/headers#adjusting-header-styles
+//           headerStyle: { backgroundColor: "#f4511e" },
+//           headerTintColor: "#fff",
+//           headerTitleStyle: {
+//             fontWeight: "bold",
+//           },
+//           // https://reactnavigation.org/docs/headers#replacing-the-title-with-a-custom-component
+//           headerTitle: (props) => <W3mButton />,
+//         }}
+//       />
+//       <View>
+//         <NavigationButton to="/create/upload-passport-data">Create</NavigationButton>
+//         <NavigationButton to="/read">Read</NavigationButton>
+//       </View>
 //     </View>
 //   );
 // }
 
 import React, { useEffect, useState } from "react";
 import { SafeAreaView, ScrollView, View, Text, Button } from "react-native";
+import { W3mButton } from "@web3modal/wagmi-react-native";
+import { useNetwork } from "wagmi";
 
 // Import the agent from our earlier setup
 import { agent } from "../lib/setup";
@@ -21,14 +40,16 @@ import { IIdentifier } from "@veramo/core";
 import { DIDResolutionResult } from "@veramo/core";
 
 export default function Page() {
+  const { chain, chains } = useNetwork();
+
   const [identifiers, setIdentifiers] = useState<IIdentifier[]>([]);
   const [resolutionResult, setResolutionResult] = useState<DIDResolutionResult | undefined>();
 
   // Add the new identifier to state
   const createIdentifier = async () => {
-    const _id = await agent.didManagerCreate({
-      provider: "did:ethr:sepolia",
-    });
+    console.log("Creating identifier...");
+    const _id = await agent.didManagerCreate();
+    console.log("Created identifier:", _id);
     setIdentifiers((s) => s.concat([_id]));
   };
 
@@ -47,20 +68,21 @@ export default function Page() {
 
   // Resolve a DID
   const resolveDID = async (did: string) => {
-    console.log("TODO - Resolving DID:", did);
-    // const result = await agent.resolveDid({ didUrl: did });
-    // console.log(JSON.stringify(result, null, 2));
-    // setResolutionResult(result);
+    console.log(`Resolving ${did}...`);
+    const result = await agent.resolveDid({ didUrl: did });
+    console.log(JSON.stringify(result, null, 2));
+    console.log("BlockchainAccountId: ", result.didDocument?.verificationMethod?.[0].blockchainAccountId);
+    setResolutionResult(result);
   };
 
   const addService = async (did: string) => {
+    console.log(`Adding service to ${did}...`);
     const result = await agent.didManagerAddService({
       did,
       service: {
         id: "1",
-        type: "DIDCommMessaging",
-        serviceEndpoint: "did:web:dev-didcomm-mediator.herokuapp.com",
-        description: "for messaging",
+        type: "MetadataService",
+        serviceEndpoint: "https://arweave.net/123",
       },
     });
     console.log(JSON.stringify(result, null, 2));
@@ -70,6 +92,8 @@ export default function Page() {
     <SafeAreaView>
       <ScrollView>
         <View style={{ padding: 20 }}>
+          {chain && <Text>Connected to {chain.name}</Text>}
+          <W3mButton />
           <Text style={{ fontSize: 30, fontWeight: "bold" }}>Identifiers</Text>
           <Button onPress={() => createIdentifier()} title={"Create Identifier"} />
           <View style={{ marginBottom: 50, marginTop: 20 }}>

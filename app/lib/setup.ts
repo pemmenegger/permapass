@@ -23,19 +23,17 @@ import { Entities, KeyStore, DIDStore, migrations, PrivateKeyStore } from "@vera
 import { DataSource } from "typeorm";
 
 // the did:peer resolver package
-// import { getResolver as peerDidResolver } from "@veramo/did-provider-peer";
+import { getResolver as ethrDidResolver } from "ethr-did-resolver";
+import { DIDResolverPlugin } from "@veramo/did-resolver";
+import { deployments } from "../contracts/EthereumDIDRegistry";
+import { mainnet, polygon, arbitrum, hardhat, sepolia, goerli } from "viem/chains";
 
 // This plugin allows us to issue and verify W3C Verifiable Credentials with JWT proof format
 import { CredentialPlugin, ICredentialIssuer, ICredentialVerifier } from "@veramo/credential-w3c";
-
-// CONSTANTS
-const ALCHEMY_API_KEY = process.env.EXPO_PUBLIC_ALCHEMY_API_KEY;
-if (!ALCHEMY_API_KEY) throw new Error("ALCHEMY_API_KEY is required");
-
-// This is a raw X25519 private key, provided as an example.
-// You can run `npx @veramo/cli config create-secret-key` in a terminal to generate a new key.
-// In a production app, this MUST NOT be hardcoded in your source code.
-const DB_ENCRYPTION_KEY = "29739248cad1bd1a0fc4d9b75cd4d2990de535baf5caadfdf8d8f86664aa830c";
+import { ethers } from "ethers";
+import { Web3KeyManagementSystem } from "@veramo/kms-web3";
+// import { getEthersBrowserProvider } from "./ethers";
+import config from "./config";
 
 // DB setup:
 let dbConnection = new DataSource({
@@ -48,6 +46,11 @@ let dbConnection = new DataSource({
   entities: Entities,
 }).initialize();
 
+// const walletConnectProvider = getEthersBrowserProvider();
+// if (!walletConnectProvider) {
+//   console.error("No wallet connect provider");
+// }
+
 // Veramo agent setup
 export const agent = createAgent<
   IDIDManager & IKeyManager & IDataStore & IDataStoreORM & ICredentialIssuer & ICredentialVerifier
@@ -56,19 +59,57 @@ export const agent = createAgent<
     new KeyManager({
       store: new KeyStore(dbConnection),
       kms: {
-        local: new KeyManagementSystem(new PrivateKeyStore(dbConnection, new SecretBox(DB_ENCRYPTION_KEY))),
+        local: new KeyManagementSystem(new PrivateKeyStore(dbConnection, new SecretBox(config.DB_ENCRYPTION_KEY))),
+        // web3: new Web3KeyManagementSystem({
+        //   walletConnect: walletConnectProvider!,
+        // }),
       },
     }),
     new DIDManager({
       store: new DIDStore(dbConnection),
-      defaultProvider: "did:ethr:sepolia",
+      defaultProvider: "did:ethr:hardhat",
       providers: {
         "did:ethr:sepolia": new EthrDIDProvider({
           defaultKms: "local",
-          network: "sepolia",
-          rpcUrl: `https://eth-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY}`,
+          networks: [
+            {
+              name: "sepolia",
+              provider: new ethers.JsonRpcProvider(`https://sepolia.infura.io/v3/${config.INFURA_PROJECT_ID}`),
+              registry: "0x03d5003bf0e79C5F5223588F347ebA39AfbC3818",
+              chainId: sepolia.id,
+            },
+          ],
+        }),
+        "did:ethr:hardhat": new EthrDIDProvider({
+          defaultKms: "local",
+          networks: [
+            {
+              name: "hardhat",
+              provider: new ethers.JsonRpcProvider(`http://${config.LOCALHOST_INTERNAL_IP}:8545`),
+              registry: deployments[hardhat.id].address,
+              chainId: hardhat.id,
+            },
+          ],
         }),
       },
+    }),
+    new DIDResolverPlugin({
+      ...ethrDidResolver({
+        networks: [
+          {
+            name: "sepolia",
+            provider: new ethers.JsonRpcProvider(`https://sepolia.infura.io/v3/${config.INFURA_PROJECT_ID}`),
+            registry: "0x03d5003bf0e79C5F5223588F347ebA39AfbC3818",
+            chainId: sepolia.id,
+          },
+          {
+            name: "hardhat",
+            provider: new ethers.JsonRpcProvider(`http://${config.LOCALHOST_INTERNAL_IP}:8545`),
+            registry: deployments[hardhat.id].address,
+            chainId: hardhat.id,
+          },
+        ],
+      }),
     }),
     new CredentialPlugin(),
   ],

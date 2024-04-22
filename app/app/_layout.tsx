@@ -7,21 +7,15 @@ import "cross-fetch/polyfill";
 import { StatusBar } from "expo-status-bar";
 import { WagmiConfig } from "wagmi";
 import { mainnet, polygon, arbitrum, sepolia, goerli } from "viem/chains";
-import { createWeb3Modal, defaultWagmiConfig, Web3Modal } from "@web3modal/wagmi-react-native";
+import { createWeb3Modal, defaultWagmiConfig, W3mButton, Web3Modal } from "@web3modal/wagmi-react-native";
 import { Stack } from "expo-router";
 import { defineChain } from "viem";
+import config from "../lib/config";
 
 // polyfill BigInt
 (BigInt.prototype as any).toJSON = function () {
   return this.toString();
 };
-
-// 1. Get projectId at https://cloud.walletconnect.com
-const projectId = process.env.EXPO_PUBLIC_WALLETCONNECT_CLOUD_PROJECT_ID;
-
-if (!projectId) {
-  throw new Error("Missing projectId");
-}
 
 // 2. Create config
 const metadata = {
@@ -35,8 +29,6 @@ const metadata = {
   },
 };
 
-const macbookIP = "192.168.91.91";
-
 export const hardhat = defineChain({
   id: 31_337,
   name: "Hardhat",
@@ -47,18 +39,18 @@ export const hardhat = defineChain({
     symbol: "hhETH",
   },
   rpcUrls: {
-    default: { http: [`http://${macbookIP}:8545`] },
-    public: { http: [`http://${macbookIP}:8545`] },
+    default: { http: [`http://${config.LOCALHOST_INTERNAL_IP}:8545`] },
+    public: { http: [`http://${config.LOCALHOST_INTERNAL_IP}:8545`] },
   },
 });
 
 const chains = [mainnet, polygon, arbitrum, hardhat, sepolia, goerli];
 
-const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata });
+const wagmiConfig = defaultWagmiConfig({ projectId: config.WALLETCONNECT_CLOUD_PROJECT_ID, chains, metadata });
 
 // 3. Create modal
 createWeb3Modal({
-  projectId,
+  projectId: config.WALLETCONNECT_CLOUD_PROJECT_ID,
   chains,
   wagmiConfig,
   enableAnalytics: true, // Optional - defaults to your Cloud configuration
@@ -68,6 +60,17 @@ export default function Layout() {
   return (
     <WagmiConfig config={wagmiConfig}>
       <StatusBar style="auto" />
+      {/* <Stack
+        screenOptions={{
+          headerStyle: {
+            backgroundColor: "#ffffff",
+          },
+          headerTintColor: "#000000",
+          headerTitleStyle: {
+            fontWeight: "bold",
+          },
+        }}
+      /> */}
       <Stack />
       <Web3Modal />
     </WagmiConfig>
