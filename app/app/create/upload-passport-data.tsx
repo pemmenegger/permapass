@@ -3,7 +3,7 @@ import { defaultStyles } from "../../styles";
 import { TextScreen } from "../../components/TextScreen";
 import { useState } from "react";
 import { NavigationButton } from "../../components/NavigationButton";
-import { uploadPassportData } from "../../lib/arweave";
+import { fromArweaveHashToURL, uploadPassport } from "../../lib/arweave";
 
 export default function Page() {
   const [responseURL, setResponseURL] = useState("");
@@ -11,7 +11,8 @@ export default function Page() {
   const [condition, setCondition] = useState("good");
 
   async function onPress() {
-    const url = await uploadPassportData({ name, condition });
+    const arweaveHash = await uploadPassport({ name, condition });
+    const url = fromArweaveHashToURL(arweaveHash);
     if (!url) {
       console.error("No URL returned from Arweave");
       return;

@@ -11,7 +11,7 @@ import { switchNetwork } from "@wagmi/core";
 import { readContract } from "@wagmi/core";
 import { watchContractEvent } from "@wagmi/core";
 import { useEffect, useState } from "react";
-import { uploadNFTPassportMetadata } from "../../lib/arweave";
+import { fromArweaveHashToURL, uploadNFTPassportMetadata } from "../../lib/arweave";
 import QRCode from "react-native-qrcode-svg";
 
 export default function Page() {
@@ -53,11 +53,12 @@ export default function Page() {
 
           if (log.args.to === address) {
             console.log("MINT: Correct address");
-            const url = await uploadNFTPassportMetadata({
+            const arweaveHash = await uploadNFTPassportMetadata({
               chainId: hardhat.id,
               address: deployments[hardhat.id].address,
               tokenId: log.args.tokenId!,
             });
+            const url = fromArweaveHashToURL(arweaveHash);
             console.log(url);
             if (!url) {
               console.error("No URL returned from Arweave");

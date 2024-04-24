@@ -38,7 +38,7 @@ app.post("/", async (req, res) => {
       console.log("Data to upload: ", dataToUpload);
       const receipt = await irys.upload(Buffer.from(JSON.stringify(dataToUpload)));
       console.log(`Data uploaded ==> https://arweave.net/${receipt.id}`);
-      return `https://arweave.net/${receipt.id}`;
+      return receipt.id;
     } catch (e) {
       console.log("Error uploading data ", e);
       throw e;
@@ -47,8 +47,8 @@ app.post("/", async (req, res) => {
 
   try {
     const dataToUpload = req.body;
-    const url = await uploadData(dataToUpload);
-    res.json({ url });
+    const arweaveHash = await uploadData(dataToUpload);
+    res.json({ arweaveHash });
   } catch (e) {
     console.error("Error uploading data to Arweave: ", e);
     res.status(500).send("Error uploading data to Arweave");

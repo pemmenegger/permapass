@@ -26,7 +26,9 @@ export interface PassportMetadata {
   args: string[];
 }
 
-export interface PassportData {
+export interface Passport {
   name: string;
   condition: string;
 }
+
+export type PassportType = "nft" | "did";

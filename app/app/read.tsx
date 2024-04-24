@@ -1,34 +1,32 @@
-import React, { useState } from "react";
-import { Button, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import { W3mButton } from "@web3modal/wagmi-react-native";
-import * as Linking from "expo-linking";
-import { usePassportData } from "../lib/hooks/usePassportData";
+import { usePassport } from "../lib/hooks/usePassport";
+import { useReadQueryParams } from "../lib/hooks/useReadQueryParams";
 
 export default function Page() {
-  const url = Linking.useURL();
-  const queryParams = url ? Linking.parse(url).queryParams : {};
-
-  console.log("queryParams", queryParams);
-
-  const passportMetadataURL =
-    typeof queryParams?.passportMetadataURL === "string" ? queryParams.passportMetadataURL : "";
-
-  console.log("passportMetadataURL", passportMetadataURL);
-
-  const { data, isLoading, error } = usePassportData(passportMetadataURL);
+  const { passportType, arweaveHash } = useReadQueryParams();
+  const { passport, isLoading, error } = usePassport({ passportType, arweaveHash });
 
   if (error) {
-    return <Text>Error: {error}</Text>;
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Text>Error: {error}</Text>
+      </View>
+    );
   }
 
   if (isLoading) {
-    return <Text>Loading...</Text>;
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Text>Loading...</Text>
+      </View>
+    );
   }
 
   return (
-    <View>
+    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
       <W3mButton />
-      <Text>Passport Data: {JSON.stringify(data)}</Text>
+      <Text>Passport: {JSON.stringify(passport)}</Text>
     </View>
   );
 }
