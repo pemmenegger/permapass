@@ -1,3 +1,5 @@
+import { PassportData, PassportMetadata } from "./types";
+
 export const uploadPassportData = async ({ name, condition }: { name: string; condition: string }) => {
   try {
     const url = await postArweaveApi({
@@ -53,7 +55,7 @@ export const uploadNFTPassportMetadata = async ({
   }
 };
 
-const postArweaveApi = async (body: any) => {
+const postArweaveApi = async (body: PassportData | PassportMetadata) => {
   const apiUrl = process.env.EXPO_PUBLIC_ARWEAVE_API_URL;
   if (!apiUrl) {
     throw new Error("API URL is not set");
