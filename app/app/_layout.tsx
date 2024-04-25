@@ -1,4 +1,8 @@
-import "fast-text-encoding";
+import "@sinonjs/text-encoding";
+import "react-native-get-random-values";
+import "@ethersproject/shims";
+import "cross-fetch/polyfill";
+
 import { StatusBar } from "expo-status-bar";
 import { Stack } from "expo-router";
 import { WagmiConfig } from "wagmi";
