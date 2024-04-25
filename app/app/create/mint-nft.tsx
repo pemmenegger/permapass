@@ -64,7 +64,10 @@ export default function Page() {
               console.error("No URL returned from Arweave");
               return;
             }
-            setPassportMetadataURL(url);
+
+            //192.168.91.91:8081/--/read?passportType=nft&arweaveHash=4uABXvFuIsPdue9Q1xW7jieF3RFATYWxIWRz5zMKuAg
+
+            setPassportMetadataURL(`exp://192.168.91.91:8081/--/read?passportType=nft&arweaveHash=${arweaveHash}`);
 
             unwatch?.();
             console.log("Unwatching...");
