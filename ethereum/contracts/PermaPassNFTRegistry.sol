@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract PermaPassRegistry is
+contract PermaPassNFTRegistry is
 	ERC721,
 	ERC721URIStorage,
 	ERC721Burnable,
@@ -18,7 +18,7 @@ contract PermaPassRegistry is
 
 	constructor(
 		address initialOwner
-	) ERC721("PermaPassRegistry", "PPR") Ownable(initialOwner) {}
+	) ERC721("PermaPassNFTRegistry", "PPR") Ownable(initialOwner) {}
 
 	function safeMint(address to, string memory uri) external {
 		uint256 tokenId = _nextTokenId++;

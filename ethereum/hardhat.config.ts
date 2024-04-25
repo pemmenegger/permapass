@@ -12,7 +12,7 @@ import "./tasks/utils/balance"
 import "./tasks/utils/block-number"
 import "./tasks/utils/send-eth"
 
-import "./tasks/PermaPassRegistry"
+import "./tasks/PermaPassNFTRegistry"
 
 const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY
 const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY
@@ -33,6 +33,10 @@ const config: HardhatUserConfig = {
 			accounts: [
 				{
 					privateKey: PRIVATE_KEY,
+					balance: "10000000000000000000000",
+				},
+				{
+					privateKey: "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
 					balance: "10000000000000000000000",
 				},
 			],

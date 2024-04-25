@@ -2,7 +2,7 @@ import { expect } from "chai"
 import { deployments, ethers, getNamedAccounts } from "hardhat"
 import { makeInterfaceId } from "@openzeppelin/test-helpers"
 
-describe("PermaPassRegistry", () => {
+describe("PermaPassNFTRegistry", () => {
 	const setupFixture = deployments.createFixture(async () => {
 		await deployments.fixture()
 		const signers = await getNamedAccounts()
@@ -14,7 +14,7 @@ describe("PermaPassRegistry", () => {
 		const owner = signers.deployer
 
 		const contract = await ethers.deployContract(
-			"PermaPassRegistry",
+			"PermaPassNFTRegistry",
 			[name, symbol, baseURI, contractURI, owner],
 			await ethers.getSigner(signers.deployer)
 		)

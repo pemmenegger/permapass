@@ -25,6 +25,9 @@ const postArweaveApi = async (body: Passport | PassportMetadata): Promise<string
 
     if (!response.ok) {
       if (response.status === 504) {
+        console.log("Gateway timeout, waiting 5 seconds before retrying...");
+        // wait 5 seconds before retrying
+        await new Promise((resolve) => setTimeout(resolve, 5000));
         console.log("Retrying upload to Arweave...");
         postArweaveApi(body);
       }

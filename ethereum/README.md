@@ -25,22 +25,22 @@ https://hardhat.org/getting-started/
 ├── contracts
 │   ├── BasicERC1155.sol
 │   ├── BasicERC20.sol
-│   └── PermaPassRegistry.sol
+│   └── PermaPassNFTRegistry.sol
 ├── deploy
 │   ├── Deploy_BasicERC1155.ts
 │   ├── Deploy_BasicERC20.ts
-│   └── Deploy_PermaPassRegistry.ts
+│   └── Deploy_PermaPassNFTRegistry.ts
 ├── deployments
 ├── hardhat.config.ts
 ├── tasks
 │   ├── erc1155
 │   ├── erc20
-│   ├── PermaPassRegistry
+│   ├── PermaPassNFTRegistry
 │   └── utils
 └── test
     ├── BasicERC1155.ts
     ├── BasicERC20.ts
-    └── PermaPassRegistry.ts
+    └── PermaPassNFTRegistry.ts
 ```
 
 ## Supported Networks
@@ -99,10 +99,10 @@ Make sure you include either `MNEMONIC` or `PRIVATE_KEY` in your `.env` file.
 
 > This is an example flow to deploy an ERC721 token to a public network and interact with it.
 
-#### 1. Deploy PermaPassRegistry Contract
+#### 1. Deploy PermaPassNFTRegistry Contract
 
 ```shell
-hh deploy --network sepolia --tags PermaPassRegistry
+hh deploy --network sepolia --tags PermaPassNFTRegistry
 ```
 
 #### 2. Verify Contract

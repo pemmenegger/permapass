@@ -3,6 +3,7 @@ import { publicProvider } from "wagmi/providers/public";
 import { defineChain } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { createWalletClient, http, Address } from "viem";
+import { BrowserProvider } from "ethers";
 
 const macbookIP = "192.168.91.91";
 
@@ -39,4 +40,15 @@ const walletClient = createWalletClient({
   transport: http(),
 });
 
-export { wagmiConfig, hardhat, walletClient };
+const getBrowserProvider = () => {
+  const { chain, transport } = walletClient;
+  const network = {
+    chainId: chain.id,
+    name: chain.name,
+  };
+  return new BrowserProvider(transport, network);
+};
+
+const browserProvider = getBrowserProvider();
+
+export { wagmiConfig, hardhat, walletClient, browserProvider };

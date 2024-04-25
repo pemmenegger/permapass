@@ -8,9 +8,8 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 	const { deployer, owner } = await hre.getNamedAccounts()
 	const chainId = await hre.getChainId()
 
-	const deployment = await hre.deployments.deploy("PermaPassNFTRegistry", {
+	const deployment = await hre.deployments.deploy("PermaPassDIDRegistry", {
 		from: deployer,
-		args: [owner],
 		log: true,
 	})
 
@@ -37,7 +36,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 		fs.mkdirSync(dir)
 	}
 
-	fs.writeFileSync(path.join(dir, "PermaPassNFTRegistry.ts"), formattedCode)
+	fs.writeFileSync(path.join(dir, "PermaPassDIDRegistry.ts"), formattedCode)
 }
 export default func
-func.tags = ["PermaPassNFTRegistry"]
+func.tags = ["PermaPassDIDRegistry"]

@@ -3,9 +3,10 @@ import { useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import QRCode from "react-native-qrcode-svg";
 import { uploadNFTPassportMetadata } from "../../lib/arweave";
-import { deployments } from "../../contracts/PermaPassRegistry";
+import { deployments } from "../../contracts/PermaPassNFTRegistry";
 import { watchContractEvent } from "@wagmi/core";
 import { walletClient, hardhat } from "../../lib/wagmi";
+import config from "../../lib/config";
 
 export default function Page() {
   const { tokenURI } = useLocalSearchParams();
@@ -42,7 +43,7 @@ export default function Page() {
               tokenId: log.args.tokenId!,
             });
             console.log("mintNFT - arweaveHash", arweaveHash);
-            const passportMetadataURL = `exp://192.168.91.91:8081/--/read?passportType=nft&arweaveHash=${arweaveHash}`;
+            const passportMetadataURL = config.BASE_URI_SCHEME + `/read?passportType=nft&arweaveHash=${arweaveHash}`;
             console.log("mintNFT - passportMetadataURL", passportMetadataURL);
             setPassportMetadataURL(passportMetadataURL);
             break;
