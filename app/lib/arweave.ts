@@ -24,7 +24,11 @@ const postArweaveApi = async (body: Passport | PassportMetadata): Promise<string
     });
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      if (response.status === 504) {
+        console.log("Retrying upload to Arweave...");
+        postArweaveApi(body);
+      }
+      throw new Error(`HTTP error! status: ${response.status} ${response.statusText}`);
     }
 
     const data = await response.json();

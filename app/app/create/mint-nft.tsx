@@ -2,91 +2,74 @@ import { Button, Text, View } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import QRCode from "react-native-qrcode-svg";
+import { uploadNFTPassportMetadata } from "../../lib/arweave";
+import { deployments } from "../../contracts/PermaPassRegistry";
+import { watchContractEvent } from "@wagmi/core";
+import { walletClient, hardhat } from "../../lib/wagmi";
 
 export default function Page() {
   const { tokenURI } = useLocalSearchParams();
   const [passportMetadataURL, setPassportMetadataURL] = useState<string | undefined>();
 
   const mintNFT = async () => {
-    console.log("Minting NFT to be impoemented");
-    // if (!address) {
-    //   console.error("No account address");
-    //   return;
-    // }
-    // if (!tokenURI) {
-    //   console.error("No token URI");
-    //   return;
-    // }
+    const address = walletClient.account.address;
+    console.log("mintNFT - minting NFT with address: ", address);
+    if (!tokenURI) {
+      console.error("No token URI");
+      return;
+    }
+    console.log("mintNFT - minting NFT with tokenURI: ", tokenURI);
 
-    // const unwatch = watchContractEvent(
-    //   {
-    //     chainId: hardhat.id,
-    //     address: deployments[hardhat.id].address,
-    //     abi: deployments[hardhat.id].abi,
-    //     eventName: "Mint",
-    //   },
-    //   async (logs) => {
-    //     logs.forEach(async (log) => {
-    //       console.log("MINT: event detected");
-    //       console.log(log);
+    const unwatch = watchContractEvent(
+      {
+        chainId: hardhat.id,
+        address: deployments[hardhat.id].address,
+        abi: deployments[hardhat.id].abi,
+        eventName: "Mint",
+      },
+      async (logs) => {
+        // if multiple, most recent first
+        logs.reverse();
 
-    //       if (log.args.to === address) {
-    //         console.log("MINT: Correct address");
-    //         const arweaveHash = await uploadNFTPassportMetadata({
-    //           chainId: hardhat.id,
-    //           address: deployments[hardhat.id].address,
-    //           tokenId: log.args.tokenId!,
-    //         });
-    //         const url = fromArweaveHashToURL(arweaveHash);
-    //         console.log(url);
-    //         if (!url) {
-    //           console.error("No URL returned from Arweave");
-    //           return;
-    //         }
+        for (const log of logs) {
+          console.log("mintNFT - event detected");
+          if (log.args.to === address) {
+            console.log("mintNFT - correct address, calling uploadNFTPassportMetadata...");
+            console.log("mintNFT - log.args", log.args);
+            const arweaveHash = await uploadNFTPassportMetadata({
+              chainId: hardhat.id,
+              address: deployments[hardhat.id].address,
+              tokenId: log.args.tokenId!,
+            });
+            console.log("mintNFT - arweaveHash", arweaveHash);
+            const passportMetadataURL = `exp://192.168.91.91:8081/--/read?passportType=nft&arweaveHash=${arweaveHash}`;
+            console.log("mintNFT - passportMetadataURL", passportMetadataURL);
+            setPassportMetadataURL(passportMetadataURL);
+            break;
+          }
+        }
+        unwatch?.();
+        console.log("mintNFT - Unwatched");
+      }
+    );
 
-    //         //192.168.91.91:8081/--/read?passportType=nft&arweaveHash=4uABXvFuIsPdue9Q1xW7jieF3RFATYWxIWRz5zMKuAg
-
-    //         setPassportMetadataURL(`exp://192.168.91.91:8081/--/read?passportType=nft&arweaveHash=${arweaveHash}`);
-
-    //         unwatch?.();
-    //         console.log("Unwatching...");
-    //       }
-    //     });
-    //   }
-    // );
-
-    // console.log("Minting NFT with tokenURI", tokenURI);
-    // const result = await writeContract({
-    //   chainId: hardhat.id,
-    //   address: deployments[hardhat.id].address,
-    //   abi: deployments[hardhat.id].abi,
-    //   functionName: "safeMint",
-    //   args: [address, tokenURI as string],
-    // });
-
-    // console.log(result);
+    console.log("mintNFT - safeMint...");
+    await walletClient.writeContract({
+      address: deployments[hardhat.id].address,
+      abi: deployments[hardhat.id].abi,
+      functionName: "safeMint",
+      args: [address, tokenURI as string],
+    });
+    console.log("mintNFT - safeMint done");
   };
-
-  // const readNFT = async () => {
-  //   const result = await readContract({
-  //     chainId: hardhat.id,
-  //     address: deployments[hardhat.id].address,
-  //     abi: deployments[hardhat.id].abi,
-  //     functionName: "tokenURI",
-  //     args: [BigInt(0)],
-  //   });
-
-  //   console.log(result);
-  // };
 
   return (
     <View>
       <Text>{tokenURI ? `Token URI to Mint: ${tokenURI}` : "No token URI passed"}</Text>
       <Button onPress={mintNFT} title="Mint NFT" />
-      {passportMetadataURL && <Text>Token URI: {passportMetadataURL}</Text>}
       {passportMetadataURL && (
         <View>
-          <Text>QR Code</Text>
+          <Text>Encoded QR Code URL: {passportMetadataURL}</Text>
           <QRCode value={passportMetadataURL} />
         </View>
       )}

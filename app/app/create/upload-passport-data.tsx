@@ -1,4 +1,4 @@
-import { Keyboard, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
+import { StyleSheet, Text, TextInput, TouchableOpacity } from "react-native";
 import { defaultStyles } from "../../styles";
 import { TextScreen } from "../../components/TextScreen";
 import { useState } from "react";
