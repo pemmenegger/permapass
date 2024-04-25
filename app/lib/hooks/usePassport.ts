@@ -1,7 +1,5 @@
 import { useState, useEffect } from "react";
 import { Passport, PassportMetadata, PassportType } from "../types";
-import { Address } from "viem";
-import { readContract } from "@wagmi/core";
 import { fromArweaveHashToURL } from "../arweave";
 
 interface UsePassportProps {
@@ -23,14 +21,15 @@ export function usePassport({ passportType, arweaveHash }: UsePassportProps) {
   const fetchPassportURL = async (passportType: PassportType, metadata: PassportMetadata): Promise<string> => {
     switch (passportType) {
       case "nft":
-        const tokenURI = await readContract({
-          chainId: metadata.chainId,
-          address: metadata.address as Address,
-          abi: metadata.abi,
-          functionName: metadata.functionName,
-          args: metadata.args.map((arg) => BigInt(arg)),
-        });
-        return tokenURI as string;
+        throw new Error("NFT not supported yet");
+      // const tokenURI = await readContract({
+      //   chainId: metadata.chainId,
+      //   address: metadata.address as Address,
+      //   abi: metadata.abi,
+      //   functionName: metadata.functionName,
+      //   args: metadata.args.map((arg) => BigInt(arg)),
+      // });
+      // return tokenURI as string;
       case "did":
         throw new Error("DID not supported yet");
       default:
