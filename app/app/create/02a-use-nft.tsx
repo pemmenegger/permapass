@@ -1,25 +1,25 @@
 import { Button, Text, View } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { useState } from "react";
-import QRCode from "react-native-qrcode-svg";
 import { uploadNFTPassportMetadata } from "../../lib/arweave";
 import { deployments } from "../../contracts/PermaPassNFTRegistry";
 import { watchContractEvent } from "@wagmi/core";
 import { walletClient, hardhat } from "../../lib/wagmi";
-import config from "../../lib/config";
+import { NavigationButton } from "../../components/NavigationButton";
+import { fromArweaveTxidToPassportMetadataURL } from "../../lib/utils";
 
 export default function Page() {
-  const { tokenURI } = useLocalSearchParams();
+  const { arweaveURI } = useLocalSearchParams();
   const [passportMetadataURL, setPassportMetadataURL] = useState<string | undefined>();
 
   const mintNFT = async () => {
     const address = walletClient.account.address;
     console.log("mintNFT - minting NFT with address: ", address);
-    if (!tokenURI) {
-      console.error("No token URI");
+    if (!arweaveURI) {
+      console.error("No arweaveURI passed");
       return;
     }
-    console.log("mintNFT - minting NFT with tokenURI: ", tokenURI);
+    console.log("mintNFT - minting NFT with arweaveURI: ", arweaveURI);
 
     const unwatch = watchContractEvent(
       {
@@ -37,13 +37,13 @@ export default function Page() {
           if (log.args.to === address) {
             console.log("mintNFT - correct address, calling uploadNFTPassportMetadata...");
             console.log("mintNFT - log.args", log.args);
-            const arweaveHash = await uploadNFTPassportMetadata({
+            const arweaveTxid = await uploadNFTPassportMetadata({
               chainId: hardhat.id,
               address: deployments[hardhat.id].address,
-              tokenId: log.args.tokenId!,
+              tokenId: log.args.tokenId!.toString(),
             });
-            console.log("mintNFT - arweaveHash", arweaveHash);
-            const passportMetadataURL = config.BASE_URI_SCHEME + `/read?passportType=nft&arweaveHash=${arweaveHash}`;
+            console.log("mintNFT - arweaveTxid", arweaveTxid);
+            const passportMetadataURL = fromArweaveTxidToPassportMetadataURL(arweaveTxid);
             console.log("mintNFT - passportMetadataURL", passportMetadataURL);
             setPassportMetadataURL(passportMetadataURL);
             break;
@@ -59,20 +59,36 @@ export default function Page() {
       address: deployments[hardhat.id].address,
       abi: deployments[hardhat.id].abi,
       functionName: "safeMint",
-      args: [address, tokenURI as string],
+      args: [address, arweaveURI as string],
     });
     console.log("mintNFT - safeMint done");
   };
 
   return (
     <View>
-      <Text>{tokenURI ? `Token URI to Mint: ${tokenURI}` : "No token URI passed"}</Text>
+      <Text>{arweaveURI ? `Arweave URI: ${arweaveURI}` : "No arweave URI"}</Text>
       <Button onPress={mintNFT} title="Mint NFT" />
       {passportMetadataURL && (
-        <View>
-          <Text>Encoded QR Code URL: {passportMetadataURL}</Text>
-          <QRCode value={passportMetadataURL} />
-        </View>
+        <>
+          <Text>Passport Metadata URL:</Text>
+          <Text>{passportMetadataURL}</Text>
+          <NavigationButton
+            to="/create/03a-use-qr-code"
+            params={{
+              passportMetadataURL,
+            }}
+          >
+            Use QR Code
+          </NavigationButton>
+          <NavigationButton
+            to="/create/03b-use-nfc"
+            params={{
+              passportMetadataURL,
+            }}
+          >
+            Use NFC
+          </NavigationButton>
+        </>
       )}
     </View>
   );

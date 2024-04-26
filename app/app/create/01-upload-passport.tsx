@@ -1,27 +1,22 @@
-import { StyleSheet, Text, TextInput, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { defaultStyles } from "../../styles";
-import { TextScreen } from "../../components/TextScreen";
 import { useState } from "react";
 import { NavigationButton } from "../../components/NavigationButton";
-import { fromArweaveHashToURL, uploadPassport } from "../../lib/arweave";
+import { fromArweaveTxidToURI, uploadPassport } from "../../lib/arweave";
 
 export default function Page() {
-  const [responseURL, setResponseURL] = useState("");
+  const [arweaveURI, setArweaveURI] = useState("");
   const [name, setName] = useState("");
   const [condition, setCondition] = useState("good");
 
   async function onPress() {
-    const arweaveHash = await uploadPassport({ name, condition });
-    const url = fromArweaveHashToURL(arweaveHash);
-    if (!url) {
-      console.error("No URL returned from Arweave");
-      return;
-    }
-    setResponseURL(url);
+    const txid = await uploadPassport({ name, condition });
+    const uri = fromArweaveTxidToURI(txid);
+    setArweaveURI(uri);
   }
 
   return (
-    <TextScreen header={"Upload Passport Data"}>
+    <View style={styles.container}>
       <TextInput
         style={styles.input}
         placeholder="Product Name"
@@ -34,25 +29,25 @@ export default function Page() {
       <TouchableOpacity style={styles.button} onPress={onPress}>
         <Text style={styles.buttonText}>Upload To Arweave</Text>
       </TouchableOpacity>
-      <Text>Response - Arweave link:</Text>
-      <Text>{responseURL}</Text>
+      <Text>Response from Arweave:</Text>
+      <Text>{arweaveURI}</Text>
       <NavigationButton
-        to="/create/mint-nft"
+        to="/create/02a-use-nft"
         params={{
-          tokenURI: responseURL,
+          arweaveURI,
         }}
       >
         Create NFT
       </NavigationButton>
       <NavigationButton
-        to="/create/mint-nft"
+        to="/create/02b-use-did"
         params={{
-          tokenURI: responseURL,
+          arweaveURI,
         }}
       >
         Create DID
       </NavigationButton>
-    </TextScreen>
+    </View>
   );
 }
 

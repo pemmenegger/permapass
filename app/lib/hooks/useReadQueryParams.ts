@@ -6,7 +6,7 @@ export function useReadQueryParams() {
   const queryParams = url ? Linking.parse(url).queryParams : {};
   const passportType =
     typeof queryParams?.passportType === "string" ? (queryParams.passportType as PassportType) : undefined;
-  const arweaveHash = typeof queryParams?.arweaveHash === "string" ? queryParams.arweaveHash : undefined;
+  const arweaveTxid = typeof queryParams?.arweaveTxid === "string" ? queryParams.arweaveTxid : undefined;
 
-  return { passportType, arweaveHash };
+  return { passportType, arweaveTxid };
 }

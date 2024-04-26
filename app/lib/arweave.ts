@@ -1,4 +1,4 @@
-import { Passport, PassportMetadata } from "./types";
+import { DIDPassportMetadata, NFTPassportMetadata, Passport, PassportMetadata } from "./types";
 
 const apiUrl = process.env.EXPO_PUBLIC_ARWEAVE_API_URL;
 if (!apiUrl) {
@@ -7,8 +7,12 @@ if (!apiUrl) {
   throw new Error(errorMessage);
 }
 
-export const fromArweaveHashToURL = (arweaveHash: string): string => {
-  return `https://arweave.net/${arweaveHash}`;
+export const fromArweaveTxidToURL = (arweaveTxid: string): string => {
+  return `https://arweave.net/${arweaveTxid}`;
+};
+
+export const fromArweaveTxidToURI = (arweaveTxid: string): string => {
+  return `ar://${arweaveTxid}`;
 };
 
 const postArweaveApi = async (body: Passport | PassportMetadata): Promise<string> => {
@@ -35,11 +39,11 @@ const postArweaveApi = async (body: Passport | PassportMetadata): Promise<string
     }
 
     const data = await response.json();
-    if (!data.arweaveHash) {
-      throw new Error("No Arweave hash in response");
+    if (!data.txid) {
+      throw new Error("No Arweave transaction id in response");
     }
 
-    return data.arweaveHash;
+    return data.txid;
   } catch (error) {
     console.error("Error uploading to Arweave:", error);
     throw error;
@@ -50,40 +54,10 @@ export const uploadPassport = async (passport: Passport): Promise<string> => {
   return postArweaveApi(passport);
 };
 
-export const uploadNFTPassportMetadata = async ({
-  chainId,
-  address,
-  tokenId,
-}: {
-  chainId: number;
-  address: string;
-  tokenId: bigint;
-}): Promise<string> => {
-  return postArweaveApi({
-    chainId,
-    address,
-    abi: [
-      {
-        inputs: [
-          {
-            internalType: "uint256",
-            name: "tokenId",
-            type: "uint256",
-          },
-        ],
-        name: "tokenURI",
-        outputs: [
-          {
-            internalType: "string",
-            name: "",
-            type: "string",
-          },
-        ],
-        stateMutability: "view",
-        type: "function",
-      },
-    ],
-    functionName: "tokenURI",
-    args: [tokenId.toString()],
-  });
+export const uploadNFTPassportMetadata = async (metadata: NFTPassportMetadata): Promise<string> => {
+  return postArweaveApi(metadata);
+};
+
+export const uploadDIDPassportMetadata = async (metadata: DIDPassportMetadata): Promise<string> => {
+  return postArweaveApi(metadata);
 };

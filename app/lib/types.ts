@@ -1,29 +1,15 @@
-interface ABIInput {
-  internalType: string;
-  name: string;
-  type: string;
-}
+export type PassportMetadata = NFTPassportMetadata | DIDPassportMetadata;
 
-interface ABIOutput {
-  internalType: string;
-  name: string;
-  type: string;
-}
-
-interface ABI {
-  inputs: ABIInput[];
-  name: string;
-  outputs: ABIOutput[];
-  stateMutability: string;
-  type: string;
-}
-
-export interface PassportMetadata {
+export interface NFTPassportMetadata {
   chainId: number;
   address: string;
-  abi: ABI[];
-  functionName: string;
-  args: string[];
+  tokenId: string;
+}
+
+export interface DIDPassportMetadata {
+  chainId: number;
+  address: string;
+  serviceId: string;
 }
 
 export interface Passport {
@@ -31,4 +17,4 @@ export interface Passport {
   condition: string;
 }
 
-export type PassportType = "nft" | "did";
+// export type PassportType = "nft" | "did";
