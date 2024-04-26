@@ -15,6 +15,11 @@ export const fromArweaveTxidToURI = (arweaveTxid: string): string => {
   return `ar://${arweaveTxid}`;
 };
 
+export const fromArweaveURIToURL = (arweaveURI: string): string => {
+  const arweaveTxid = arweaveURI.replace("ar://", "");
+  return fromArweaveTxidToURL(arweaveTxid);
+};
+
 const postArweaveApi = async (body: Passport | PassportMetadata): Promise<string> => {
   try {
     console.log("Uploading to Arweave...", body);

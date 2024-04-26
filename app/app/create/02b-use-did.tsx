@@ -16,33 +16,59 @@ export default function Page() {
   const [passportMetadataURL, setPassportMetadataURL] = useState<string | undefined>();
 
   const initIdentifier = async () => {
-    if (!agent) console.error("Agent not initialized, exiting...");
+    if (!agent) {
+      console.error("Agent not initialized, exiting...");
+      return;
+    }
 
     const provider = "did:ethr:hardhat";
 
     console.log("Creating identifier...");
-    const identifier = await agent!.didManagerCreate({
+    const identifier = await agent.didManagerCreate({
       provider,
     });
     console.log("Created identifier:", identifier);
     setIdentifier(identifier);
 
+    console.log(`Resolving ${identifier.did}...`);
+    const result = await agent!.resolveDid({ didUrl: identifier.did });
+    console.log(JSON.stringify(result, null, 2));
+
+    console.log(`BlockchainAccountId: ${result.didDocument?.verificationMethod?.[0].blockchainAccountId}`);
+  };
+
+  const addService = async () => {
+    if (!agent) {
+      console.error("Agent not initialized, exiting...");
+      return;
+    }
+    if (!identifier) {
+      console.error("Identifier not initialized, exiting...");
+      return;
+    }
+
     console.log(`Adding service to ${identifier.did}...`);
-    const result = await agent!.didManagerAddService({
+    let result = await agent!.didManagerAddService({
       did: identifier.did,
       service: {
-        id: "passport",
+        id: "not supported for ethr did",
         type: "LinkedDomains",
         serviceEndpoint: arweaveURI as string,
       },
     });
-    console.log("Added service to identifier:");
+    console.log("Added service to identifier");
+    console.log(JSON.stringify(result, null, 2));
+
+    console.log(`Resolving ${identifier.did}...`);
+    result = await agent!.resolveDid({ didUrl: identifier.did });
     console.log(JSON.stringify(result, null, 2));
 
     console.log("Uploading passport metadata to Arweave...");
     const arweaveTxid = await uploadDIDPassportMetadata({
+      type: "did",
       chainId: hardhat.id,
       address: deployments[hardhat.id].address,
+      did: identifier.did,
       serviceId: "passport",
     });
     console.log("arweaveTxid", arweaveTxid);
@@ -55,6 +81,7 @@ export default function Page() {
     <View>
       <Text>{arweaveURI ? `Arweave URI: ${arweaveURI}` : "No arweave URI"}</Text>
       <Button onPress={() => initIdentifier()} title={"Init Identifier"} />
+      <Button onPress={() => addService()} title={"Add Service"} />
       {passportMetadataURL && (
         <>
           <Text>Passport Metadata URL:</Text>

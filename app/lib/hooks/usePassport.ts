@@ -1,15 +1,15 @@
 import { useState, useEffect } from "react";
-import { Passport, PassportMetadata, PassportType } from "../types";
-import { fromArweaveTxidToURL } from "../arweave";
-import { readContract } from "@wagmi/core";
+import { Passport, PassportMetadata } from "../types";
+import { fromArweaveTxidToURL, fromArweaveURIToURL } from "../arweave";
+import { readContract, erc721ABI } from "@wagmi/core";
 import { Address } from "viem";
+import { useVeramoAgent } from "./useVeramoAgent";
 
 interface UsePassportProps {
-  passportType: PassportType | undefined;
   arweaveTxid: string | undefined;
 }
 
-export function usePassport({ passportType, arweaveTxid }: UsePassportProps) {
+export function usePassport({ arweaveTxid }: UsePassportProps) {
   const [passport, setPassport] = useState<Passport | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -20,21 +20,30 @@ export function usePassport({ passportType, arweaveTxid }: UsePassportProps) {
     return response.json();
   };
 
-  const fetchPassportURL = async (passportType: PassportType, metadata: PassportMetadata): Promise<string> => {
-    switch (passportType) {
+  const fetchPassportURL = async (metadata: PassportMetadata): Promise<string> => {
+    switch (metadata.type) {
       case "nft":
-        const tokenURI = await readContract({
+        const arweaveURI = await readContract({
           chainId: metadata.chainId,
           address: metadata.address as Address,
-          abi: metadata.abi,
-          functionName: metadata.functionName,
-          args: metadata.args.map((arg) => BigInt(arg)),
+          abi: erc721ABI,
+          functionName: "tokenURI",
+          args: [BigInt(metadata.tokenId)],
         });
-        return tokenURI as string;
+        return fromArweaveURIToURL(arweaveURI as string);
       case "did":
-        throw new Error("DID not supported yet");
+        const { agent } = useVeramoAgent();
+        const result = await agent.resolveDid({ didUrl: metadata.did });
+        const services = result.didDocument?.service || [];
+        for (const service of services) {
+          if (service.type === "LinkedDomains") {
+            const arweaveURI = service.serviceEndpoint;
+            return fromArweaveURIToURL(arweaveURI as string);
+          }
+        }
+        return "Service not found.";
       default:
-        throw new Error(`Unknown passport type: ${passportType}`);
+        throw new Error(`Unknown passport type: ${metadata}`);
     }
   };
 
@@ -45,7 +54,7 @@ export function usePassport({ passportType, arweaveTxid }: UsePassportProps) {
   };
 
   useEffect(() => {
-    if (!passportType || !arweaveTxid) return;
+    if (!arweaveTxid) return;
 
     const runAsync = async () => {
       setIsLoading(true);
@@ -54,7 +63,7 @@ export function usePassport({ passportType, arweaveTxid }: UsePassportProps) {
       try {
         const metadataURL = fromArweaveTxidToURL(arweaveTxid);
         const metadata = await fetchMetadata(metadataURL);
-        const passportURL = await fetchPassportURL(passportType, metadata);
+        const passportURL = await fetchPassportURL(metadata);
         const passport = await fetchPassport(passportURL);
         setPassport(passport);
       } catch (error: unknown) {
@@ -69,7 +78,7 @@ export function usePassport({ passportType, arweaveTxid }: UsePassportProps) {
     };
 
     void runAsync();
-  }, [passportType, arweaveTxid]);
+  }, [arweaveTxid]);
 
   return { passport, isLoading, error };
 }

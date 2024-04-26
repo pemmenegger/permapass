@@ -3,8 +3,8 @@ import { usePassport } from "../lib/hooks/usePassport";
 import { useReadQueryParams } from "../lib/hooks/useReadQueryParams";
 
 export default function Page() {
-  const { passportType, arweaveTxid } = useReadQueryParams();
-  const { passport, isLoading, error } = usePassport({ passportType, arweaveTxid });
+  const { arweaveTxid } = useReadQueryParams();
+  const { passport, isLoading, error } = usePassport({ arweaveTxid });
 
   if (error) {
     return (

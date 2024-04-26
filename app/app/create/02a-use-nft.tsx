@@ -38,6 +38,7 @@ export default function Page() {
             console.log("mintNFT - correct address, calling uploadNFTPassportMetadata...");
             console.log("mintNFT - log.args", log.args);
             const arweaveTxid = await uploadNFTPassportMetadata({
+              type: "nft",
               chainId: hardhat.id,
               address: deployments[hardhat.id].address,
               tokenId: log.args.tokenId!.toString(),
