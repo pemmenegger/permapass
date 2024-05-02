@@ -1,0 +1,29 @@
+{
+  "cli": {
+    "version": ">= 3.13.2",
+    "promptToConfigurePushNotifications": false
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "ios": {
+        "image": "macos-sonoma-14.4-xcode-15.3"
+      }
+    },
+    "preview": {
+      "distribution": "internal",
+      "ios": {
+        "image": "macos-sonoma-14.4-xcode-15.3"
+      }
+    },
+    "production": {
+      "ios": {
+        "image": "macos-sonoma-14.4-xcode-15.3"
+      }
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}
