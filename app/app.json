@@ -30,7 +30,7 @@
           "uniswap"
         ]
       },
-      "buildNumber": "8"
+      "buildNumber": "10"
     },
     "android": {
       "versionCode": 1,
@@ -44,6 +44,7 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
+      "expo-router",
       [
         "expo-build-properties",
         {
@@ -57,7 +58,19 @@
           }
         }
       ],
-      "expo-router"
+      [
+        "react-native-nfc-manager",
+        {
+          "nfcPermission": "Interact with HaLo tags",
+          "selectIdentifiers": [
+            "481199130E9F01",
+            "D2760000850100",
+            "D2760000850101"
+          ],
+          "systemCodes": [],
+          "includeNdefEntitlement": false
+        }
+      ]
     ],
     "extra": {
       "eas": {
