@@ -1,3 +1,4 @@
+import "../global";
 import "@walletconnect/react-native-compat";
 import { WagmiConfig } from "wagmi";
 import { sepolia } from "viem/chains";
