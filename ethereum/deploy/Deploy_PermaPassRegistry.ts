@@ -17,7 +17,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 	const address = deployment.address
 	const abi = JSON.stringify(deployment.abi, null, 2)
 
-	const tsCode = `export const deployments = {
+	const tsCode = `export const PermaPassNFTRegistry = {
 		${chainId}: {
 			address: "${address}",
 			abi: ${abi}
