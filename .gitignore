@@ -4,3 +4,4 @@ arweave-api/node_modules
 app/.env
 app/ios
 app/android
+app/contracts

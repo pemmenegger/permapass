@@ -19,13 +19,21 @@
 	"author": "Kristjan Kosic <kristjan@protokol.com>",
 	"license": "MIT",
 	"dependencies": {
-		"@openzeppelin/contracts": "5.0.2",
-		"viem": "^2.9.26"
+		"@openzeppelin/contracts": "5.0.2"
 	},
 	"devDependencies": {
+		"@nomicfoundation/hardhat-ignition": "^0.15.2",
+		"@nomicfoundation/hardhat-ignition-viem": "^0.15.0",
+		"@nomicfoundation/hardhat-network-helpers": "^1.0.0",
 		"@nomicfoundation/hardhat-toolbox-viem": "^3.0.0",
+		"@nomicfoundation/hardhat-verify": "^2.0.0",
+		"@nomicfoundation/hardhat-viem": "^2.0.0",
+		"@nomicfoundation/ignition-core": "^0.15.2",
 		"@nomiclabs/hardhat-solhint": "^3.0.1",
 		"@openzeppelin/test-helpers": "^0.5.16",
+		"@types/chai": "^4.2.0",
+		"@types/chai-as-promised": "^7.1.6",
+		"@types/mocha": ">=9.1.0",
 		"@types/node": "^20.0.0",
 		"@typescript-eslint/eslint-plugin": "^6.10.0",
 		"@typescript-eslint/parser": "^6.10.0",
@@ -36,10 +44,13 @@
 		"ethers": "^6.12.0",
 		"hardhat": "^2.19.0",
 		"hardhat-deploy": "^0.12.0",
+		"hardhat-gas-reporter": "^1.0.8",
 		"prettier": "^3.0.3",
 		"prettier-plugin-solidity": "^1.2.0",
 		"solhint": "^4.0.0",
 		"solidity-coverage": "^0.8.5",
-		"typescript": "^5.0.4"
+		"ts-node": "^10.9.2",
+		"typescript": "^5.0.4",
+		"viem": "^2.9.26"
 	}
 }
