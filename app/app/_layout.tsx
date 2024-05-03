@@ -7,12 +7,12 @@ import { StyleSheet } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { defineChain } from "viem";
 import { Stack } from "expo-router";
+import { EXPO_PUBLIC_WALLETCONNECT_CLOUD_PROJECT_ID } from "@env";
 
-// 1. Get projectId at https://cloud.walletconnect.com
-const projectId = process.env.EXPO_PUBLIC_WALLETCONNECT_CLOUD_PROJECT_ID;
+const projectId = EXPO_PUBLIC_WALLETCONNECT_CLOUD_PROJECT_ID;
 
 if (!projectId) {
-  throw new Error("Missing projectId");
+  throw new Error("Missing EXPO_PUBLIC_WALLETCONNECT_CLOUD_PROJECT_ID");
 }
 
 // 2. Create config
