@@ -19,6 +19,9 @@
       "config": {
         "usesNonExemptEncryption": false
       },
+      "infoPlist": {
+        "LSApplicationQueriesSchemes": ["metamask", "trust", "safe", "rainbow", "uniswap"]
+      },
       "buildNumber": "2"
     },
     "android": {
@@ -51,6 +54,7 @@
       "eas": {
         "projectId": "9db56f2d-9a7a-4a01-b6c8-5b380a1aa9d7"
       }
-    }
+    },
+    "scheme": "permapass"
   }
 }
