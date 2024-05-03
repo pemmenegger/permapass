@@ -2,10 +2,10 @@ import "@walletconnect/react-native-compat";
 import { WagmiConfig } from "wagmi";
 import { sepolia } from "viem/chains";
 import { createWeb3Modal, defaultWagmiConfig, Web3Modal } from "@web3modal/wagmi-react-native";
-import ConnectView from "./ConnectView";
-import { View, Text, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { defineChain } from "viem";
+import { Stack } from "expo-router";
 
 // 1. Get projectId at https://cloud.walletconnect.com
 const projectId = process.env.EXPO_PUBLIC_WALLETCONNECT_CLOUD_PROJECT_ID;
@@ -58,12 +58,8 @@ createWeb3Modal({
 export default function App() {
   return (
     <WagmiConfig config={wagmiConfig}>
-      <View style={styles.container}>
-        <StatusBar style="auto" />
-        <Text>Open up App.tsx to start working on your app!</Text>
-        <ConnectView />
-      </View>
-
+      <StatusBar style="auto" />
+      <Stack />
       <Web3Modal />
     </WagmiConfig>
   );
