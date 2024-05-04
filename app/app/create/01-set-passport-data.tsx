@@ -1,25 +1,22 @@
-import { Button, StyleSheet, TextInput, View, Text } from "react-native";
-import { defaultStyles } from "../../styles";
+import { Button, TextInput, View, Text } from "react-native";
 import { useState } from "react";
 import { useCreation } from "../../context/CreationContext";
-import { PassportCreate } from "../../types";
 import { router } from "expo-router";
 
 export default function Page() {
   const { state, dispatch } = useCreation();
   const [name, setName] = useState<string>(state.userInput.passportData?.name || "");
-  const [condition, setCondition] = useState<string>(state.userInput.passportData?.condition || "good");
+  const [condition, setCondition] = useState<string>(state.userInput.passportData?.condition || "");
 
-  async function onNext() {
+  const isInvalid = !name || !condition;
+
+  const handleNext = async () => {
     dispatch({
       type: "PASSPORT_DATA_CHANGED",
-      passportData: {
-        name: name,
-        condition: condition,
-      },
+      passportData: { name, condition },
     });
     router.push("/create/02-select-data-carrier");
-  }
+  };
 
   return (
     <View>
@@ -38,10 +35,9 @@ export default function Page() {
         onChangeText={setCondition}
         maxLength={16}
         autoCapitalize="none"
-        autoFocus={true}
       />
       <Button title="Back" onPress={router.back} />
-      <Button title="Next" onPress={onNext} />
+      <Button title="Next" onPress={handleNext} disabled={isInvalid} />
     </View>
   );
 }

@@ -6,7 +6,12 @@ export type CreationState = {
     dataCarrier?: DataCarrierType;
     digitalIdentifier?: DigitalIdentifierType;
   };
-  status?: "PASSPORT_DATA_UPLOADED" | "DIGITAL_IDENTIFIER_CREATED" | "DATA_CARRIER_SET_UP" | "CREATION_ERROR";
+  status?:
+    | "CREATION_STARTED"
+    | "PASSPORT_DATA_UPLOADED"
+    | "DIGITAL_IDENTIFIER_CREATED"
+    | "DATA_CARRIER_SET_UP"
+    | "CREATION_ERROR";
   errorMessage?: string;
 };
 
@@ -22,6 +27,10 @@ export type CreationAction =
   | {
       type: "DIGITAL_IDENTIFIER_CHANGED";
       digitalIdentifier: DigitalIdentifierType;
+    }
+  | {
+      type: "CREATION_STATUS_CHANGED";
+      status: CreationState["status"];
     }
   | {
       type: "CREATION_ERROR";
@@ -53,6 +62,11 @@ export function creationReducer(state: CreationState, action: CreationAction): C
           ...state.userInput,
           digitalIdentifier: action.digitalIdentifier,
         },
+      };
+    case "CREATION_STATUS_CHANGED":
+      return {
+        ...state,
+        status: action.status,
       };
     case "CREATION_ERROR":
       return {

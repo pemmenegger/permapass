@@ -1,9 +1,9 @@
-import { Button, StyleSheet, TextInput, View, Text, TouchableOpacity } from "react-native";
-import { defaultStyles } from "../../styles";
+import { Button, View, Text } from "react-native";
 import { useState } from "react";
 import { useCreation } from "../../context/CreationContext";
-import { DataCarrierType, DigitalIdentifierType, PassportCreate } from "../../types";
+import { DigitalIdentifierType } from "../../types";
 import { router } from "expo-router";
+import OptionCard from "../../components/OptionCard";
 
 export default function Page() {
   const { state, dispatch } = useCreation();
@@ -11,66 +11,20 @@ export default function Page() {
     state.userInput.digitalIdentifier
   );
 
-  async function onNext() {
+  const isInvalid = !digitalIdentifier;
+
+  const handleNext = async () => {
     dispatch({ type: "DIGITAL_IDENTIFIER_CHANGED", digitalIdentifier: digitalIdentifier! });
     router.push("/create/04-summary-and-creation");
-  }
+  };
 
   return (
     <View>
       <Text>Now, select your data carrier:</Text>
-      <TouchableOpacity
-        style={digitalIdentifier == "nft" ? styles.buttonSelected : styles.buttonUnselected}
-        onPress={() => setDigitalIdentifier("nft")}
-      >
-        <Text style={styles.buttonText}>NFT</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={digitalIdentifier == "did" ? styles.buttonSelected : styles.buttonUnselected}
-        onPress={() => setDigitalIdentifier("did")}
-      >
-        <Text style={styles.buttonText}>DID</Text>
-      </TouchableOpacity>
+      <OptionCard text="NFT" isSelected={digitalIdentifier == "nft"} onPress={() => setDigitalIdentifier("nft")} />
+      <OptionCard text="DID" isSelected={digitalIdentifier == "did"} onPress={() => setDigitalIdentifier("did")} />
       <Button title="Back" onPress={router.back} />
-      <Button title="Next" onPress={onNext} disabled={digitalIdentifier == undefined} />
+      <Button title="Next" onPress={handleNext} disabled={isInvalid} />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  buttonUnselected: {
-    flex: 0,
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 10,
-    width: 200,
-    height: 50,
-    marginVertical: 5,
-    backgroundColor: defaultStyles.bgLight,
-    shadowOffset: { width: 3, height: 3 },
-    shadowColor: defaultStyles.bgDark,
-    shadowRadius: 5,
-    shadowOpacity: 0.2,
-    borderRadius: 10,
-  },
-  buttonSelected: {
-    flex: 0,
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 10,
-    width: 200,
-    height: 50,
-    marginVertical: 5,
-    backgroundColor: defaultStyles.secondary,
-    shadowOffset: { width: 3, height: 3 },
-    shadowColor: defaultStyles.bgDark,
-    shadowRadius: 5,
-    shadowOpacity: 0.2,
-    borderRadius: 10,
-  },
-  buttonText: {
-    color: defaultStyles.secondary,
-    fontSize: defaultStyles.fontMedium,
-    fontWeight: "bold",
-  },
-});

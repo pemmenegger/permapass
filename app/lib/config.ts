@@ -31,8 +31,8 @@ const getConfig = (): Config => {
     throw new Error("EXPO_PUBLIC_PRIVATE_KEY is required");
   }
 
-  // const LOCALHOST_INTERNAL_IP = "192.168.91.91";
-  const LOCALHOST_INTERNAL_IP = "192.168.0.25";
+  const LOCALHOST_INTERNAL_IP = "192.168.91.91";
+  // const LOCALHOST_INTERNAL_IP = "192.168.0.25";
 
   return {
     LOCALHOST_INTERNAL_IP,
