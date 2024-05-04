@@ -1,4 +1,5 @@
-import "../global";
+import "../global.js";
+import "../global.css";
 import "@walletconnect/react-native-compat";
 (BigInt.prototype as any).toJSON = function () {
   return this.toString();
