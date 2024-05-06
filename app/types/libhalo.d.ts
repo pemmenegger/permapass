@@ -1,4 +1,3 @@
-// libhalo-react-native.d.ts
 declare module "@arx-research/libhalo/api/react-native.js" {
   import { NfcManager } from "react-native-nfc-manager";
   import { Buffer } from "buffer/";
