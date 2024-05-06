@@ -10,11 +10,9 @@
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#2FD0A0"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.permapass.app",
@@ -22,13 +20,7 @@
         "usesNonExemptEncryption": false
       },
       "infoPlist": {
-        "LSApplicationQueriesSchemes": [
-          "metamask",
-          "trust",
-          "safe",
-          "rainbow",
-          "uniswap"
-        ]
+        "LSApplicationQueriesSchemes": ["metamask", "trust", "safe", "rainbow", "uniswap"]
       },
       "buildNumber": "10"
     },
@@ -36,12 +28,9 @@
       "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#2FD0A0"
       },
       "package": "com.permapass.app"
-    },
-    "web": {
-      "favicon": "./assets/favicon.png"
     },
     "plugins": [
       "expo-router",
@@ -62,11 +51,7 @@
         "react-native-nfc-manager",
         {
           "nfcPermission": "Interact with HaLo tags",
-          "selectIdentifiers": [
-            "481199130E9F01",
-            "D2760000850100",
-            "D2760000850101"
-          ],
+          "selectIdentifiers": ["481199130E9F01", "D2760000850100", "D2760000850101"],
           "systemCodes": [],
           "includeNdefEntitlement": false
         }
