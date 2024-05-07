@@ -1,5 +1,5 @@
 #!/bin/bash
-export NODE_ENV=build
+export APP_ENV=build
 
 set -a
 source .env.build.local
