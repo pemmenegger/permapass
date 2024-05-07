@@ -1,7 +1,8 @@
 #!/bin/bash
-# Load local environment variables
+export NODE_ENV=build
+
 set -a
-source .env
+source .env.build.local
 set +a
 
 eas build --local

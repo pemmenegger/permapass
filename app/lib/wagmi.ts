@@ -16,8 +16,8 @@ const hardhat = defineChain({
     symbol: "hhETH",
   },
   rpcUrls: {
-    default: { http: [`http://${config.LOCALHOST_INTERNAL_IP}:8545`] },
-    public: { http: [`http://${config.LOCALHOST_INTERNAL_IP}:8545`] },
+    default: { http: [config.HARDHAT_RPC_URL] },
+    public: { http: [config.HARDHAT_RPC_URL] },
   },
 });
 

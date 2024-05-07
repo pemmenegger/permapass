@@ -1,4 +1,4 @@
-import { arweave } from "./arweave";
+import { api } from "./web-api";
 import { blockchain } from "./blockchain";
 import config from "./config";
 import { PassportMetadata } from "../types";
@@ -8,8 +8,8 @@ export const fromArweaveTxidToPassportMetadataURL = (txid: string) => {
 };
 
 export const readPassportMetadata = async (arweaveTxid: string) => {
-  const metadataURL = arweave.fromTxidToURL(arweaveTxid);
-  const metadata = await arweave.fetchPassportMetadata(metadataURL);
+  const metadataURL = api.arweave.fromTxidToURL(arweaveTxid);
+  const metadata = await api.arweave.fetchPassportMetadata(metadataURL);
   return metadata;
 };
 

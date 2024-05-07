@@ -2,8 +2,8 @@ import { PermaPassNFTRegistry } from "../contracts/PermaPassNFTRegistry";
 import { walletClient, hardhat } from "./wagmi";
 import { readContract, erc721ABI, watchContractEvent } from "@wagmi/core";
 import { NFTPassportMetadata } from "../types";
-import { arweave } from "./arweave";
 import { Address } from "viem";
+import { api } from "./web-api";
 
 const readNFTPassport = async (metadata: NFTPassportMetadata) => {
   const passportURI = await readContract({
@@ -13,8 +13,8 @@ const readNFTPassport = async (metadata: NFTPassportMetadata) => {
     functionName: "tokenURI",
     args: [metadata.tokenId],
   });
-  const passportURL = arweave.fromURIToURL(passportURI as string);
-  const passport = await arweave.fetchPassport(passportURL);
+  const passportURL = api.arweave.fromURIToURL(passportURI as string);
+  const passport = await api.arweave.fetchPassport(passportURL);
   return passport;
 };
 

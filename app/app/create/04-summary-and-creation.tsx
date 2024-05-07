@@ -1,7 +1,7 @@
 import { Button, View, Text } from "react-native";
 import { useState } from "react";
 import { useCreation } from "../../context/CreationContext";
-import { arweave } from "../../lib/arweave";
+import { api } from "../../lib/web-api";
 import { walletClient, hardhat } from "../../lib/wagmi";
 import { blockchain } from "../../lib/blockchain";
 import { PermaPassNFTRegistry } from "../../contracts/PermaPassNFTRegistry";
@@ -23,8 +23,8 @@ export default function Page() {
       throw new Error("No passport data to upload");
     }
     addCreationProgress("Uploading passport data to Arweave...");
-    const txid = await arweave.uploadPassport(state.userInput.passportData);
-    const uri = arweave.fromTxidToURI(txid);
+    const txid = await api.arweave.uploadPassport(state.userInput.passportData);
+    const uri = api.arweave.fromTxidToURI(txid);
     addCreationProgress("Passport data uploaded to Arweave");
     return uri;
   };
@@ -34,7 +34,7 @@ export default function Page() {
     const to = walletClient.account.address;
     const tokenId = await blockchain.mintNFT(to, passportDataURI as string);
     console.log("handleNFTCreation - Token ID:", tokenId);
-    const arweaveTxid = await arweave.uploadNFTPassportMetadata({
+    const arweaveTxid = await api.arweave.uploadNFTPassportMetadata({
       type: "nft",
       chainId: hardhat.id,
       address: PermaPassNFTRegistry[hardhat.id].address,
