@@ -1,16 +1,57 @@
-const express = require("express");
-const Irys = require("@irys/sdk");
-const fs = require("fs");
-const path = require("path");
+import express from "express";
+import Irys from "@irys/sdk";
+import { DIDResolverPlugin } from "@veramo/did-resolver";
+import { getResolver as ethrDidResolver } from "ethr-did-resolver";
+import { ethers } from "ethers";
 
 const app = express();
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  res.send("Express on Vercel running...");
+  res.send("API running...");
 });
 
-app.post("/", async (req, res) => {
+app.get("/did", async (req, res) => {
+  const { didUrl, registryAddress } = req.query;
+
+  if (!didUrl) {
+    return res.status(400).json({ error: "didUrl is required" });
+  }
+
+  const network = didUrl.split(":")[2];
+  if (network === "hardhat") {
+    if (!registryAddress) {
+      return res.status(400).json({ error: "registryAddress is required for Hardhat DIDs" });
+    }
+  } else if (network !== "sepolia" && network !== "hardhat") {
+    return res.status(400).json({ error: "Only sepolia and hardhat networks are currently supported" });
+  }
+
+  const networks = [
+    {
+      name: "sepolia",
+      provider: new ethers.JsonRpcProvider(`https://sepolia.infura.io/v3/2Nxca4S9yIKHNyPZ0JetWFvHyO6`),
+      registry: registryAddress || "0x03d5003bf0e79C5F5223588F347ebA39AfbC3818",
+      chainId: 11155111,
+    },
+    {
+      name: "hardhat",
+      provider: new ethers.JsonRpcProvider(`http://localhost:8545`),
+      registry: registryAddress,
+      chainId: 31337,
+    },
+  ];
+
+  const resolver = new DIDResolverPlugin({
+    ...ethrDidResolver({ networks }),
+  });
+  const doc = await resolver.resolveDid({ didUrl });
+  console.log("Resolved DID: ", doc);
+
+  res.json(doc.didDocument);
+});
+
+app.post("/arweave", async (req, res) => {
   const getIrys = async () => {
     const key = {
       kty: "RSA",
@@ -56,5 +97,3 @@ app.post("/", async (req, res) => {
 });
 
 app.listen(3000, () => console.log("Server ready on port 3000."));
-
-module.exports = app;

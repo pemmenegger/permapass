@@ -1,6 +1,6 @@
 .DS_Store
 
-arweave-api/node_modules
+**/node_modules
 app/.env
 app/ios
 app/android
