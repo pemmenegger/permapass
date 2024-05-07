@@ -8,7 +8,7 @@ const app = express();
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  res.send("API running...");
+  res.send("Web API running...");
 });
 
 app.get("/did", async (req, res) => {
@@ -21,7 +21,7 @@ app.get("/did", async (req, res) => {
   const network = didUrl.split(":")[2];
   if (network === "hardhat") {
     if (!registryAddress) {
-      return res.status(400).json({ error: "registryAddress is required for Hardhat DIDs" });
+      return res.status(400).json({ error: "registryAddress is required for hardhat DIDs" });
     }
   } else if (network !== "sepolia" && network !== "hardhat") {
     return res.status(400).json({ error: "Only sepolia and hardhat networks are currently supported" });
