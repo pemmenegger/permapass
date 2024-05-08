@@ -8,7 +8,6 @@ import { hardhat } from "../lib/wagmi";
 import { blockchain } from "../lib/blockchain";
 
 export default function Page() {
-  const [did, setDid] = useState<string | null>(null);
   const [didDocument, setDidDocument] = useState<DIDDocument | null>(null);
 
   const resolveSepolia = async () => {
