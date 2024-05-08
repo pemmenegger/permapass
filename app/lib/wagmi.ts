@@ -52,4 +52,13 @@ const publicClient = createPublicClient({
 
 // const browserProvider = getBrowserProvider();
 
-export { hardhat, walletClient, publicClient, chains };
+const initWalletClient = (privateKey: string) => {
+  const account = privateKeyToAccount(privateKey as Address);
+  return createWalletClient({
+    account,
+    chain: hardhat,
+    transport: http(),
+  });
+};
+
+export { hardhat, walletClient, publicClient, chains, initWalletClient };

@@ -5,7 +5,10 @@ import { DIDDocument } from "../types/did";
 const fetchUrl = async (url: string, requestInit?: RequestInit) => {
   console.log("fetchUrl", url, requestInit);
   const response = await fetch(url, requestInit);
-  if (!response.ok) throw new Error(`fetchUrl - error while fetching data, status: ${response.status}`);
+  if (!response.ok) {
+    console.error(JSON.stringify(response));
+    throw new Error("Error while fetching data");
+  }
   const contentType = response.headers.get("content-type");
   const data = contentType?.includes("application/json") ? await response.json() : await response.text();
   return data;
