@@ -72,6 +72,8 @@ const setTokenURI = async (tokenId: bigint, uri: string) => {
   console.log("Token URI set");
 };
 
+// we need this function because veramo does not have this possibility
+// we used api because for simplicity and not rewriting the code (veramo dependencies conflict with wallet conection)
 async function createDID() {
   const privateKey = generatePrivateKey();
   const account = privateKeyToAccount(privateKey as Address);

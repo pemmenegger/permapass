@@ -14,7 +14,7 @@ export type DIDPassportMetadata = {
   chainId: number;
   address: string;
   did: string;
-  serviceId: string;
+  serviceType: string;
 };
 
 export interface Passport {

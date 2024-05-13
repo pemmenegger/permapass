@@ -7,6 +7,7 @@ import { blockchain } from "../../lib/blockchain";
 import { PermaPassNFTRegistry } from "../../contracts/PermaPassNFTRegistry";
 import { fromArweaveTxidToPassportMetadataURL } from "../../lib/utils";
 import QRCode from "react-native-qrcode-svg";
+import { PermaPassDIDRegistry } from "../../contracts/PermaPassDIDRegistry";
 
 export default function Page() {
   const { state } = useCreation();
@@ -47,6 +48,24 @@ export default function Page() {
     return passportMetadataURL;
   };
 
+  const handleDIDCreation = async (passportDataURI: string) => {
+    addCreationProgress("Creating DID...");
+    const did = await blockchain.createDID();
+    console.log("DID created:", did);
+    addCreationProgress("Adding Service to DID...");
+    await blockchain.addDIDService(did, passportDataURI);
+    const arweaveTxid = await api.arweave.uploadDIDPassportMetadata({
+      type: "did",
+      chainId: hardhat.id,
+      address: PermaPassDIDRegistry[hardhat.id].address,
+      did: did,
+      serviceType: "LinkedDomains",
+    });
+    const passportMetadataURL = fromArweaveTxidToPassportMetadataURL(arweaveTxid);
+    addCreationProgress(`DID ${did} created`);
+    return passportMetadataURL;
+  };
+
   const handleCreation = async () => {
     try {
       const passportDataURI = await handlePassportDataUpload();
@@ -59,7 +78,9 @@ export default function Page() {
           break;
         }
         case "did":
-          throw new Error("Did not implement yet");
+          const passportMetadataURL = await handleDIDCreation(passportDataURI);
+          setUrlToEncode(passportMetadataURL);
+          break;
         default:
           throw new Error("Unsupported digital identifier type");
       }

@@ -59,10 +59,10 @@ export default function Page() {
         <NavigationButton to="/create/01-set-passport-data">Create Passport</NavigationButton>
         <NavigationButton to="/connect">Connect Wallet</NavigationButton>
         <NavigationButton to="/nfc">Read/Write HaLo NFC</NavigationButton>
-        <Button title="Resolve Sepolia DID" onPress={resolveSepolia} />
+        {/* <Button title="Resolve Sepolia DID" onPress={resolveSepolia} />
         <Button title="Resolve Hardhat DID" onPress={resolveHardhat} />
         <Button title="Create Hardhat DID" onPress={() => handleDIDCreation("petersilie")} />
-        {didDocument && <Text>{JSON.stringify(didDocument, null, 2)}</Text>}
+        {didDocument && <Text>{JSON.stringify(didDocument, null, 2)}</Text>} */}
       </ScrollView>
     </SafeAreaView>
   );

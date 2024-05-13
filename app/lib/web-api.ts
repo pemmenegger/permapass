@@ -3,7 +3,7 @@ import { DIDPassportMetadata, NFTPassportMetadata, Passport, PassportMetadata } 
 import { DIDDocument } from "../types/did";
 
 const fetchUrl = async (url: string, requestInit?: RequestInit) => {
-  console.log("fetchUrl", url, requestInit);
+  console.log(`fetching ${url}`);
   const response = await fetch(url, requestInit);
   if (!response.ok) {
     console.error(JSON.stringify(response));
