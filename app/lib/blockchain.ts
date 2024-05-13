@@ -5,7 +5,8 @@ import { NFTPassportMetadata } from "../types";
 import { api } from "./web-api";
 import { PermaPassDIDRegistry } from "../contracts/PermaPassDIDRegistry";
 import { generatePrivateKey, privateKeyToAccount, sign } from "viem/accounts";
-import { Address, encodePacked, keccak256 } from "viem";
+import { Address, encodePacked, keccak256, pad } from "viem";
+import { stringToBytes, toHex } from "viem";
 
 const readNFTPassport = async (metadata: NFTPassportMetadata) => {
   const passportURI = await readContract({
@@ -102,12 +103,46 @@ async function createDID() {
     args: [identity, Number(sig.v), sig.r, sig.s, newOwner],
   });
 
-  console.log(`Transaction Hash: ${txHash}`);
+  console.log(`createDID transaction Hash: ${txHash}`);
 
   await publicClient.waitForTransactionReceipt({ hash: txHash });
-  console.log("Transaction confirmed");
+  console.log("createDID transaction confirmed");
 
   return "did:ethr:hardhat:" + identity;
+}
+
+function stringToBytes32(str: string): string {
+  const bytes = stringToBytes(str);
+  const padded = pad(bytes, { size: 32, dir: "right" });
+  return toHex(padded);
+}
+
+async function addDIDService(didUrl: string, passportDataURI: string) {
+  const identity = didUrl.split(":")[3];
+
+  const service = {
+    type: "LinkedDomains",
+    serviceEndpoint: passportDataURI as string,
+  };
+
+  let key = "did/svc/" + service.type;
+  let value =
+    typeof service.serviceEndpoint === "string" ? service.serviceEndpoint : JSON.stringify(service.serviceEndpoint);
+
+  let attrName = stringToBytes32(key);
+  let attrValue = toHex(stringToBytes(value));
+
+  const txHash = await walletClient.writeContract({
+    address: PermaPassDIDRegistry[hardhat.id].address,
+    abi: PermaPassDIDRegistry[hardhat.id].abi,
+    functionName: "setAttribute",
+    args: [identity as Address, attrName as Address, attrValue as Address, BigInt(86400)],
+  });
+
+  console.log(`addDIDService transaction Hash: ${txHash}`);
+
+  await publicClient.waitForTransactionReceipt({ hash: txHash });
+  console.log("addDIDService transaction confirmed");
 }
 
 export const blockchain = {
@@ -115,4 +150,5 @@ export const blockchain = {
   mintNFT,
   setTokenURI,
   createDID,
+  addDIDService,
 };
