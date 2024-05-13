@@ -46,8 +46,14 @@ export const api = {
     uploadPassport: async (passport: Passport) => await uploadToArweave(passport),
     uploadNFTPassportMetadata: async (metadata: NFTPassportMetadata) => await uploadToArweave(metadata),
     uploadDIDPassportMetadata: async (metadata: DIDPassportMetadata) => await uploadToArweave(metadata),
-    fetchPassport: async (url: string) => (await fetchUrl(url)) as Passport,
-    fetchPassportMetadata: async (url: string) => (await fetchUrl(url)) as PassportMetadata,
+    fetchPassport: async (url: string): Promise<Passport> => {
+      const data = await fetchUrl(url);
+      return JSON.parse(data) as Passport;
+    },
+    fetchPassportMetadata: async (url: string): Promise<PassportMetadata> => {
+      const data = await fetchUrl(url);
+      return JSON.parse(data) as PassportMetadata;
+    },
   },
   veramo: {
     resolveDID,

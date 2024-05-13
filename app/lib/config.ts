@@ -41,8 +41,8 @@ const getConfig = (): Config => {
     WEB_API_URL,
     PRIVATE_KEY,
     DB_ENCRYPTION_KEY: "29739248cad1bd1a0fc4d9b75cd4d2990de535baf5caadfdf8d8f86664aa830c",
-    // BASE_URI_SCHEME: `exp://${HOST}:8081/--`,
-    BASE_URI_SCHEME: `com.permapass.app://expo-development-client/?url=http%3A%2F%2F192.168.91.91%3A8081/--`,
+    // BASE_URI_SCHEME: `exp://${HOST}:8081/--/`,
+    BASE_URI_SCHEME: `com.permapass.app://`,
     WALLETCONNECT_CLOUD_PROJECT_ID,
   };
 };
