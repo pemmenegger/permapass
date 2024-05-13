@@ -1,4 +1,4 @@
-import { walletClient, hardhat, publicClient } from "./../wagmi";
+import { walletClient, hardhat, publicClient } from "./wagmi";
 import { readContract } from "@wagmi/core";
 import { DIDPassportMetadata } from "../../types";
 import { api } from "./../web-api";
@@ -48,7 +48,7 @@ async function createDID() {
   return "did:ethr:hardhat:" + identity;
 }
 
-async function addDIDService(didUrl: string, passportDataURI: string) {
+async function updateDIDService(didUrl: string, passportDataURI: string) {
   const identity = didUrl.split(":")[3];
 
   const service = {
@@ -74,10 +74,10 @@ async function addDIDService(didUrl: string, passportDataURI: string) {
     args: [identity as Address, attrName as Address, attrValue as Address, BigInt(86400)],
   });
 
-  console.log(`addDIDService transaction Hash: ${txHash}`);
+  console.log(`updateDIDService transaction Hash: ${txHash}`);
 
   await publicClient.waitForTransactionReceipt({ hash: txHash });
-  console.log("addDIDService transaction confirmed");
+  console.log("updateDIDService transaction confirmed");
 }
 
 const readDIDPassportURI = async (metadata: DIDPassportMetadata) => {
@@ -90,7 +90,7 @@ const readDIDPassportURI = async (metadata: DIDPassportMetadata) => {
 };
 
 export const didRegistry = {
-  readDIDPassportURI,
   createDID,
-  addDIDService,
+  updateDIDService,
+  readDIDPassportURI,
 };

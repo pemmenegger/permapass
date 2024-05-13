@@ -2,7 +2,7 @@ import { Button, View, Text } from "react-native";
 import { useState } from "react";
 import { useCreation } from "../../context/CreationContext";
 import { api } from "../../lib/web-api";
-import { walletClient, hardhat } from "../../lib/wagmi";
+import { walletClient, hardhat } from "../../lib/blockchain/wagmi";
 import { nftRegistry } from "../../lib/blockchain/nftRegistry";
 import { didRegistry } from "../../lib/blockchain/didRegistry";
 import { PermaPassNFTRegistry } from "../../contracts/PermaPassNFTRegistry";
@@ -34,7 +34,7 @@ export default function Page() {
   const handleNFTCreation = async (passportDataURI: string) => {
     addCreationProgress("Creating NFT...");
     const to = walletClient.account.address;
-    const tokenId = await nftRegistry.mintNFT(to, passportDataURI as string);
+    const tokenId = await nftRegistry.createNFT(to, passportDataURI as string);
     console.log("handleNFTCreation - Token ID:", tokenId);
     const arweaveTxid = await api.arweave.uploadNFTPassportMetadata({
       type: "nft",
@@ -54,7 +54,7 @@ export default function Page() {
     const did = await didRegistry.createDID();
     console.log("DID created:", did);
     addCreationProgress("Adding Service to DID...");
-    await didRegistry.addDIDService(did, passportDataURI);
+    await didRegistry.updateDIDService(did, passportDataURI);
     const arweaveTxid = await api.arweave.uploadDIDPassportMetadata({
       type: "did",
       chainId: hardhat.id,
