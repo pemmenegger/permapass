@@ -8,16 +8,8 @@
   },
   "dependencies": {
     "@irys/sdk": "^0.1.24",
-    "@veramo/core": "^6.0.0",
-    "@veramo/credential-w3c": "^6.0.0",
-    "@veramo/data-store": "^6.0.0",
-    "@veramo/did-manager": "^6.0.0",
-    "@veramo/did-provider-ethr": "^6.0.0",
     "@veramo/did-resolver": "^6.0.0",
-    "@veramo/key-manager": "^6.0.0",
-    "@veramo/kms-local": "^6.0.0",
     "arweave": "^1.15.1",
-    "did-resolver": "^4.1.0",
     "ethr-did-resolver": "^10.1.5",
     "express": "^4.19.2",
     "web-did-resolver": "^2.0.27"
