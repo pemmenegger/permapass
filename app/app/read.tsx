@@ -1,28 +1,33 @@
 import { Button, Text, View } from "react-native";
-import { usePassport } from "../hooks/usePassport";
 import { usePassportMetadata } from "../hooks/usePassportMetadata";
 import { useReadQueryParams } from "../hooks/useReadQueryParams";
 import { usePassportHistory } from "../hooks/usePassportHistory";
 import { api } from "../lib/web-api";
 import { nftRegistry } from "../lib/blockchain/nftRegistry";
 import { didRegistry } from "../lib/blockchain/didRegistry";
+import { useState } from "react";
 
 export default function Page() {
+  const [version, setVersion] = useState(0);
   const { arweaveTxid } = useReadQueryParams();
   const { passportMetadata, isLoading: isMetadataLoading, error: metadataError } = usePassportMetadata({ arweaveTxid });
-  const { passport, isLoading: isPassportLoading, error: passportError } = usePassport({ passportMetadata });
-  const { passportHistory } = usePassportHistory({ passportMetadata });
-  // const [passportHistory, setPassportHistory] = useState<Passport[]>([]);
+  const {
+    passportHistory,
+    isLoading: isPassportHistoryLoading,
+    error: passportHistoryError,
+  } = usePassportHistory({ passportMetadata, version });
 
   const update = async () => {
     if (!passportMetadata) {
       console.log("No passport metadata");
       return;
     }
-    if (!passport) {
+    if (!passportHistory || passportHistory.length === 0) {
       console.log("No passport");
       return;
     }
+
+    const passport = passportHistory[0];
 
     const txid = await api.arweave.uploadPassport({
       name: `${passport.name} UPDATED`,
@@ -41,44 +46,9 @@ export default function Page() {
         throw new Error(`Unknown passport type`);
     }
 
-    console.log("Passport updated");
+    // reload history
+    setVersion((prevVersion) => prevVersion + 1);
   };
-
-  // const readHistory = async () => {
-  //   if (!passportMetadata) {
-  //     console.log("No passport metadata");
-  //     return;
-  //   }
-  //   if (!passport) {
-  //     console.log("No passport");
-  //     return;
-  //   }
-
-  //   switch (passportMetadata.type) {
-  //     case "nft":
-  //       let currentPassport = passport;
-
-  //       setPassportHistory((history) => [...history, currentPassport]);
-
-  //       const logs = await publicClient.getContractEvents({
-  //         chainId: hardhat.id,
-  //         address: deployments[hardhat.id].address,
-  //         abi: deployments[hardhat.id].abi,
-  //         eventName: "TokenURIChanged",
-  //         args: {
-  //           tokenId: passportMetadata.tokenId,
-  //           uri: p,
-  //         },
-  //       });
-
-  //       break;
-  //     case "did":
-  //       console.log("to implement");
-  //       break;
-  //     default:
-  //       throw new Error(`Unknown passport type`);
-  //   }
-  // };
 
   if (isMetadataLoading) {
     return (
@@ -96,7 +66,7 @@ export default function Page() {
     );
   }
 
-  if (isPassportLoading) {
+  if (isPassportHistoryLoading) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <Text>Loading passport...</Text>
@@ -104,24 +74,20 @@ export default function Page() {
     );
   }
 
-  if (passportError) {
+  if (passportHistoryError) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Text>Error Passport: {passportError}</Text>
+        <Text>Error Passport: {passportHistoryError}</Text>
       </View>
     );
   }
 
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      {/* {hasError != "" && <Text>Error: error occurred, {hasError}</Text>} */}
-      <Text>Passport: {JSON.stringify(passport)}</Text>
-      <Button title="Update" onPress={update} />
-      {/* <Button title="Read History" onPress={readHistory} /> */}
-      {/* <Text>Passport History:</Text> */}
+    <View style={{ flex: 1, justifyContent: "center" }}>
       {passportHistory.map((passport, index) => (
-        <Text key={index}>PassportChange: {JSON.stringify(passport)}</Text>
+        <Text key={index}>{JSON.stringify(passport, null, 2)}</Text>
       ))}
+      <Button title="Update" onPress={update} />
     </View>
   );
 }

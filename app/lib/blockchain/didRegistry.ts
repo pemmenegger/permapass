@@ -1,10 +1,10 @@
 import { walletClient, hardhat, publicClient } from "./wagmi";
 import { readContract } from "@wagmi/core";
-import { DIDPassportMetadata } from "../../types";
+import { DIDPassportMetadata, PassportURIHistory } from "../../types";
 import { api } from "./../web-api";
 import { PermaPassDIDRegistry } from "../../contracts/PermaPassDIDRegistry";
 import { generatePrivateKey, privateKeyToAccount, sign } from "viem/accounts";
-import { Address, encodePacked, keccak256, pad } from "viem";
+import { Address, encodePacked, fromHex, keccak256, pad } from "viem";
 import { stringToBytes, toHex } from "viem";
 
 // we need this function because veramo does not have this possibility
@@ -52,7 +52,7 @@ async function updateDIDService(didUrl: string, passportDataURI: string) {
   const identity = didUrl.split(":")[3];
 
   const service = {
-    type: "LinkedDomains",
+    type: "ProductPassport",
     serviceEndpoint: passportDataURI as string,
   };
 
@@ -85,12 +85,83 @@ const readDIDPassportURI = async (metadata: DIDPassportMetadata) => {
   const registryAddress = PermaPassDIDRegistry[hardhat.id].address;
   // we use the api because veramo packages conflict with the wallet connection
   const didDocument = await api.veramo.resolveDID(did, registryAddress);
-  const passportURI = didDocument.service?.find((service) => service.type === "LinkedDomains")?.serviceEndpoint;
+  // console.log("didDocument", JSON.stringify(didDocument, null, 2));
+
+  // Filter ProductPassport services
+  const passportServices = didDocument.service?.filter((service) => service.type === "ProductPassport") || [];
+
+  if (passportServices.length === 0) {
+    console.log("No ProductPassport services found.");
+    throw new Error("No ProductPassport services found.");
+  }
+
+  let mostRecentService = passportServices[0];
+  for (let service of passportServices) {
+    const serviceCount = service.id.split("-").pop();
+    if (!serviceCount) {
+      console.log("Service count not found.");
+      throw new Error("Service count not found.");
+    }
+    const mostRecentServiceCount = mostRecentService.id.split("-").pop();
+    if (!mostRecentServiceCount) {
+      console.log("Most recent service count not found.");
+      throw new Error("Most recent service count not found.");
+    }
+    if (parseInt(serviceCount, 10) > parseInt(mostRecentServiceCount, 10)) {
+      mostRecentService = service;
+    }
+  }
+  const passportURI = mostRecentService.serviceEndpoint;
   return passportURI;
+};
+
+const readDIDPassportURIHistory = async (metadata: DIDPassportMetadata) => {
+  const { did } = metadata;
+  const identity = did.split(":")[3] as Address;
+
+  let previousChange: bigint = await readContract({
+    chainId: hardhat.id,
+    address: PermaPassDIDRegistry[hardhat.id].address,
+    abi: PermaPassDIDRegistry[hardhat.id].abi,
+    functionName: "changed",
+    args: [identity],
+  });
+
+  const URIHistory: PassportURIHistory[] = [];
+  while (previousChange) {
+    const events = await publicClient.getContractEvents({
+      address: metadata.address as Address,
+      abi: PermaPassDIDRegistry[hardhat.id].abi,
+      eventName: "DIDAttributeChanged",
+      args: { identity },
+      fromBlock: previousChange,
+      toBlock: previousChange,
+    });
+
+    const block = await publicClient.getBlock({ blockNumber: previousChange });
+
+    for (const event of events) {
+      const name = fromHex(event.args.name!, "string").replace(/\0/g, "");
+      if (name !== "did/svc/ProductPassport") {
+        console.log("Attribute name is not ProductPassport, skipping.");
+        continue;
+      }
+      URIHistory.push({
+        uri: fromHex(event.args.value!, "string"),
+        timestamp: block.timestamp,
+      });
+    }
+
+    const lastEvent = events[events.length - 1];
+    previousChange = lastEvent ? BigInt(lastEvent.args.previousChange!) : 0n;
+  }
+
+  return URIHistory;
 };
 
 export const didRegistry = {
   createDID,
   updateDIDService,
   readDIDPassportURI,
+  readDIDPassportURIHistory,
 };

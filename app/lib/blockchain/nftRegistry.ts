@@ -93,8 +93,8 @@ const readNFTPassportURIHistory = async (metadata: NFTPassportMetadata) => {
     for (const event of events) {
       URIHistory.push({
         uri: event.args.uri!,
-        version: event.args.version!,
         timestamp: block.timestamp,
+        version: event.args.version!,
         sender: event.args.sender!,
       });
     }

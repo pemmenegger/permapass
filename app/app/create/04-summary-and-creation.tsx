@@ -60,7 +60,7 @@ export default function Page() {
       chainId: hardhat.id,
       address: PermaPassDIDRegistry[hardhat.id].address,
       did: did,
-      serviceType: "LinkedDomains",
+      serviceType: "ProductPassport",
     });
     const passportMetadataURL = fromArweaveTxidToPassportMetadataURL(arweaveTxid);
     addCreationProgress(`DID ${did} created`);

@@ -19,9 +19,6 @@ export function stringToBytes32(str: string): string {
 export const readPassportMetadata = async (arweaveTxid: string) => {
   const metadataURL = api.arweave.fromTxidToURL(arweaveTxid);
   const metadata = await api.arweave.fetchPassportMetadata(metadataURL);
-  console.log("readPassportMetadata - metadata", metadata);
-  console.log(`typeof metadata: ${typeof metadata}`);
-
   return metadata;
 };
 
@@ -40,6 +37,35 @@ export const readPassport = async (metadata: PassportMetadata) => {
   const passportURL = api.arweave.fromURIToURL(passportURI as string);
   const passport = await api.arweave.fetchPassport(passportURL);
   return passport;
+};
+
+export const readPassportHistory = async (metadata: PassportMetadata) => {
+  let passportURIHistory;
+  switch (metadata.type) {
+    case "nft":
+      passportURIHistory = await nftRegistry.readNFTPassportURIHistory(metadata);
+      break;
+    case "did":
+      passportURIHistory = await didRegistry.readDIDPassportURIHistory(metadata);
+      break;
+    default:
+      throw new Error(`Unknown passport type: ${metadata}`);
+  }
+
+  if (!passportURIHistory || passportURIHistory.length === 0) {
+    console.log("No passport URI history found.");
+    return [];
+  }
+
+  const passportHistory = await Promise.all(
+    passportURIHistory.map(async (passportURI) => {
+      const passportURL = api.arweave.fromURIToURL(passportURI.uri as string);
+      const passport = await api.arweave.fetchPassport(passportURL);
+      return passport;
+    })
+  );
+
+  return passportHistory;
 };
 
 export const readPassportFromMetadataTxid = async (metadataTxid: string) => {

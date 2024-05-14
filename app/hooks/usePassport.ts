@@ -4,9 +4,10 @@ import { readPassport } from "../lib/utils";
 
 interface UsePassportProps {
   passportMetadata: PassportMetadata | undefined;
+  version: number;
 }
 
-export function usePassport({ passportMetadata }: UsePassportProps) {
+export function usePassport({ passportMetadata, version }: UsePassportProps) {
   const [passport, setPassport] = useState<Passport | undefined>(undefined);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | undefined>(undefined);
@@ -14,12 +15,15 @@ export function usePassport({ passportMetadata }: UsePassportProps) {
   useEffect(() => {
     if (!passportMetadata) return;
 
+    console.log(JSON.stringify(passportMetadata));
+
     const runAsync = async () => {
       setIsLoading(true);
       setError(undefined);
 
       try {
         const passport = await readPassport(passportMetadata);
+        console.log("usePassport - passport", passport);
         setPassport(passport);
       } catch (error: unknown) {
         let errorMessage = "Unknown error occurred";
@@ -33,7 +37,7 @@ export function usePassport({ passportMetadata }: UsePassportProps) {
     };
 
     void runAsync();
-  }, [passportMetadata]);
+  }, [passportMetadata, version]);
 
   return { passport, isLoading, error };
 }

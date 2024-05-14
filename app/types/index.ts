@@ -41,7 +41,7 @@ export type DigitalIdentifierType = "nft" | "pbt" | "did";
 
 export type PassportURIHistory = {
   uri: string;
-  version: bigint;
   timestamp: bigint;
-  sender: Address;
+  version?: bigint;
+  sender?: Address;
 };
