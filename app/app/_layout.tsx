@@ -7,7 +7,7 @@ import "@walletconnect/react-native-compat";
 import { StatusBar } from "expo-status-bar";
 import { Stack } from "expo-router";
 import { WagmiConfig } from "wagmi";
-import { chains } from "../lib/wagmi";
+import { chains } from "../lib/blockchain/wagmi";
 import { createWeb3Modal, defaultWagmiConfig, Web3Modal } from "@web3modal/wagmi-react-native";
 import { CreationProvider } from "../context/CreationContext";
 import config from "../lib/config";

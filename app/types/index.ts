@@ -1,3 +1,5 @@
+import { Address } from "viem";
+
 export type PassportType = "nft" | "did";
 
 export type PassportMetadata = NFTPassportMetadata | DIDPassportMetadata;
@@ -36,3 +38,10 @@ export interface PassportRead extends PassportCreate {
 export type DataCarrierType = "qr" | "nfc";
 
 export type DigitalIdentifierType = "nft" | "pbt" | "did";
+
+export type PassportURIHistory = {
+  uri: string;
+  timestamp: bigint;
+  version?: bigint;
+  sender?: Address;
+};

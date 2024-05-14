@@ -4,7 +4,7 @@ import { createPublicClient, defineChain } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { createWalletClient, http, Address } from "viem";
 // import { BrowserProvider } from "ethers";
-import config from "./config";
+import config from "../config";
 
 const hardhat = defineChain({
   id: 31_337,
