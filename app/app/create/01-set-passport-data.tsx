@@ -2,6 +2,7 @@ import { Button, TextInput, View, Text } from "react-native";
 import { useState } from "react";
 import { useCreation } from "../../context/CreationContext";
 import { router } from "expo-router";
+import StepperFooter from "../../components/StepperFooter";
 
 export default function Page() {
   const { state, dispatch } = useCreation();
@@ -36,8 +37,7 @@ export default function Page() {
         maxLength={16}
         autoCapitalize="none"
       />
-      <Button title="Back" onPress={router.back} />
-      <Button title="Next" onPress={handleNext} disabled={isInvalid} />
+      <StepperFooter handleNext={handleNext} isInvalid={isInvalid} />
     </View>
   );
 }

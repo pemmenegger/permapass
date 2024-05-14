@@ -4,6 +4,7 @@ import { useCreation } from "../../context/CreationContext";
 import { DataCarrierType } from "../../types";
 import { router } from "expo-router";
 import OptionCard from "../../components/OptionCard";
+import StepperFooter from "../../components/StepperFooter";
 
 export default function Page() {
   const { state, dispatch } = useCreation();
@@ -21,8 +22,7 @@ export default function Page() {
       <Text>Now, select your data carrier:</Text>
       <OptionCard text="QR Code" isSelected={dataCarrier == "qr"} onPress={() => setDataCarrier("qr")} />
       <OptionCard text="HaLo NFC Chip" isSelected={dataCarrier == "nfc"} onPress={() => setDataCarrier("nfc")} />
-      <Button title="Back" onPress={router.back} />
-      <Button title="Next" onPress={handleNext} disabled={isInvalid} />
+      <StepperFooter handleNext={handleNext} isInvalid={isInvalid} />
     </View>
   );
 }
