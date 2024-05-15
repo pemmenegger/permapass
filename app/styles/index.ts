@@ -1,8 +1,11 @@
 export const defaultStyles = {
+  primary: "#2FD0A0",
+  black: "#000000",
+  white: "#ffffff",
+
   bgRed: "#d60606",
   bgLight: "#fff",
   bgDark: "#000",
-  primary: "#7BDF44",
   secondary: "#2B061E",
   tertiary: "#FFAC2F",
   quaternary: "#D9D9D9",

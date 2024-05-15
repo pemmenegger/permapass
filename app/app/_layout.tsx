@@ -5,13 +5,12 @@ import "@walletconnect/react-native-compat";
 };
 
 import { StatusBar } from "expo-status-bar";
-import { Slot, Stack } from "expo-router";
+import { Stack } from "expo-router";
 import { WagmiConfig } from "wagmi";
 import { chains } from "../lib/blockchain/wagmi";
 import { createWeb3Modal, defaultWagmiConfig, W3mButton, Web3Modal } from "@web3modal/wagmi-react-native";
 import { CreationProvider } from "../context/CreationContext";
 import config from "../lib/config";
-import { SafeAreaView } from "react-native";
 
 const projectId = config.WALLETCONNECT_CLOUD_PROJECT_ID;
 

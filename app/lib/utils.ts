@@ -22,23 +22,6 @@ export const readPassportMetadata = async (arweaveTxid: string) => {
   return metadata;
 };
 
-export const readPassport = async (metadata: PassportMetadata) => {
-  let passportURI;
-  switch (metadata.type) {
-    case "nft":
-      passportURI = await nftRegistry.readNFTPassportURI(metadata);
-      break;
-    case "did":
-      passportURI = await didRegistry.readDIDPassportURI(metadata);
-      break;
-    default:
-      throw new Error(`Unknown passport type: ${metadata}`);
-  }
-  const passportURL = api.arweave.fromURIToURL(passportURI as string);
-  const passport = await api.arweave.fetchPassport(passportURL);
-  return passport;
-};
-
 export const readPassportHistory = async (metadata: PassportMetadata) => {
   let passportURIHistory;
   switch (metadata.type) {
@@ -66,10 +49,4 @@ export const readPassportHistory = async (metadata: PassportMetadata) => {
   );
 
   return passportHistory;
-};
-
-export const readPassportFromMetadataTxid = async (metadataTxid: string) => {
-  const metadata = await readPassportMetadata(metadataTxid);
-  const passport = await readPassport(metadata);
-  return passport;
 };

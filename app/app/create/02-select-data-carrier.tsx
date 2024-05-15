@@ -1,4 +1,4 @@
-import { Button, View, Text } from "react-native";
+import { View, Text } from "react-native";
 import { useState } from "react";
 import { useCreation } from "../../context/CreationContext";
 import { DataCarrierType } from "../../types";

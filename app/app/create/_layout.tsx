@@ -1,11 +1,11 @@
 import { Slot } from "expo-router";
-import { createWeb3Modal, defaultWagmiConfig, W3mButton, Web3Modal } from "@web3modal/wagmi-react-native";
 import { SafeAreaView } from "react-native";
+import WalletConnector from "../../components/WalletConnector";
 
 export default function Layout() {
   return (
     <SafeAreaView>
-      <W3mButton />
+      <WalletConnector />
       <Slot />
     </SafeAreaView>
   );
