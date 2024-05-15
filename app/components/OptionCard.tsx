@@ -33,21 +33,21 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
   },
   containerUnselected: {
-    backgroundColor: defaultStyles.bgLight,
-    shadowColor: defaultStyles.bgDark,
+    backgroundColor: defaultStyles.white,
+    shadowColor: defaultStyles.black,
   },
   containerSelected: {
-    backgroundColor: defaultStyles.bgDark,
-    shadowColor: defaultStyles.bgDark,
+    backgroundColor: defaultStyles.black,
+    shadowColor: defaultStyles.black,
   },
   textBase: {
     fontSize: defaultStyles.fontMedium,
     fontWeight: "bold",
   },
   textUnselected: {
-    color: defaultStyles.secondary,
+    color: defaultStyles.black,
   },
   textSelected: {
-    color: defaultStyles.bgLight,
+    color: defaultStyles.white,
   },
 });

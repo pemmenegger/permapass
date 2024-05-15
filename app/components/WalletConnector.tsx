@@ -39,7 +39,6 @@ const styles = StyleSheet.create({
     borderRadius: 32,
     backgroundColor: defaultStyles.primary,
     marginVertical: 12,
-    marginHorizontal: 12,
     paddingVertical: 12,
     paddingHorizontal: 16,
   },
