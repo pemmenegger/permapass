@@ -1,5 +1,5 @@
+import React, { useState } from "react";
 import { Button, View, Text } from "react-native";
-import { useState } from "react";
 import { useCreation } from "../../context/CreationContext";
 import { api } from "../../lib/web-api";
 import { encodeDataCarrierURL } from "../../lib/utils";
@@ -16,25 +16,24 @@ export default function Page() {
   const [creationProgress, setCreationProgress] = useState<string[]>([]);
 
   const addCreationProgress = (step: string) => {
-    setCreationProgress((creationProgress) => [...creationProgress, step]);
+    setCreationProgress((prevProgress) => [...prevProgress, step]);
   };
 
-  const handlePassportDataUpload = async () => {
+  const handlePassportDataUpload = async (): Promise<ArweaveURI> => {
     if (!state.userInput.passportData) {
-      console.log("handlePassportDataUpload - No passport data to upload");
+      console.log("No passport data to upload");
       throw new Error("No passport data to upload");
     }
 
     addCreationProgress("Uploading passport data to Arweave...");
     const passportURI = await api.arweave.uploadPassport(state.userInput.passportData);
-
     addCreationProgress("Passport data uploaded to Arweave");
     return passportURI;
   };
 
-  const handleNFTCreation = async (passportURI: ArweaveURI) => {
+  const handleNFTCreation = async (passportURI: ArweaveURI): Promise<string> => {
     if (!nftRegistry.createNFT) {
-      console.error("handleNFTCreation - createNFT not available");
+      console.error("createNFT not available");
       throw new Error("createNFT not available");
     }
 
@@ -42,29 +41,26 @@ export default function Page() {
     const passportMetadata = await nftRegistry.createNFT(passportURI);
     const metadataURI = await api.arweave.uploadNFTPassportMetadata(passportMetadata);
     const dataCarrierURL = encodeDataCarrierURL(metadataURI);
-
     addCreationProgress("NFT created");
     return dataCarrierURL;
   };
 
-  const handleDIDCreation = async (passportURI: ArweaveURI) => {
+  const handleDIDCreation = async (passportURI: ArweaveURI): Promise<string> => {
     if (!didRegistry.createDID) {
-      console.error("handleDIDCreation - createDID not available");
+      console.error("createDID not available");
       throw new Error("createDID not available");
     }
     if (!didRegistry.addDIDService) {
-      console.error("handleDIDCreation - addDIDService not available");
+      console.error("addDIDService not available");
       throw new Error("addDIDService not available");
     }
 
     addCreationProgress("Creating DID...");
     const passportMetadata = await didRegistry.createDID();
-
     addCreationProgress("Adding Service to DID...");
     await didRegistry.addDIDService(passportMetadata.did, passportURI);
     const metadataURI = await api.arweave.uploadDIDPassportMetadata(passportMetadata);
     const dataCarrierURL = encodeDataCarrierURL(metadataURI);
-
     addCreationProgress(`DID ${passportMetadata.did} created`);
     return dataCarrierURL;
   };
@@ -74,12 +70,11 @@ export default function Page() {
       const passportDataURI = await handlePassportDataUpload();
       console.log("Passport data uploaded to", passportDataURI);
 
-      let dataCarrierURL;
+      let dataCarrierURL: string;
       switch (state.userInput.digitalIdentifier) {
-        case "nft": {
+        case "nft":
           dataCarrierURL = await handleNFTCreation(passportDataURI);
           break;
-        }
         case "did":
           dataCarrierURL = await handleDIDCreation(passportDataURI);
           break;
@@ -90,12 +85,12 @@ export default function Page() {
       setUrlToEncode(dataCarrierURL);
       console.log("dataCarrierURL:", dataCarrierURL);
 
-      if (state.userInput.dataCarrier == "qr") {
+      if (state.userInput.dataCarrier === "qr") {
         addCreationProgress("Creating QR Code...");
       }
     } catch (error) {
       console.error("Error while creating passport", error);
-      addCreationProgress(`Error while creating passport`);
+      addCreationProgress("Error while creating passport");
     }
   };
 
@@ -115,7 +110,7 @@ export default function Page() {
           ))}
         </>
       )}
-      {urlToEncode && state.userInput.dataCarrier == "qr" && <QRCode value={urlToEncode} size={200} />}
+      {urlToEncode && state.userInput.dataCarrier === "qr" && <QRCode value={urlToEncode} size={200} />}
       {urlToEncode && <Text>urlToEncode: {urlToEncode}</Text>}
     </View>
   );

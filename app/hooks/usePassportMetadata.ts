@@ -12,6 +12,7 @@ export function usePassportMetadata({ metadataURI }: UsePassportMetadataProps) {
   const [error, setError] = useState<string | undefined>(undefined);
 
   useEffect(() => {
+    setPassportMetadata(undefined);
     if (!metadataURI) return;
 
     const runAsync = async () => {

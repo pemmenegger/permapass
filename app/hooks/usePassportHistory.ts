@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
-import { ArweaveURI, Passport, PassportMetadata } from "../types";
+import { Passport, PassportMetadata } from "../types";
 import { useNFTRegistry } from "./useNFTRegistry";
 import { api } from "../lib/web-api";
 import { useDIDRegistry } from "./useDIDRegistry";
-import { fromURIToURL } from "../lib/utils";
 
 interface UsePassportHistoryProps {
   passportMetadata: PassportMetadata | undefined;
@@ -18,6 +17,7 @@ export function usePassportHistory({ passportMetadata, version }: UsePassportHis
   const { didRegistry } = useDIDRegistry();
 
   useEffect(() => {
+    setPassportHistory([]);
     if (!passportMetadata) return;
 
     const runAsync = async () => {
