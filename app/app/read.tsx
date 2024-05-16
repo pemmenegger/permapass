@@ -3,14 +3,16 @@ import { usePassportMetadata } from "../hooks/usePassportMetadata";
 import { useReadQueryParams } from "../hooks/useReadQueryParams";
 import { usePassportHistory } from "../hooks/usePassportHistory";
 import { api } from "../lib/web-api";
-import { nftRegistry } from "../lib/blockchain/nftRegistry";
-import { didRegistry } from "../lib/blockchain/didRegistry";
 import { useState } from "react";
+import { useNFTRegistry } from "../hooks/useNFTRegistry";
+import { useDIDRegistry } from "../hooks/useDIDRegistry";
 
 export default function Page() {
+  const { didRegistry } = useDIDRegistry();
   const [version, setVersion] = useState(0);
-  const { arweaveTxid } = useReadQueryParams();
-  const { passportMetadata, isLoading: isMetadataLoading, error: metadataError } = usePassportMetadata({ arweaveTxid });
+  const { nftRegistry } = useNFTRegistry();
+  const { metadataURI } = useReadQueryParams();
+  const { passportMetadata, isLoading: isMetadataLoading, error: metadataError } = usePassportMetadata({ metadataURI });
   const {
     passportHistory,
     isLoading: isPassportHistoryLoading,
@@ -26,21 +28,28 @@ export default function Page() {
       console.log("No passport");
       return;
     }
+    if (nftRegistry.updateTokenURI === undefined) {
+      console.log("updateTokenURI not available");
+      return;
+    }
+    if (didRegistry.addDIDService === undefined) {
+      console.log("addDIDService not available");
+      return;
+    }
 
     const passport = passportHistory[0];
 
-    const txid = await api.arweave.uploadPassport({
+    const passportURI = await api.arweave.uploadPassport({
       name: `${passport.name} UPDATED`,
       condition: `${passport.condition} UPDATED`,
     });
-    const uri = api.arweave.fromTxidToURI(txid);
 
     switch (passportMetadata.type) {
       case "nft":
-        await nftRegistry.updateTokenURI(passportMetadata.tokenId, uri);
+        await nftRegistry.updateTokenURI(passportMetadata.tokenId, passportURI);
         break;
       case "did":
-        await didRegistry.updateDIDService(passportMetadata.did, uri);
+        await didRegistry.addDIDService(passportMetadata.did, passportURI);
         break;
       default:
         throw new Error(`Unknown passport type`);

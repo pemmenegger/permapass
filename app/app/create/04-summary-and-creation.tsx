@@ -2,15 +2,14 @@ import { Button, View, Text } from "react-native";
 import { useState } from "react";
 import { useCreation } from "../../context/CreationContext";
 import { api } from "../../lib/web-api";
-import { walletClient, hardhat } from "../../lib/blockchain/wagmi";
-import { didRegistry } from "../../lib/blockchain/didRegistry";
-import { PermaPassNFTRegistry } from "../../contracts/PermaPassNFTRegistry";
-import { fromArweaveTxidToPassportMetadataURL } from "../../lib/utils";
+import { encodeDataCarrierURL } from "../../lib/utils";
 import QRCode from "react-native-qrcode-svg";
-import { PermaPassDIDRegistry } from "../../contracts/PermaPassDIDRegistry";
 import { useNFTRegistry } from "../../hooks/useNFTRegistry";
+import { useDIDRegistry } from "../../hooks/useDIDRegistry";
+import { ArweaveURI } from "../../types";
 
 export default function Page() {
+  const { didRegistry } = useDIDRegistry();
   const { nftRegistry } = useNFTRegistry();
   const { state } = useCreation();
   const [urlToEncode, setUrlToEncode] = useState<string | undefined>();
@@ -25,55 +24,49 @@ export default function Page() {
       console.log("handlePassportDataUpload - No passport data to upload");
       throw new Error("No passport data to upload");
     }
+
     addCreationProgress("Uploading passport data to Arweave...");
-    const txid = await api.arweave.uploadPassport(state.userInput.passportData);
-    const uri = api.arweave.fromTxidToURI(txid);
+    const passportURI = await api.arweave.uploadPassport(state.userInput.passportData);
+
     addCreationProgress("Passport data uploaded to Arweave");
-    return uri;
+    return passportURI;
   };
 
-  const handleNFTCreation = async (passportDataURI: string) => {
-    addCreationProgress("Creating NFT...");
-    if (!walletClient) {
-      console.error("handleNFTCreation - walletClient not available");
-      throw new Error("walletClient not available");
-    }
-    const to = walletClient.account.address;
+  const handleNFTCreation = async (passportURI: ArweaveURI) => {
     if (!nftRegistry.createNFT) {
       console.error("handleNFTCreation - createNFT not available");
       throw new Error("createNFT not available");
     }
-    const tokenId = await nftRegistry.createNFT(to, passportDataURI as string);
-    console.log("handleNFTCreation - Token ID:", tokenId);
-    const arweaveTxid = await api.arweave.uploadNFTPassportMetadata({
-      type: "nft",
-      chainId: hardhat.id,
-      address: PermaPassNFTRegistry[hardhat.id].address,
-      tokenId: tokenId,
-    });
-    console.log("handleNFTCreation - arweaveTxid", arweaveTxid);
-    const passportMetadataURL = fromArweaveTxidToPassportMetadataURL(arweaveTxid);
-    console.log("handleNFTCreation - passportMetadataURL", passportMetadataURL);
+
+    addCreationProgress("Creating NFT...");
+    const passportMetadata = await nftRegistry.createNFT(passportURI);
+    const metadataURI = await api.arweave.uploadNFTPassportMetadata(passportMetadata);
+    const dataCarrierURL = encodeDataCarrierURL(metadataURI);
+
     addCreationProgress("NFT created");
-    return passportMetadataURL;
+    return dataCarrierURL;
   };
 
-  const handleDIDCreation = async (passportDataURI: string) => {
+  const handleDIDCreation = async (passportURI: ArweaveURI) => {
+    if (!didRegistry.createDID) {
+      console.error("handleDIDCreation - createDID not available");
+      throw new Error("createDID not available");
+    }
+    if (!didRegistry.addDIDService) {
+      console.error("handleDIDCreation - addDIDService not available");
+      throw new Error("addDIDService not available");
+    }
+
     addCreationProgress("Creating DID...");
-    const did = await didRegistry.createDID();
-    console.log("DID created:", did);
+    const passportMetadata = await didRegistry.createDID();
+
     addCreationProgress("Adding Service to DID...");
-    await didRegistry.updateDIDService(did, passportDataURI);
-    const arweaveTxid = await api.arweave.uploadDIDPassportMetadata({
-      type: "did",
-      chainId: hardhat.id,
-      address: PermaPassDIDRegistry[hardhat.id].address,
-      did: did,
-      serviceType: "ProductPassport",
-    });
-    const passportMetadataURL = fromArweaveTxidToPassportMetadataURL(arweaveTxid);
-    addCreationProgress(`DID ${did} created`);
-    return passportMetadataURL;
+    await didRegistry.addDIDService(passportMetadata.did, passportURI);
+    const metadataURI = await api.arweave.uploadDIDPassportMetadata(passportMetadata);
+    const dataCarrierURL = encodeDataCarrierURL(metadataURI);
+
+    addCreationProgress(`DID ${passportMetadata.did} created`);
+    return dataCarrierURL;
   };
 
   const handleCreation = async () => {
@@ -81,21 +74,21 @@ export default function Page() {
       const passportDataURI = await handlePassportDataUpload();
       console.log("Passport data uploaded to", passportDataURI);
 
+      let dataCarrierURL;
       switch (state.userInput.digitalIdentifier) {
         case "nft": {
-          const passportMetadataURL = await handleNFTCreation(passportDataURI);
-          setUrlToEncode(passportMetadataURL);
-          console.log("Passport Metadata URL:", passportMetadataURL);
+          dataCarrierURL = await handleNFTCreation(passportDataURI);
           break;
         }
         case "did":
-          const passportMetadataURL = await handleDIDCreation(passportDataURI);
-          setUrlToEncode(passportMetadataURL);
-          console.log("Passport Metadata URL:", passportMetadataURL);
+          dataCarrierURL = await handleDIDCreation(passportDataURI);
           break;
         default:
           throw new Error("Unsupported digital identifier type");
       }
+
+      setUrlToEncode(dataCarrierURL);
+      console.log("dataCarrierURL:", dataCarrierURL);
 
       if (state.userInput.dataCarrier == "qr") {
         addCreationProgress("Creating QR Code...");

@@ -1,25 +1,25 @@
 import { useState, useEffect } from "react";
-import { PassportMetadata } from "../types";
-import { readPassportMetadata } from "../lib/utils";
+import { ArweaveURI, PassportMetadata } from "../types";
+import { api } from "../lib/web-api";
 
 interface UsePassportMetadataProps {
-  arweaveTxid: string | undefined;
+  metadataURI: ArweaveURI | undefined;
 }
 
-export function usePassportMetadata({ arweaveTxid }: UsePassportMetadataProps) {
+export function usePassportMetadata({ metadataURI }: UsePassportMetadataProps) {
   const [passportMetadata, setPassportMetadata] = useState<PassportMetadata | undefined>(undefined);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | undefined>(undefined);
 
   useEffect(() => {
-    if (!arweaveTxid) return;
+    if (!metadataURI) return;
 
     const runAsync = async () => {
       setIsLoading(true);
       setError(undefined);
 
       try {
-        const metadata = await readPassportMetadata(arweaveTxid);
+        const metadata = await api.arweave.fetchPassportMetadata(metadataURI);
         setPassportMetadata(metadata);
       } catch (error: unknown) {
         let errorMessage = "Unknown error occurred";
@@ -33,7 +33,7 @@ export function usePassportMetadata({ arweaveTxid }: UsePassportMetadataProps) {
     };
 
     void runAsync();
-  }, [arweaveTxid]);
+  }, [metadataURI]);
 
   return { passportMetadata, isLoading, error };
 }

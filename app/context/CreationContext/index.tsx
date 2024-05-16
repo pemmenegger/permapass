@@ -21,19 +21,7 @@ const initialState: CreationState = {
 function CreationProvider({ children }: PropsWithChildren) {
   let parsedState = initialState;
 
-  // TODO react native local storage
-  //   if (typeof window !== "undefined") {
-  //     const localState = window.localStorage.getItem("creationState");
-  //     parsedState = localState ? (JSON.parse(localState) as CreationState) : initialState;
-  //   }
-
   const [state, dispatch] = useReducer(creationReducer, parsedState);
-
-  //   useEffect(() => {
-  //     if (typeof window !== "undefined") {
-  //       window.localStorage.setItem("creationState", JSON.stringify(state));
-  //     }
-  //   }, [state]);
 
   const value = { state, dispatch };
 
