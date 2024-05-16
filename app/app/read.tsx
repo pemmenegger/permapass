@@ -1,16 +1,52 @@
+import React, { useState } from "react";
 import { Button, Text, View } from "react-native";
 import { usePassportMetadata } from "../hooks/usePassportMetadata";
 import { useReadQueryParams } from "../hooks/useReadQueryParams";
 import { usePassportHistory } from "../hooks/usePassportHistory";
 import { api } from "../lib/web-api";
-import { nftRegistry } from "../lib/blockchain/nftRegistry";
-import { didRegistry } from "../lib/blockchain/didRegistry";
-import { useState } from "react";
+import { useNFTRegistry } from "../hooks/useNFTRegistry";
+import { useDIDRegistry } from "../hooks/useDIDRegistry";
+import ViewWithWalletConnector from "../components/ViewWithWalletConnector";
+import { Passport, PassportMetadata } from "../types";
+
+const MetadataDisplay = ({
+  isLoading,
+  error,
+  metadata,
+}: {
+  isLoading: boolean;
+  error?: string;
+  metadata?: PassportMetadata;
+}) => (
+  <>
+    {isLoading && <Text>Loading metadata...</Text>}
+    {error && <Text>Error Metadata: {error}</Text>}
+    <Text>Metadata:</Text>
+    <Text>{JSON.stringify(metadata, null, 2)}</Text>
+  </>
+);
+
+const HistoryDisplay = ({ isLoading, error, history }: { isLoading: boolean; error?: string; history: Passport[] }) => (
+  <>
+    {isLoading && <Text>Loading passport...</Text>}
+    {error && <Text>Error Passport: {error}</Text>}
+    <Text>History:</Text>
+    {history.length === 0 ? (
+      <Text>No history found</Text>
+    ) : (
+      history.map((passport, index) => <Text key={index}>{JSON.stringify(passport, null, 2)}</Text>)
+    )}
+  </>
+);
 
 export default function Page() {
+  const { didRegistry } = useDIDRegistry();
+  const { nftRegistry } = useNFTRegistry();
+  const { metadataURI } = useReadQueryParams();
   const [version, setVersion] = useState(0);
-  const { arweaveTxid } = useReadQueryParams();
-  const { passportMetadata, isLoading: isMetadataLoading, error: metadataError } = usePassportMetadata({ arweaveTxid });
+
+  const { passportMetadata, isLoading: isMetadataLoading, error: metadataError } = usePassportMetadata({ metadataURI });
+
   const {
     passportHistory,
     isLoading: isPassportHistoryLoading,
@@ -18,76 +54,38 @@ export default function Page() {
   } = usePassportHistory({ passportMetadata, version });
 
   const update = async () => {
-    if (!passportMetadata) {
-      console.log("No passport metadata");
-      return;
-    }
-    if (!passportHistory || passportHistory.length === 0) {
-      console.log("No passport");
-      return;
-    }
+    if (!passportMetadata) return console.log("No passport metadata");
+    if (!passportHistory || passportHistory.length === 0) return console.log("No passport");
+    if (!nftRegistry.updateTokenURI) return console.log("updateTokenURI not available");
+    if (!didRegistry.addDIDService) return console.log("addDIDService not available");
 
     const passport = passportHistory[0];
-
-    const txid = await api.arweave.uploadPassport({
+    const passportURI = await api.arweave.uploadPassport({
       name: `${passport.name} UPDATED`,
       condition: `${passport.condition} UPDATED`,
     });
-    const uri = api.arweave.fromTxidToURI(txid);
 
     switch (passportMetadata.type) {
       case "nft":
-        await nftRegistry.updateTokenURI(passportMetadata.tokenId, uri);
+        await nftRegistry.updateTokenURI(passportMetadata.tokenId, passportURI);
         break;
       case "did":
-        await didRegistry.updateDIDService(passportMetadata.did, uri);
+        await didRegistry.addDIDService(passportMetadata.did, passportURI);
         break;
       default:
         throw new Error(`Unknown passport type`);
     }
 
-    // reload history
+    // Reload history
     setVersion((prevVersion) => prevVersion + 1);
   };
 
-  if (isMetadataLoading) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Text>Loading metadata...</Text>
-      </View>
-    );
-  }
-
-  if (metadataError) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Text>Error Metadata: {metadataError}</Text>
-      </View>
-    );
-  }
-
-  if (isPassportHistoryLoading) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Text>Loading passport...</Text>
-      </View>
-    );
-  }
-
-  if (passportHistoryError) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Text>Error Passport: {passportHistoryError}</Text>
-      </View>
-    );
-  }
-
   return (
-    <View style={{ flex: 1, justifyContent: "center" }}>
-      {passportHistory.map((passport, index) => (
-        <Text key={index}>{JSON.stringify(passport, null, 2)}</Text>
-      ))}
+    <ViewWithWalletConnector>
+      <MetadataDisplay isLoading={isMetadataLoading} error={metadataError} metadata={passportMetadata} />
+      <Text>-----</Text>
+      <HistoryDisplay isLoading={isPassportHistoryLoading} error={passportHistoryError} history={passportHistory} />
       <Button title="Update" onPress={update} />
-    </View>
+    </ViewWithWalletConnector>
   );
 }

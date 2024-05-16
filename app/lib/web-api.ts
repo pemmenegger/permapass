@@ -1,6 +1,7 @@
 import config from "./config";
-import { DIDPassportMetadata, NFTPassportMetadata, Passport, PassportMetadata } from "../types";
+import { ArweaveURI, DIDPassportMetadata, NFTPassportMetadata, Passport, PassportMetadata } from "../types";
 import { DIDDocument } from "../types/did";
+import { fromTxidToURI, fromURIToURL } from "./utils";
 
 const fetchUrl = async (url: string, requestInit?: RequestInit) => {
   console.log(`fetching ${url}`);
@@ -40,18 +41,29 @@ const resolveDID = async (didUrl: string, registryAddress?: string) => {
 
 export const api = {
   arweave: {
-    fromTxidToURI: (txid: string) => `ar://${txid}`,
-    fromTxidToURL: (txid: string) => `https://arweave.net/${txid}`,
-    fromURIToURL: (uri: string) => `https://arweave.net/${uri.replace("ar://", "")}`,
-    uploadPassport: async (passport: Passport) => await uploadToArweave(passport),
-    uploadNFTPassportMetadata: async (metadata: NFTPassportMetadata) => await uploadToArweave(metadata),
-    uploadDIDPassportMetadata: async (metadata: DIDPassportMetadata) => await uploadToArweave(metadata),
-    fetchPassport: async (url: string): Promise<Passport> => {
-      const data = await fetchUrl(url);
+    uploadPassport: async (passport: Passport) => {
+      const txid = await uploadToArweave(passport);
+      const passportURI = fromTxidToURI(txid);
+      return passportURI;
+    },
+    uploadNFTPassportMetadata: async (metadata: NFTPassportMetadata) => {
+      const txid = await uploadToArweave(metadata);
+      const metadataURI = fromTxidToURI(txid);
+      return metadataURI;
+    },
+    uploadDIDPassportMetadata: async (metadata: DIDPassportMetadata) => {
+      const txid = await uploadToArweave(metadata);
+      const metadataURI = fromTxidToURI(txid);
+      return metadataURI;
+    },
+    fetchPassport: async (passportURI: ArweaveURI): Promise<Passport> => {
+      const passportURL = fromURIToURL(passportURI);
+      const data = await fetchUrl(passportURL);
       return JSON.parse(data) as Passport;
     },
-    fetchPassportMetadata: async (url: string): Promise<PassportMetadata> => {
-      const data = await fetchUrl(url);
+    fetchPassportMetadata: async (metadataURI: ArweaveURI): Promise<PassportMetadata> => {
+      const metadataURL = fromURIToURL(metadataURI);
+      const data = await fetchUrl(metadataURL);
       return JSON.parse(data) as PassportMetadata;
     },
   },

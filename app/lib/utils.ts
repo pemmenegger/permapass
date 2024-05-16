@@ -1,75 +1,20 @@
-import { api } from "./web-api";
-import { nftRegistry } from "./blockchain/nftRegistry";
-import { didRegistry } from "./blockchain/didRegistry";
 import config from "./config";
-import { PassportMetadata } from "../types";
-import { pad } from "viem";
+import { Address, pad } from "viem";
 import { stringToBytes, toHex } from "viem";
+import { ArweaveURI, ArweaveURL } from "../types";
 
-export const fromArweaveTxidToPassportMetadataURL = (txid: string) => {
-  return config.BASE_URI_SCHEME + `read?arweaveTxid=${txid}`;
+export const encodeDataCarrierURL = (metadataURI: ArweaveURI) => {
+  return config.BASE_URI_SCHEME + `read?metadataURI=${metadataURI}`;
 };
 
-export function stringToBytes32(str: string): string {
-  const bytes = stringToBytes(str);
-  const padded = pad(bytes, { size: 32, dir: "right" });
-  return toHex(padded);
-}
+export const fromTxidToURI = (txid: string): ArweaveURI => `ar://${txid}`;
+export const fromTxidToURL = (txid: string): ArweaveURL => `https://arweave.net/${txid}`;
+export const fromURIToURL = (uri: string): ArweaveURL => `https://arweave.net/${uri.replace("ar://", "")}`;
 
-export const readPassportMetadata = async (arweaveTxid: string) => {
-  const metadataURL = api.arweave.fromTxidToURL(arweaveTxid);
-  const metadata = await api.arweave.fetchPassportMetadata(metadataURL);
-  return metadata;
-};
+export const fromDIDToIdentity = (did: string): Address => did.split(":")[3] as Address;
 
-export const readPassport = async (metadata: PassportMetadata) => {
-  let passportURI;
-  switch (metadata.type) {
-    case "nft":
-      passportURI = await nftRegistry.readNFTPassportURI(metadata);
-      break;
-    case "did":
-      passportURI = await didRegistry.readDIDPassportURI(metadata);
-      break;
-    default:
-      throw new Error(`Unknown passport type: ${metadata}`);
-  }
-  const passportURL = api.arweave.fromURIToURL(passportURI as string);
-  const passport = await api.arweave.fetchPassport(passportURL);
-  return passport;
-};
-
-export const readPassportHistory = async (metadata: PassportMetadata) => {
-  let passportURIHistory;
-  switch (metadata.type) {
-    case "nft":
-      passportURIHistory = await nftRegistry.readNFTPassportURIHistory(metadata);
-      break;
-    case "did":
-      passportURIHistory = await didRegistry.readDIDPassportURIHistory(metadata);
-      break;
-    default:
-      throw new Error(`Unknown passport type: ${metadata}`);
-  }
-
-  if (!passportURIHistory || passportURIHistory.length === 0) {
-    console.log("No passport URI history found.");
-    return [];
-  }
-
-  const passportHistory = await Promise.all(
-    passportURIHistory.map(async (passportURI) => {
-      const passportURL = api.arweave.fromURIToURL(passportURI.uri as string);
-      const passport = await api.arweave.fetchPassport(passportURL);
-      return passport;
-    })
-  );
-
-  return passportHistory;
-};
-
-export const readPassportFromMetadataTxid = async (metadataTxid: string) => {
-  const metadata = await readPassportMetadata(metadataTxid);
-  const passport = await readPassport(metadata);
-  return passport;
-};
+// export function stringToBytes32(str: string): string {
+//   const bytes = stringToBytes(str);
+//   const padded = pad(bytes, { size: 32, dir: "right" });
+//   return toHex(padded);
+// }

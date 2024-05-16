@@ -7,10 +7,11 @@ import "@walletconnect/react-native-compat";
 import { StatusBar } from "expo-status-bar";
 import { Stack } from "expo-router";
 import { WagmiConfig } from "wagmi";
-import { chains } from "../lib/blockchain/wagmi";
+import { chains } from "../lib/wagmi";
 import { createWeb3Modal, defaultWagmiConfig, Web3Modal } from "@web3modal/wagmi-react-native";
 import { CreationProvider } from "../context/CreationContext";
 import config from "../lib/config";
+import { UrlProvider } from "../context/CreationContext/UrlContext";
 
 const projectId = config.WALLETCONNECT_CLOUD_PROJECT_ID;
 
@@ -37,11 +38,17 @@ createWeb3Modal({
 export default function Layout() {
   return (
     <WagmiConfig config={wagmiConfig}>
-      <CreationProvider>
-        <StatusBar style="auto" />
-        <Stack />
-        <Web3Modal />
-      </CreationProvider>
+      <UrlProvider>
+        <CreationProvider>
+          <StatusBar style="auto" />
+          <Stack
+            screenOptions={{
+              headerShown: false,
+            }}
+          />
+          <Web3Modal />
+        </CreationProvider>
+      </UrlProvider>
     </WagmiConfig>
   );
 }

@@ -39,9 +39,13 @@ export type DataCarrierType = "qr" | "nfc";
 
 export type DigitalIdentifierType = "nft" | "pbt" | "did";
 
-export type PassportURIHistory = {
-  uri: string;
+export type PassportVersion = {
+  uri: ArweaveURI;
   timestamp: bigint;
   version?: bigint;
   sender?: Address;
 };
+
+export type ArweaveURI = `ar://${string}`;
+
+export type ArweaveURL = `https://arweave.net/${string}`;

@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     fontSize: defaultStyles.fontMedium,
     fontWeight: "bold",
-    color: defaultStyles.bgLight,
+    color: defaultStyles.white,
     textAlign: "center",
   },
 });
