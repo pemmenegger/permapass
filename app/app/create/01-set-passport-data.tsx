@@ -18,7 +18,6 @@ export default function Page() {
     });
     router.push("/create/02-select-data-carrier");
   };
-
   return (
     <View>
       <Text>First, fill in passport data:</Text>

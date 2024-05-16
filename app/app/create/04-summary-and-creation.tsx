@@ -3,14 +3,15 @@ import { useState } from "react";
 import { useCreation } from "../../context/CreationContext";
 import { api } from "../../lib/web-api";
 import { walletClient, hardhat } from "../../lib/blockchain/wagmi";
-import { nftRegistry } from "../../lib/blockchain/nftRegistry";
 import { didRegistry } from "../../lib/blockchain/didRegistry";
 import { PermaPassNFTRegistry } from "../../contracts/PermaPassNFTRegistry";
 import { fromArweaveTxidToPassportMetadataURL } from "../../lib/utils";
 import QRCode from "react-native-qrcode-svg";
 import { PermaPassDIDRegistry } from "../../contracts/PermaPassDIDRegistry";
+import { useNFTRegistry } from "../../hooks/useNFTRegistry";
 
 export default function Page() {
+  const { nftRegistry } = useNFTRegistry();
   const { state } = useCreation();
   const [urlToEncode, setUrlToEncode] = useState<string | undefined>();
   const [creationProgress, setCreationProgress] = useState<string[]>([]);
@@ -33,7 +34,15 @@ export default function Page() {
 
   const handleNFTCreation = async (passportDataURI: string) => {
     addCreationProgress("Creating NFT...");
+    if (!walletClient) {
+      console.error("handleNFTCreation - walletClient not available");
+      throw new Error("walletClient not available");
+    }
     const to = walletClient.account.address;
+    if (!nftRegistry.createNFT) {
+      console.error("handleNFTCreation - createNFT not available");
+      throw new Error("createNFT not available");
+    }
     const tokenId = await nftRegistry.createNFT(to, passportDataURI as string);
     console.log("handleNFTCreation - Token ID:", tokenId);
     const arweaveTxid = await api.arweave.uploadNFTPassportMetadata({
