@@ -2,7 +2,9 @@ import { TextInput, View, Text } from "react-native";
 import { useState } from "react";
 import { useCreation } from "../../context/CreationContext";
 import { router } from "expo-router";
-import StepperFooter from "../../components/StepperFooter";
+import StepFooter from "../../components/stepper/StepFooter";
+import StepTitle from "../../components/stepper/StepTitle";
+import StepSubtitle from "../../components/stepper/StepSubtitle";
 
 export default function Page() {
   const { state, dispatch } = useCreation();
@@ -20,7 +22,8 @@ export default function Page() {
   };
   return (
     <View>
-      <Text>First, fill in passport data:</Text>
+      <StepTitle text="First, set your passport data." highlight="passport data" />
+      <StepSubtitle text="Passports contain information that supports the adoption of circular economy practices." />
       <TextInput
         placeholder="Product Name"
         value={name}
@@ -36,7 +39,7 @@ export default function Page() {
         maxLength={16}
         autoCapitalize="none"
       />
-      <StepperFooter handleNext={handleNext} isInvalid={isInvalid} />
+      <StepFooter handleNext={handleNext} isInvalid={isInvalid} />
     </View>
   );
 }

@@ -1,6 +1,6 @@
 import React, { PropsWithChildren } from "react";
 import { Pressable, StyleSheet, Text, ViewStyle, TextStyle, DimensionValue } from "react-native";
-import { defaultStyles } from "../styles";
+import { commonColors, commonStyles } from "../../styles";
 
 interface styleOptions {
   width?: DimensionValue;
@@ -20,17 +20,17 @@ export default function DefaultButton({ type, text, onPress, disabled, style }: 
   let styleOptions = undefined;
   if (type === "primary") {
     styleOptions = {
-      backgroundColor: defaultStyles.black,
-      borderColor: defaultStyles.black,
-      textColor: defaultStyles.white,
+      backgroundColor: commonColors.black,
+      borderColor: commonColors.black,
+      textColor: commonColors.white,
       width: style?.width,
       opacity: disabled ? 0.7 : 1,
     };
   } else if (type === "secondary") {
     styleOptions = {
-      backgroundColor: defaultStyles.white,
-      borderColor: defaultStyles.black,
-      textColor: defaultStyles.black,
+      backgroundColor: commonColors.white,
+      borderColor: commonColors.black,
+      textColor: commonColors.black,
       width: style?.width,
       opacity: disabled ? 0.7 : 1,
     };
@@ -74,7 +74,8 @@ const internalStyles = StyleSheet.create({
     justifyContent: "center",
   },
   text: {
-    fontSize: defaultStyles.fontMedium,
     textAlign: "center",
+    fontSize: 12,
+    fontFamily: "Inter-Medium",
   },
 });

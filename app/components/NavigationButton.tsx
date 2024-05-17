@@ -1,7 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { Link } from "expo-router";
 import { PropsWithChildren, ReactNode } from "react";
-import { defaultStyles } from "../styles";
 
 export interface NavigationButtonProps extends PropsWithChildren {
   to: string;
@@ -35,9 +34,9 @@ const styles = StyleSheet.create({
   donateButtonText: {
     paddingVertical: 10,
     paddingHorizontal: 20,
-    fontSize: defaultStyles.fontMedium,
+    fontSize: 20,
     fontWeight: "bold",
-    color: defaultStyles.white,
+    color: "#fff",
     textAlign: "center",
   },
 });

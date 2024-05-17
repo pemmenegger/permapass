@@ -6,7 +6,7 @@ import { usePassportHistory } from "../hooks/usePassportHistory";
 import { api } from "../lib/web-api";
 import { useNFTRegistry } from "../hooks/useNFTRegistry";
 import { useDIDRegistry } from "../hooks/useDIDRegistry";
-import ViewWithWalletConnector from "../components/ViewWithWalletConnector";
+import ViewWithWalletConnector from "../components/ui/ViewWithWalletConnector";
 import { Passport, PassportMetadata } from "../types";
 
 const MetadataDisplay = ({

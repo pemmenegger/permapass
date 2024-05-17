@@ -3,8 +3,10 @@ import { useState } from "react";
 import { useCreation } from "../../context/CreationContext";
 import { DataCarrierType } from "../../types";
 import { router } from "expo-router";
-import OptionCard from "../../components/OptionCard";
-import StepperFooter from "../../components/StepperFooter";
+import StepOption from "../../components/stepper/StepOption";
+import StepFooter from "../../components/stepper/StepFooter";
+import StepTitle from "../../components/stepper/StepTitle";
+import StepSubtitle from "../../components/stepper/StepSubtitle";
 
 export default function Page() {
   const { state, dispatch } = useCreation();
@@ -19,10 +21,21 @@ export default function Page() {
 
   return (
     <View>
-      <Text>Now, select your data carrier:</Text>
-      <OptionCard text="QR Code" isSelected={dataCarrier == "qr"} onPress={() => setDataCarrier("qr")} />
-      <OptionCard text="HaLo NFC Chip" isSelected={dataCarrier == "nfc"} onPress={() => setDataCarrier("nfc")} />
-      <StepperFooter handleNext={handleNext} isInvalid={isInvalid} />
+      <StepTitle text="Next, select your data carrier." highlight="data carrier" />
+      <StepSubtitle text="Attaching a data carrier to the construction product allows passports to be easily read via smartphones." />
+      <StepOption
+        title="QR Code"
+        subtitle="A QR Code will be created that links to the digital identifier where the passport data can be retrieved."
+        isSelected={dataCarrier == "qr"}
+        onPress={() => setDataCarrier("qr")}
+      />
+      <StepOption
+        title="HaLo NFC Chip"
+        subtitle="If you have HaLo NFC Chips available, you can write the "
+        isSelected={dataCarrier == "nfc"}
+        onPress={() => setDataCarrier("nfc")}
+      />
+      <StepFooter handleNext={handleNext} isInvalid={isInvalid} />
     </View>
   );
 }

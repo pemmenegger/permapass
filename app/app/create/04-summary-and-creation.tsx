@@ -7,6 +7,8 @@ import QRCode from "react-native-qrcode-svg";
 import { useNFTRegistry } from "../../hooks/useNFTRegistry";
 import { useDIDRegistry } from "../../hooks/useDIDRegistry";
 import { ArweaveURI } from "../../types";
+import StepTitle from "../../components/stepper/StepTitle";
+import StepSubtitle from "../../components/stepper/StepSubtitle";
 
 export default function Page() {
   const { didRegistry } = useDIDRegistry();
@@ -96,11 +98,9 @@ export default function Page() {
 
   return (
     <View>
-      <Text>We will create the passport with the following properties:</Text>
-      <Text>Name: {state.userInput.passportData?.name}</Text>
-      <Text>Condition: {state.userInput.passportData?.condition}</Text>
-      <Text>Data Carrier: {state.userInput.dataCarrier}</Text>
-      <Text>Digital Identifier: {state.userInput.digitalIdentifier}</Text>
+      <StepTitle text="Finally, create your passport." highlight="passport" />
+      <StepSubtitle text="Given your configuration, the passport is now ready to be created." />
+
       <Button title="Create" onPress={handleCreation} />
       {creationProgress.length > 0 && (
         <>

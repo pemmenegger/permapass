@@ -2,7 +2,7 @@ import React from "react";
 import { useAccount, useNetwork } from "wagmi";
 import { useWeb3Modal, useWeb3ModalState } from "@web3modal/wagmi-react-native";
 import { Pressable, View, StyleSheet, Text } from "react-native";
-import { defaultStyles } from "../styles";
+import { commonColors, commonStyles } from "../styles";
 
 export default function WalletConnector() {
   const { open } = useWeb3Modal();
@@ -37,8 +37,7 @@ export default function WalletConnector() {
 const styles = StyleSheet.create({
   button: {
     borderRadius: 32,
-    backgroundColor: defaultStyles.primary,
-    marginVertical: 12,
+    backgroundColor: commonColors.primary,
     paddingVertical: 12,
     paddingHorizontal: 16,
   },
@@ -53,7 +52,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   text: {
-    color: defaultStyles.white,
-    fontSize: defaultStyles.fontMedium,
+    fontFamily: "Inter-SemiBold",
+    letterSpacing: -0.5,
+    fontSize: 16,
+    color: commonColors.white,
   },
 });
