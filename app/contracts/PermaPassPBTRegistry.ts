@@ -1,11 +1,51 @@
-export const PermaPassNFTRegistry = {
+export const PermaPassPBTRegistry = {
   31337: {
-    address: "0x17e0860618Ec91519704d6C7Fbf1809E173AcC94",
+    address: "0xa304d89fec68FC2fA8C3325B96F53dBD2B5A1bFa",
     abi: [
       {
         inputs: [],
         stateMutability: "nonpayable",
         type: "constructor",
+      },
+      {
+        inputs: [],
+        name: "AlreadyMinted",
+        type: "error",
+      },
+      {
+        inputs: [],
+        name: "ArrayLengthMismatch",
+        type: "error",
+      },
+      {
+        inputs: [],
+        name: "BlockNumberTooOld",
+        type: "error",
+      },
+      {
+        inputs: [],
+        name: "InvalidBlockNumber",
+        type: "error",
+      },
+      {
+        inputs: [],
+        name: "InvalidSignature",
+        type: "error",
+      },
+      {
+        inputs: [],
+        name: "NoMappedTokenForChip",
+        type: "error",
+      },
+      {
+        inputs: [],
+        name: "NoMintedTokenForChip",
+        type: "error",
+      },
+      {
+        inputs: [],
+        name: "SeedingChipDataForExistingToken",
+        type: "error",
       },
       {
         anonymous: false,
@@ -63,31 +103,6 @@ export const PermaPassNFTRegistry = {
           {
             indexed: true,
             internalType: "address",
-            name: "to",
-            type: "address",
-          },
-          {
-            indexed: false,
-            internalType: "string",
-            name: "uri",
-            type: "string",
-          },
-          {
-            indexed: false,
-            internalType: "uint256",
-            name: "tokenId",
-            type: "uint256",
-          },
-        ],
-        name: "Minted",
-        type: "event",
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: true,
-            internalType: "address",
             name: "previousOwner",
             type: "address",
           },
@@ -99,6 +114,50 @@ export const PermaPassNFTRegistry = {
           },
         ],
         name: "OwnershipTransferred",
+        type: "event",
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: "uint256",
+            name: "tokenId",
+            type: "uint256",
+          },
+          {
+            indexed: true,
+            internalType: "address",
+            name: "oldChipAddress",
+            type: "address",
+          },
+          {
+            indexed: true,
+            internalType: "address",
+            name: "newChipAddress",
+            type: "address",
+          },
+        ],
+        name: "PBTChipRemapping",
+        type: "event",
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: "uint256",
+            name: "tokenId",
+            type: "uint256",
+          },
+          {
+            indexed: true,
+            internalType: "address",
+            name: "chipAddress",
+            type: "address",
+          },
+        ],
+        name: "PBTMint",
         type: "event",
       },
       {
@@ -233,6 +292,19 @@ export const PermaPassNFTRegistry = {
         type: "function",
       },
       {
+        inputs: [],
+        name: "getMaxBlockhashValidWindow",
+        outputs: [
+          {
+            internalType: "uint256",
+            name: "",
+            type: "uint256",
+          },
+        ],
+        stateMutability: "pure",
+        type: "function",
+      },
+      {
         inputs: [
           {
             internalType: "address",
@@ -254,6 +326,63 @@ export const PermaPassNFTRegistry = {
           },
         ],
         stateMutability: "view",
+        type: "function",
+      },
+      {
+        inputs: [
+          {
+            internalType: "uint256",
+            name: "tokenId",
+            type: "uint256",
+          },
+          {
+            internalType: "bytes",
+            name: "payload",
+            type: "bytes",
+          },
+          {
+            internalType: "bytes",
+            name: "signature",
+            type: "bytes",
+          },
+        ],
+        name: "isChipSignatureForToken",
+        outputs: [
+          {
+            internalType: "bool",
+            name: "",
+            type: "bool",
+          },
+        ],
+        stateMutability: "view",
+        type: "function",
+      },
+      {
+        inputs: [
+          {
+            internalType: "address",
+            name: "chipAddress",
+            type: "address",
+          },
+          {
+            internalType: "bytes",
+            name: "signatureFromChip",
+            type: "bytes",
+          },
+          {
+            internalType: "uint256",
+            name: "blockNumberUsedInSig",
+            type: "uint256",
+          },
+          {
+            internalType: "string",
+            name: "_tokenURI",
+            type: "string",
+          },
+        ],
+        name: "mintPBT",
+        outputs: [],
+        stateMutability: "nonpayable",
         type: "function",
       },
       {
@@ -312,24 +441,6 @@ export const PermaPassNFTRegistry = {
         inputs: [
           {
             internalType: "address",
-            name: "to",
-            type: "address",
-          },
-          {
-            internalType: "string",
-            name: "uri",
-            type: "string",
-          },
-        ],
-        name: "safeMint",
-        outputs: [],
-        stateMutability: "nonpayable",
-        type: "function",
-      },
-      {
-        inputs: [
-          {
-            internalType: "address",
             name: "from",
             type: "address",
           },
@@ -368,7 +479,7 @@ export const PermaPassNFTRegistry = {
           },
           {
             internalType: "bytes",
-            name: "_data",
+            name: "data",
             type: "bytes",
           },
         ],
@@ -404,7 +515,7 @@ export const PermaPassNFTRegistry = {
           },
           {
             internalType: "string",
-            name: "uri",
+            name: "_tokenURI",
             type: "string",
           },
         ],
@@ -440,6 +551,44 @@ export const PermaPassNFTRegistry = {
             internalType: "string",
             name: "",
             type: "string",
+          },
+        ],
+        stateMutability: "view",
+        type: "function",
+      },
+      {
+        inputs: [
+          {
+            internalType: "address",
+            name: "chipAddress",
+            type: "address",
+          },
+        ],
+        name: "tokenIdFor",
+        outputs: [
+          {
+            internalType: "uint256",
+            name: "",
+            type: "uint256",
+          },
+        ],
+        stateMutability: "view",
+        type: "function",
+      },
+      {
+        inputs: [
+          {
+            internalType: "address",
+            name: "chipAddress",
+            type: "address",
+          },
+        ],
+        name: "tokenIdMappedFor",
+        outputs: [
+          {
+            internalType: "uint256",
+            name: "",
+            type: "uint256",
           },
         ],
         stateMutability: "view",
@@ -496,6 +645,47 @@ export const PermaPassNFTRegistry = {
           },
         ],
         name: "transferOwnership",
+        outputs: [],
+        stateMutability: "nonpayable",
+        type: "function",
+      },
+      {
+        inputs: [
+          {
+            internalType: "bytes",
+            name: "signatureFromChip",
+            type: "bytes",
+          },
+          {
+            internalType: "uint256",
+            name: "blockNumberUsedInSig",
+            type: "uint256",
+          },
+        ],
+        name: "transferTokenWithChip",
+        outputs: [],
+        stateMutability: "nonpayable",
+        type: "function",
+      },
+      {
+        inputs: [
+          {
+            internalType: "bytes",
+            name: "signatureFromChip",
+            type: "bytes",
+          },
+          {
+            internalType: "uint256",
+            name: "blockNumberUsedInSig",
+            type: "uint256",
+          },
+          {
+            internalType: "bool",
+            name: "useSafeTransferFrom",
+            type: "bool",
+          },
+        ],
+        name: "transferTokenWithChip",
         outputs: [],
         stateMutability: "nonpayable",
         type: "function",

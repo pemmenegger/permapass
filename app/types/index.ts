@@ -2,7 +2,14 @@ import { Address } from "viem";
 
 export type PassportType = "nft" | "did";
 
-export type PassportMetadata = NFTPassportMetadata | DIDPassportMetadata;
+export type PassportMetadata = NFTPassportMetadata | DIDPassportMetadata | PBTPassportMetadata;
+
+export type PBTPassportMetadata = {
+  type: "pbt";
+  chainId: number;
+  address: string;
+  tokenId: bigint;
+};
 
 export type NFTPassportMetadata = {
   type: "nft";
@@ -42,7 +49,6 @@ export type DigitalIdentifierType = "nft" | "pbt" | "did";
 export type PassportVersion = {
   uri: ArweaveURI;
   timestamp: bigint;
-  version?: bigint;
   sender?: Address;
 };
 
