@@ -31,17 +31,19 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   defaultCard: {
+    borderWidth: 1,
     borderColor: commonColors.black,
   },
   selectedCard: {
+    borderWidth: 1,
     borderColor: commonColors.primary,
   },
   title: {
-    ...commonStyles.title,
+    ...commonStyles.h2,
     marginBottom: 10,
   },
   subtitle: {
-    ...commonStyles.subtitle,
+    ...commonStyles.h4,
     fontSize: 16,
   },
 });

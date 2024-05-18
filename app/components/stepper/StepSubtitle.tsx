@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   text: {
-    ...commonStyles.subtitle,
+    ...commonStyles.h3,
     fontSize: 18,
   },
 });

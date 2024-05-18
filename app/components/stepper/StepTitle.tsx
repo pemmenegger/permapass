@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   text: {
-    ...commonStyles.title,
+    ...commonStyles.h1,
   },
   highlight: {
     color: commonColors.primary,
