@@ -1,3 +1,5 @@
+import React, { useState, useEffect } from "react";
+import { View, Text, Button } from "react-native";
 import ViewWithWalletConnector from "../components/ui/ViewWithWalletConnector";
 import StepOption from "../components/stepper/StepOption";
 import { router } from "expo-router";
@@ -13,11 +15,6 @@ import { execHaloCmdRN } from "@arx-research/libhalo/api/react-native.js";
 NfcManager.start();
 
 export default function Page() {
-  const openCamera = async () => {
-    // TODO open camera
-    console.log("open camera");
-  };
-
   const readNdef = async () => {
     await NfcManager.requestTechnology(NfcTech.IsoDep);
 
@@ -31,23 +28,23 @@ export default function Page() {
   return (
     <ViewWithWalletConnector withScrollView>
       <StepTitle text="Welcome to PermaPass" highlight="PermaPass" />
-      <StepSubtitle text="PermaPass is a decentralized identity and passport system for construction products." />
+      <StepSubtitle text="A permanent passport system for construction products using decentralized technologies." />
       <StepOption
         title="Create Passport"
-        subtitle="Choose between QR Codes or HaLo NFC chips acting as data carrier and NFTs, PBTs or DIDs to represent digital identity."
+        subtitle="Use QR Codes or HaLo NFC chips as data carriers, and NFTs, PBTs, or DIDs for digital identity."
         onPress={() => router.push("/create/01-set-passport-data")}
         Icon={<PlusSquareIcon height={48} strokeWidth={1.1} color={commonColors.black} />}
       />
-      <StepSubtitle text="Or scan a passport to view its data. You can either directly scan a QR Code or read a HaLo NFC chip or do it from the app as follows." />
+      <StepSubtitle text="Scan a QR Code or HaLo NFC to read a passport. Once read, you can update or delete it if you own it. Use the buttons below or scan directly with your device." />
       <StepOption
         title="Read QR Code Passport"
-        subtitle="Open the camera and scan a QR code based passport."
-        onPress={openCamera}
+        subtitle="Open the camera to scan a QR code-based passport."
+        onPress={() => router.push("/qr-code-scanner")}
         Icon={<QRCodeIcon height={48} strokeWidth={1.1} color={commonColors.black} />}
       />
       <StepOption
         title="Read HaLo NFC Passport"
-        subtitle="Open the NFC reader and scan a HaLo NFC based passport."
+        subtitle="Open the NFC reader to scan a HaLo NFC-based passport."
         onPress={readNdef}
         Icon={<NFCIcon height={48} strokeWidth={1.1} color={commonColors.black} />}
       />

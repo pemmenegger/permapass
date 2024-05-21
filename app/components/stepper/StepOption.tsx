@@ -58,7 +58,7 @@ export default function StepOption({ title, subtitle, isSelected = false, onPres
           <Text style={styles.title}>{title}</Text>
           <Text style={styles.subtitle}>{subtitle}</Text>
         </View>
-        {Icon && <View style={styles.iconContainer}>{Icon}</View>}
+        {/* {Icon && <View style={styles.iconContainer}>{Icon}</View>} */}
       </View>
     </TouchableOpacity>
   );

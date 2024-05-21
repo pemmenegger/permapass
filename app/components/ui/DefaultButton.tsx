@@ -66,7 +66,7 @@ export default function DefaultButton({ type, text, onPress, disabled, style }: 
 
 const internalStyles = StyleSheet.create({
   button: {
-    borderRadius: 9,
+    borderRadius: 12,
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderWidth: 1,
@@ -75,7 +75,8 @@ const internalStyles = StyleSheet.create({
   },
   text: {
     textAlign: "center",
-    fontSize: 12,
+    fontSize: 14,
     fontFamily: "Inter-Medium",
+    letterSpacing: -0.2,
   },
 });

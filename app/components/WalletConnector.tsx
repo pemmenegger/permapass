@@ -28,7 +28,7 @@ export default function WalletConnector() {
       {isConnected ? (
         <View style={styles.isConnectedContainer}>
           <View>
-            <Text style={styles.subtext}>Wallet</Text>
+            <Text style={styles.subtext}>Address</Text>
             <Text style={styles.text}>{shortenedAddress}</Text>
           </View>
           <View>
@@ -43,7 +43,7 @@ export default function WalletConnector() {
       ) : (
         <View style={styles.isDisconnectedContainer}>
           <View style={styles.icon}>
-            <WalletIcon height={15} strokeWidth={1.05} color={commonColors.black} />
+            <WalletIcon height={15} strokeWidth={1.2} color={commonColors.black} />
           </View>
           <Text style={styles.text}>Connect Wallet</Text>
         </View>
@@ -55,10 +55,10 @@ export default function WalletConnector() {
 const styles = StyleSheet.create({
   button: {
     borderRadius: 12,
-    backgroundColor: commonColors.primary,
     paddingVertical: 12,
-    paddingHorizontal: commonStyles.innerMarginHorizontal,
     borderWidth: 1,
+    backgroundColor: commonColors.primary,
+    paddingHorizontal: commonStyles.innerMarginHorizontal,
     borderColor: commonColors.secondary,
   },
   isConnectedContainer: {
@@ -78,9 +78,9 @@ const styles = StyleSheet.create({
     color: commonColors.secondary,
   },
   text: {
-    fontFamily: "Inter-Regular",
-    letterSpacing: -0.5,
-    fontSize: 16,
+    fontFamily: "Inter-Medium",
+    letterSpacing: -0.2,
+    fontSize: 14,
     color: commonColors.black,
   },
   icon: {
