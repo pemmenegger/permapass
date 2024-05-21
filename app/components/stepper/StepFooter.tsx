@@ -30,10 +30,10 @@ const styles = StyleSheet.create({
   },
   leftButtonContainer: {
     flex: 1,
-    marginRight: commonStyles.marginHorizontal / 2,
+    marginRight: commonStyles.innerMarginHorizontal / 2,
   },
   rightButtonContainer: {
     flex: 1,
-    marginLeft: commonStyles.marginHorizontal / 2,
+    marginLeft: commonStyles.innerMarginHorizontal / 2,
   },
 });
