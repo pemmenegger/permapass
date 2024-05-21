@@ -1,6 +1,5 @@
 import config from "./config";
-import { Address, pad } from "viem";
-import { stringToBytes, toHex } from "viem";
+import { Address } from "viem";
 import { ArweaveURI, ArweaveURL } from "../types";
 
 export const encodeDataCarrierURL = (metadataURI: ArweaveURI) => {
@@ -8,13 +7,9 @@ export const encodeDataCarrierURL = (metadataURI: ArweaveURI) => {
 };
 
 export const fromTxidToURI = (txid: string): ArweaveURI => `ar://${txid}`;
+
 export const fromTxidToURL = (txid: string): ArweaveURL => `https://arweave.net/${txid}`;
+
 export const fromURIToURL = (uri: string): ArweaveURL => `https://arweave.net/${uri.replace("ar://", "")}`;
 
 export const fromDIDToIdentity = (did: string): Address => did.split(":")[3] as Address;
-
-// export function stringToBytes32(str: string): string {
-//   const bytes = stringToBytes(str);
-//   const padded = pad(bytes, { size: 32, dir: "right" });
-//   return toHex(padded);
-// }

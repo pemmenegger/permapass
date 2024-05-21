@@ -8,7 +8,6 @@ export default function Page() {
       <ScrollView>
         <Text>Welcome to PermaPass</Text>
         <NavigationButton to="/create/01-set-passport-data">Create Passport</NavigationButton>
-        <NavigationButton to="/nfc">Read/Write HaLo NFC</NavigationButton>
       </ScrollView>
     </ViewWithWalletConnector>
   );

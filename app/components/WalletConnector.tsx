@@ -40,6 +40,7 @@ export default function WalletConnector() {
 
 const styles = StyleSheet.create({
   button: {
+    marginTop: 12,
     borderRadius: 32,
     backgroundColor: commonColors.primary,
     paddingVertical: 12,

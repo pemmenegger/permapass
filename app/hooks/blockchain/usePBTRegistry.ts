@@ -1,14 +1,20 @@
 import { useState, useEffect, useCallback } from "react";
 import { Address, useWalletClient } from "wagmi";
-import { PermaPassPBTRegistry } from "../contracts/PermaPassPBTRegistry";
+import { PermaPassPBTRegistry } from "../../contracts/PermaPassPBTRegistry";
 import { readContract, watchContractEvent } from "@wagmi/core";
-import { ArweaveURI, PBTPassportMetadata, PassportVersion } from "../types";
-import { getPublicClient } from "../lib/wagmi";
+import { ArweaveURI, PBTPassportMetadata, PassportVersion } from "../../types";
+import { getPublicClient } from "../../lib/wagmi";
 
 export function usePBTRegistry() {
   const { data: walletClient, isError, isLoading } = useWalletClient();
   const [createPBT, setCreatePBT] = useState<
-    ((chipAddress: Address, tokenURI: ArweaveURI) => Promise<PBTPassportMetadata>) | undefined
+    | ((
+        chipAddress: Address,
+        signatureFromChip: Address,
+        blockNumberUsedInSig: bigint,
+        tokenURI: ArweaveURI
+      ) => Promise<PBTPassportMetadata>)
+    | undefined
   >(undefined);
   const [updateTokenURI, setUpdateTokenURI] = useState<
     ((tokenId: bigint, tokenURI: ArweaveURI) => Promise<void>) | undefined
@@ -33,7 +39,12 @@ export function usePBTRegistry() {
       throw new Error(`Unsupported chain id: ${chainId}`);
     }
 
-    const handleCreatePBT = async (chipAddress: Address, tokenURI: ArweaveURI) => {
+    const handleCreatePBT = async (
+      chipAddress: Address,
+      signatureFromChip: Address,
+      blockNumberUsedInSig: bigint,
+      tokenURI: ArweaveURI
+    ) => {
       try {
         const tokenIdPromise = new Promise<bigint>((resolve, reject) => {
           console.log("Watching for PBTMint event...");

@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
 import { Address, useWalletClient } from "wagmi";
-import { PermaPassNFTRegistry } from "../contracts/PermaPassNFTRegistry";
+import { PermaPassNFTRegistry } from "../../contracts/PermaPassNFTRegistry";
 import { readContract, watchContractEvent } from "@wagmi/core";
-import { ArweaveURI, NFTPassportMetadata, PassportVersion } from "../types";
-import { getPublicClient } from "../lib/wagmi";
+import { ArweaveURI, NFTPassportMetadata, PassportVersion } from "../../types";
+import { getPublicClient } from "../../lib/wagmi";
 
 export function useNFTRegistry() {
   const { data: walletClient, isError, isLoading } = useWalletClient();

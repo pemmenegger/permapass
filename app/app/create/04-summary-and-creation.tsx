@@ -4,17 +4,21 @@ import { useCreation } from "../../context/CreationContext";
 import { api } from "../../lib/web-api";
 import { encodeDataCarrierURL } from "../../lib/utils";
 import QRCode from "react-native-qrcode-svg";
-import { useNFTRegistry } from "../../hooks/useNFTRegistry";
-import { useDIDRegistry } from "../../hooks/useDIDRegistry";
+import { useNFTRegistry } from "../../hooks/blockchain/useNFTRegistry";
+import { useDIDRegistry } from "../../hooks/blockchain/useDIDRegistry";
 import { ArweaveURI } from "../../types";
 import StepTitle from "../../components/stepper/StepTitle";
 import StepSubtitle from "../../components/stepper/StepSubtitle";
 import StepFooter from "../../components/stepper/StepFooter";
 import { commonColors, commonStyles } from "../../styles";
+import { usePBTRegistry } from "../../hooks/blockchain/usePBTRegistry";
+import { useHaLoNFCChip } from "../../hooks/useHaloNFCChip";
 
 export default function Page() {
   const { didRegistry } = useDIDRegistry();
   const { nftRegistry } = useNFTRegistry();
+  const { pbtRegistry } = usePBTRegistry();
+  const { haloNFCChip } = useHaLoNFCChip();
   const { state } = useCreation();
   const [urlToEncode, setUrlToEncode] = useState<string | undefined>();
   const [creationProgress, setCreationProgress] = useState<string[]>([]);
@@ -43,9 +47,41 @@ export default function Page() {
 
     addCreationProgress("Creating NFT...");
     const passportMetadata = await nftRegistry.createNFT(passportURI);
-    const metadataURI = await api.arweave.uploadNFTPassportMetadata(passportMetadata);
+    const metadataURI = await api.arweave.uploadPassportMetadata(passportMetadata);
     const dataCarrierURL = encodeDataCarrierURL(metadataURI);
     addCreationProgress("NFT created");
+    return dataCarrierURL;
+  };
+
+  const handlePBTCreation = async (passportURI: ArweaveURI): Promise<string> => {
+    if (!pbtRegistry.createPBT) {
+      console.error("createPBT not available");
+      throw new Error("createPBT not available");
+    }
+
+    if (!haloNFCChip.computeSignatureFromChip) {
+      console.error("computeSignatureFromChip not available");
+      throw new Error("computeSignatureFromChip not available");
+    }
+
+    addCreationProgress("Computing signature from chip...");
+    const result = await haloNFCChip.computeSignatureFromChip();
+    if (!result) {
+      console.error("Failed to compute signature from chip");
+      throw new Error("Failed to compute signature from chip");
+    }
+    const { chipAddress, signatureFromChip, blockNumberUsedInSig } = result;
+
+    addCreationProgress("Creating PBT...");
+    const passportMetadata = await pbtRegistry.createPBT(
+      chipAddress,
+      signatureFromChip,
+      blockNumberUsedInSig,
+      passportURI
+    );
+    const metadataURI = await api.arweave.uploadPassportMetadata(passportMetadata);
+    const dataCarrierURL = encodeDataCarrierURL(metadataURI);
+    addCreationProgress("PBT created");
     return dataCarrierURL;
   };
 
@@ -63,7 +99,7 @@ export default function Page() {
     const passportMetadata = await didRegistry.createDID();
     addCreationProgress("Adding Service to DID...");
     await didRegistry.addDIDService(passportMetadata.did, passportURI);
-    const metadataURI = await api.arweave.uploadDIDPassportMetadata(passportMetadata);
+    const metadataURI = await api.arweave.uploadPassportMetadata(passportMetadata);
     const dataCarrierURL = encodeDataCarrierURL(metadataURI);
     addCreationProgress(`DID ${passportMetadata.did} created`);
     return dataCarrierURL;
@@ -78,6 +114,9 @@ export default function Page() {
       switch (state.userInput.digitalIdentifier) {
         case "nft":
           dataCarrierURL = await handleNFTCreation(passportDataURI);
+          break;
+        case "pbt":
+          dataCarrierURL = await handlePBTCreation(passportDataURI);
           break;
         case "did":
           dataCarrierURL = await handleDIDCreation(passportDataURI);
@@ -122,7 +161,9 @@ export default function Page() {
               <Text style={styles.stepNumberText}>2</Text>
             </View>
             <View style={styles.stepText}>
-              <Text style={styles.stepTitle}>Creating NFT as digital identifier</Text>
+              <Text style={styles.stepTitle}>
+                Creating {state.userInput.digitalIdentifier?.toUpperCase()} as digital identifier
+              </Text>
               <Text style={styles.stepDescription}>
                 An NFT will be minted on the <Text style={styles.link}>Sepolia Blockchain</Text> and will permanently
                 exist there.
@@ -134,17 +175,23 @@ export default function Page() {
               <Text style={styles.stepNumberText}>3</Text>
             </View>
             <View style={styles.stepText}>
-              <Text style={styles.stepTitle}>Generating QR Code as data carrier</Text>
+              <Text style={styles.stepTitle}>
+                {state.userInput.dataCarrier == "qr"
+                  ? "Generating QR Code as data carrier"
+                  : "Setting up HaLo NFC Chip as data carrier"}
+              </Text>
               <Text style={styles.stepDescription}>
-                A QR Code linking to the digital identifier and passport data will be generated.
+                {state.userInput.dataCarrier == "qr"
+                  ? "A QR Code linking to the digital identifier and passport data will be generated."
+                  : "The HaLo NFC Chip will be programmed with the digital identifier that links to the passport data."}
               </Text>
             </View>
           </View>
         </View>
       </View>
-      <StepFooter handleNext={handleCreation} isInvalid={false} />
+      {/* <StepFooter handleNext={handleCreation} isInvalid={false} /> */}
 
-      {/* <Button title="Create" onPress={handleCreation} />
+      <Button title="Create" onPress={handleCreation} />
       {creationProgress.length > 0 && (
         <>
           <Text>Creation Progress:</Text>
@@ -154,7 +201,7 @@ export default function Page() {
         </>
       )}
       {urlToEncode && state.userInput.dataCarrier === "qr" && <QRCode value={urlToEncode} size={200} />}
-      {urlToEncode && <Text>urlToEncode: {urlToEncode}</Text>} */}
+      {urlToEncode && <Text>urlToEncode: {urlToEncode}</Text>}
     </View>
   );
 }
