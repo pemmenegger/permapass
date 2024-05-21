@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, View, Text } from "react-native";
+import { Button, View, Text, StyleSheet } from "react-native";
 import { useCreation } from "../../context/CreationContext";
 import { api } from "../../lib/web-api";
 import { encodeDataCarrierURL } from "../../lib/utils";
@@ -7,6 +7,10 @@ import QRCode from "react-native-qrcode-svg";
 import { useNFTRegistry } from "../../hooks/useNFTRegistry";
 import { useDIDRegistry } from "../../hooks/useDIDRegistry";
 import { ArweaveURI } from "../../types";
+import StepTitle from "../../components/stepper/StepTitle";
+import StepSubtitle from "../../components/stepper/StepSubtitle";
+import StepFooter from "../../components/stepper/StepFooter";
+import { commonColors, commonStyles } from "../../styles";
 
 export default function Page() {
   const { didRegistry } = useDIDRegistry();
@@ -95,13 +99,52 @@ export default function Page() {
   };
 
   return (
-    <View>
-      <Text>We will create the passport with the following properties:</Text>
-      <Text>Name: {state.userInput.passportData?.name}</Text>
-      <Text>Condition: {state.userInput.passportData?.condition}</Text>
-      <Text>Data Carrier: {state.userInput.dataCarrier}</Text>
-      <Text>Digital Identifier: {state.userInput.digitalIdentifier}</Text>
-      <Button title="Create" onPress={handleCreation} />
+    <View style={styles.container}>
+      <View>
+        <StepTitle text="Finally, create your passport." highlight="passport" />
+        <StepSubtitle text="Given your configuration, the passport is now ready to be created." />
+
+        <View style={styles.steps}>
+          <View style={styles.step}>
+            <View style={styles.stepNumber}>
+              <Text style={styles.stepNumberText}>1</Text>
+            </View>
+            <View style={styles.stepText}>
+              <Text style={styles.stepTitle}>Uploading passport data</Text>
+              <Text style={styles.stepDescription}>
+                Passport data will be uploaded to <Text style={styles.link}>Arweave</Text>, where it will be permanently
+                stored.
+              </Text>
+            </View>
+          </View>
+          <View style={styles.step}>
+            <View style={styles.stepNumber}>
+              <Text style={styles.stepNumberText}>2</Text>
+            </View>
+            <View style={styles.stepText}>
+              <Text style={styles.stepTitle}>Creating NFT as digital identifier</Text>
+              <Text style={styles.stepDescription}>
+                An NFT will be minted on the <Text style={styles.link}>Sepolia Blockchain</Text> and will permanently
+                exist there.
+              </Text>
+            </View>
+          </View>
+          <View style={styles.step}>
+            <View style={styles.stepNumber}>
+              <Text style={styles.stepNumberText}>3</Text>
+            </View>
+            <View style={styles.stepText}>
+              <Text style={styles.stepTitle}>Generating QR Code as data carrier</Text>
+              <Text style={styles.stepDescription}>
+                A QR Code linking to the digital identifier and passport data will be generated.
+              </Text>
+            </View>
+          </View>
+        </View>
+      </View>
+      <StepFooter handleNext={handleCreation} isInvalid={false} />
+
+      {/* <Button title="Create" onPress={handleCreation} />
       {creationProgress.length > 0 && (
         <>
           <Text>Creation Progress:</Text>
@@ -111,7 +154,51 @@ export default function Page() {
         </>
       )}
       {urlToEncode && state.userInput.dataCarrier === "qr" && <QRCode value={urlToEncode} size={200} />}
-      {urlToEncode && <Text>urlToEncode: {urlToEncode}</Text>}
+      {urlToEncode && <Text>urlToEncode: {urlToEncode}</Text>} */}
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "space-between",
+  },
+  steps: {
+    marginTop: 24,
+  },
+  step: {
+    flexDirection: "row",
+    marginBottom: 16,
+  },
+  stepNumber: {
+    width: 28,
+    height: 28,
+    borderRadius: 8,
+    backgroundColor: commonColors.white,
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 1,
+  },
+  stepNumberText: {
+    ...commonStyles.p,
+    fontFamily: "Inter-SemiBold",
+  },
+  stepText: {
+    marginTop: 4,
+    marginLeft: 16,
+    flex: 1,
+  },
+  stepTitle: {
+    ...commonStyles.p,
+    fontFamily: "Inter-SemiBold",
+  },
+  stepDescription: {
+    ...commonStyles.h4,
+    marginTop: 4,
+  },
+  link: {
+    color: commonColors.primary,
+    textDecorationLine: "underline",
+  },
+});

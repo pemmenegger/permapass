@@ -12,6 +12,7 @@ import { createWeb3Modal, defaultWagmiConfig, Web3Modal } from "@web3modal/wagmi
 import { CreationProvider } from "../context/CreationContext";
 import config from "../lib/config";
 import { UrlProvider } from "../context/CreationContext/UrlContext";
+import { useFonts } from "expo-font";
 
 const projectId = config.WALLETCONNECT_CLOUD_PROJECT_ID;
 
@@ -32,10 +33,19 @@ createWeb3Modal({
   projectId,
   chains,
   wagmiConfig,
-  enableAnalytics: true, // Optional - defaults to your Cloud configuration
 });
 
 export default function Layout() {
+  const [fontsLoaded] = useFonts({
+    "Inter-Regular": require("../assets/fonts/Inter-Regular.ttf"),
+    "Inter-Medium": require("../assets/fonts/Inter-Medium.ttf"),
+    "Inter-SemiBold": require("../assets/fonts/Inter-SemiBold.ttf"),
+  });
+
+  if (!fontsLoaded) {
+    return null;
+  }
+
   return (
     <WagmiConfig config={wagmiConfig}>
       <UrlProvider>

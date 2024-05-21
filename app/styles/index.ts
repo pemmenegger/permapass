@@ -1,23 +1,43 @@
-export const defaultStyles = {
+export const commonColors = {
   primary: "#2FD0A0",
   black: "#000000",
   white: "#ffffff",
   bg: "#ECF0F1",
-  grey: "#A2A2A2",
+  gray: "#A2A2A2",
+};
 
-  // bgRed: "#d60606",
-  // bgLight: "#fff",
-  // bgDark: "#000",
-  // secondary: "#2B061E",
-  // tertiary: "#FFAC2F",
-  // quaternary: "#D9D9D9",
-  fontSmaller: 11,
-  fontSmall: 13,
-  fontMedium: 17,
-  fontLarge: 21,
-  fontLarger: 23,
-  fontLargest: 31,
-  fontHuge: 45,
-  fontHuger: 90,
+export const commonStyles = {
   marginHorizontal: 12,
+
+  h1: {
+    fontFamily: "Inter-SemiBold",
+    letterSpacing: -0.5,
+    fontSize: 26,
+  },
+
+  h2: {
+    fontFamily: "Inter-SemiBold",
+    letterSpacing: -0.5,
+    fontSize: 24,
+  },
+
+  h3: {
+    fontFamily: "Inter-Medium",
+    letterSpacing: -0.85,
+    color: commonColors.gray,
+    fontSize: 16,
+  },
+
+  h4: {
+    fontFamily: "Inter-Medium",
+    letterSpacing: -0.7,
+    color: commonColors.gray,
+    fontSize: 14,
+  },
+
+  p: {
+    fontFamily: "Inter-Regular",
+    color: commonColors.black,
+    fontSize: 16,
+  },
 };

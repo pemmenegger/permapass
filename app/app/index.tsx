@@ -1,6 +1,6 @@
 import { ScrollView, Text } from "react-native";
 import { NavigationButton } from "../components/NavigationButton";
-import ViewWithWalletConnector from "../components/ViewWithWalletConnector";
+import ViewWithWalletConnector from "../components/ui/ViewWithWalletConnector";
 
 export default function Page() {
   return (

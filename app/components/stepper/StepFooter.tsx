@@ -1,15 +1,15 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
 import { router } from "expo-router";
-import DefaultButton from "./DefaultButton";
-import { defaultStyles } from "../styles";
+import DefaultButton from "../ui/DefaultButton";
+import { commonStyles } from "../../styles";
 
-interface StepperFooterProps {
+interface StepFooterProps {
   handleNext: () => void;
   isInvalid: boolean;
 }
 
-export default function StepperFooter({ handleNext, isInvalid }: StepperFooterProps) {
+export default function StepFooter({ handleNext, isInvalid }: StepFooterProps) {
   return (
     <View style={styles.container}>
       <View style={styles.leftButtonContainer}>
@@ -30,10 +30,10 @@ const styles = StyleSheet.create({
   },
   leftButtonContainer: {
     flex: 1,
-    marginRight: defaultStyles.marginHorizontal / 2,
+    marginRight: commonStyles.marginHorizontal / 2,
   },
   rightButtonContainer: {
     flex: 1,
-    marginLeft: defaultStyles.marginHorizontal / 2,
+    marginLeft: commonStyles.marginHorizontal / 2,
   },
 });

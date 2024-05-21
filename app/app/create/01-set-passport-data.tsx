@@ -1,8 +1,10 @@
-import { TextInput, View, Text } from "react-native";
+import { TextInput, View, StyleSheet } from "react-native";
 import { useState } from "react";
 import { useCreation } from "../../context/CreationContext";
 import { router } from "expo-router";
-import StepperFooter from "../../components/StepperFooter";
+import StepFooter from "../../components/stepper/StepFooter";
+import StepTitle from "../../components/stepper/StepTitle";
+import StepSubtitle from "../../components/stepper/StepSubtitle";
 
 export default function Page() {
   const { state, dispatch } = useCreation();
@@ -19,24 +21,44 @@ export default function Page() {
     router.push("/create/02-select-data-carrier");
   };
   return (
-    <View>
-      <Text>First, fill in passport data:</Text>
-      <TextInput
-        placeholder="Product Name"
-        value={name}
-        onChangeText={setName}
-        maxLength={16}
-        autoCapitalize="none"
-        autoFocus={true}
-      />
-      <TextInput
-        placeholder="Product Condition"
-        value={condition}
-        onChangeText={setCondition}
-        maxLength={16}
-        autoCapitalize="none"
-      />
-      <StepperFooter handleNext={handleNext} isInvalid={isInvalid} />
+    <View style={styles.container}>
+      <View>
+        <StepTitle text="First, set your passport data." highlight="passport data" />
+        <StepSubtitle text="Passports contain information that supports the adoption of circular economy practices." />
+        <TextInput
+          placeholder="Product Name"
+          value={name}
+          onChangeText={setName}
+          maxLength={16}
+          autoCapitalize="none"
+          // autoFocus={true}
+          style={styles.input}
+        />
+        <TextInput
+          placeholder="Product Condition"
+          value={condition}
+          onChangeText={setCondition}
+          maxLength={16}
+          autoCapitalize="none"
+          style={styles.input}
+        />
+      </View>
+      <StepFooter handleNext={handleNext} isInvalid={isInvalid} />
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "space-between",
+  },
+  input: {
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 16,
+  },
+});

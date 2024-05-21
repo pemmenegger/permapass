@@ -49,3 +49,9 @@ export type PassportVersion = {
 export type ArweaveURI = `ar://${string}`;
 
 export type ArweaveURL = `https://arweave.net/${string}`;
+
+export interface IconProps {
+  height: number;
+  color: string;
+  strokeWidth?: number;
+}
