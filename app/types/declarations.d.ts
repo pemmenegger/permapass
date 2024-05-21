@@ -18,8 +18,11 @@ declare module "@arx-research/libhalo/api/react-native.js" {
 
   interface Command {
     name: string;
-    message: string;
-    keyNo: number;
+    message?: string;
+    digest?: string;
+    keyNo?: number;
+    format?: string;
+    legacySignCommand?: boolean;
   }
 
   interface ExecOptions {
@@ -30,11 +33,4 @@ declare module "@arx-research/libhalo/api/react-native.js" {
   export function execCoreCommandRN(nfcManager: NfcManager, command: Buffer): Promise<HaloResult>;
 
   export function execHaloCmdRN(nfcManager: NfcManager, command: Command, options?: ExecOptions): Promise<any>;
-}
-
-declare module "*.svg" {
-  import React from "react";
-  import { SvgProps } from "react-native-svg";
-  const content: React.FC<SvgProps>;
-  export default content;
 }

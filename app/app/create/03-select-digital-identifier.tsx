@@ -26,12 +26,21 @@ export default function Page() {
       <View>
         <StepTitle text="Now, pick a digital identifier." highlight="digital identifier" />
         <StepSubtitle text="By assigning a construction product to a digital identifier, we can link it to its previously created passport data." />
-        <StepOption
-          title="Non-Fungible Token"
-          subtitle="Non-Fungible Tokens (NFTs) are unique digital assets on a blockchain."
-          isSelected={digitalIdentifier == "nft"}
-          onPress={() => setDigitalIdentifier("nft")}
-        />
+        {state.userInput.dataCarrier == "nfc" ? (
+          <StepOption
+            title="Physical Backed Token"
+            subtitle="Physical Backed Token (PBT) is a new Ethereum token standard based off of ERC721. It ties a physical item to a digital token."
+            isSelected={digitalIdentifier == "pbt"}
+            onPress={() => setDigitalIdentifier("pbt")}
+          />
+        ) : (
+          <StepOption
+            title="Non-Fungible Token"
+            subtitle="Non-Fungible Tokens (NFTs) are unique digital assets on a blockchain."
+            isSelected={digitalIdentifier == "nft"}
+            onPress={() => setDigitalIdentifier("nft")}
+          />
+        )}
         <StepOption
           title="Decentralized Identifier"
           subtitle="Decentralized Identifiers (DIDs) are digital identifiers that enable verifiable, self-sovereign identity without a centralized authority."

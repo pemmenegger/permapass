@@ -1,5 +1,5 @@
 import React from "react";
-import { useAccount, useNetwork } from "wagmi";
+import { useAccount, useBalance, useNetwork } from "wagmi";
 import { useWeb3Modal, useWeb3ModalState } from "@web3modal/wagmi-react-native";
 import { Pressable, View, StyleSheet, Text } from "react-native";
 import { commonColors, commonStyles } from "../styles";
@@ -10,6 +10,7 @@ export default function WalletConnector() {
   const { selectedNetworkId } = useWeb3ModalState();
   const { isConnected, address } = useAccount();
   const { chains } = useNetwork();
+  const { data } = useBalance({ address });
 
   const getNetworkName = (networkId?: number) => {
     const chain = chains.find((chain) => chain.id === networkId);
@@ -19,12 +20,25 @@ export default function WalletConnector() {
   const shortenedAddress = address ? `${address.slice(0, 6)}...${address.slice(-4)}` : "";
   const networkName = getNetworkName(selectedNetworkId);
 
+  // only 4 decimals
+  const balance = data ? `${data.formatted.slice(0, -data.decimals + 4)} ${data.symbol}` : 0;
+
   return (
     <Pressable style={styles.button} onPress={async () => await open()}>
       {isConnected ? (
         <View style={styles.isConnectedContainer}>
-          <Text style={styles.text}>{shortenedAddress}</Text>
-          <Text style={styles.text}>{networkName}</Text>
+          <View>
+            <Text style={styles.subtext}>Wallet</Text>
+            <Text style={styles.text}>{shortenedAddress}</Text>
+          </View>
+          <View>
+            <Text style={styles.subtext}>Balance</Text>
+            <Text style={styles.text}>{balance}</Text>
+          </View>
+          <View>
+            <Text style={styles.subtext}>Network</Text>
+            <Text style={styles.text}>{networkName}</Text>
+          </View>
         </View>
       ) : (
         <View style={styles.isDisconnectedContainer}>
@@ -40,15 +54,12 @@ export default function WalletConnector() {
 
 const styles = StyleSheet.create({
   button: {
-    borderRadius: 32,
+    borderRadius: 12,
     backgroundColor: commonColors.primary,
     paddingVertical: 12,
-    paddingHorizontal: 16,
-    // elevation: 2,
-    // shadowColor: commonColors.black,
-    // shadowOffset: { width: 0, height: 2 },
-    // shadowOpacity: 0.25,
-    // shadowRadius: 3.84,
+    paddingHorizontal: commonStyles.innerMarginHorizontal,
+    borderWidth: 1,
+    borderColor: commonColors.secondary,
   },
   isConnectedContainer: {
     flexDirection: "row",
@@ -59,6 +70,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
+  },
+  subtext: {
+    fontFamily: "Inter-SemiBold",
+    letterSpacing: -0.1,
+    fontSize: 12,
+    color: commonColors.secondary,
   },
   text: {
     fontFamily: "Inter-Regular",

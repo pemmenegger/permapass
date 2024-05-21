@@ -22,7 +22,7 @@ const metadata = {
   url: "https://permapass.com",
   icons: ["https://avatars.githubusercontent.com/u/37784886"],
   redirect: {
-    native: "permapass://",
+    native: "com.permapass.app://",
     universal: "permapass.com",
   },
 };

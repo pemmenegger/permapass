@@ -46,12 +46,7 @@ export const api = {
       const passportURI = fromTxidToURI(txid);
       return passportURI;
     },
-    uploadNFTPassportMetadata: async (metadata: NFTPassportMetadata) => {
-      const txid = await uploadToArweave(metadata);
-      const metadataURI = fromTxidToURI(txid);
-      return metadataURI;
-    },
-    uploadDIDPassportMetadata: async (metadata: DIDPassportMetadata) => {
+    uploadPassportMetadata: async (metadata: PassportMetadata) => {
       const txid = await uploadToArweave(metadata);
       const metadataURI = fromTxidToURI(txid);
       return metadataURI;

@@ -19,7 +19,8 @@
 	"author": "Kristjan Kosic <kristjan@protokol.com>",
 	"license": "MIT",
 	"dependencies": {
-		"@openzeppelin/contracts": "5.0.2"
+		"@chiru-labs/pbt": "^0.3.0",
+		"@openzeppelin/contracts": "4.5.0"
 	},
 	"devDependencies": {
 		"@nomicfoundation/hardhat-ignition": "^0.15.2",

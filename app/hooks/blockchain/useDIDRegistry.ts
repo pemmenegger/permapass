@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import { Address, useWalletClient } from "wagmi";
-import { PermaPassDIDRegistry } from "../contracts/PermaPassDIDRegistry";
+import { PermaPassDIDRegistry } from "../../contracts/PermaPassDIDRegistry";
 import { readContract } from "@wagmi/core";
 import { generatePrivateKey, privateKeyToAccount, sign } from "viem/accounts";
 import { encodePacked, fromHex, keccak256, pad, stringToBytes, toHex } from "viem";
-import { ArweaveURI, DIDPassportMetadata, PassportVersion } from "../types";
-import { getPublicClient } from "../lib/wagmi";
-import { fromDIDToIdentity } from "../lib/utils";
+import { ArweaveURI, DIDPassportMetadata, PassportVersion } from "../../types";
+import { getPublicClient } from "../../lib/wagmi";
+import { fromDIDToIdentity } from "../../lib/utils";
 
 export function useDIDRegistry() {
   const { data: walletClient, isError, isLoading } = useWalletClient();

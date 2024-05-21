@@ -1,30 +1,36 @@
 import { useState, useEffect, useCallback } from "react";
 import { Address, useWalletClient } from "wagmi";
-import { PermaPassNFTRegistry } from "../contracts/PermaPassNFTRegistry";
+import { PermaPassPBTRegistry } from "../../contracts/PermaPassPBTRegistry";
 import { readContract, watchContractEvent } from "@wagmi/core";
-import { ArweaveURI, NFTPassportMetadata, PassportVersion } from "../types";
-import { getPublicClient } from "../lib/wagmi";
+import { ArweaveURI, PBTPassportMetadata, PassportVersion } from "../../types";
+import { getPublicClient } from "../../lib/wagmi";
 
-export function useNFTRegistry() {
+export function usePBTRegistry() {
   const { data: walletClient, isError, isLoading } = useWalletClient();
-  const [createNFT, setCreateNFT] = useState<((tokenURI: ArweaveURI) => Promise<NFTPassportMetadata>) | undefined>(
-    undefined
-  );
+  const [createPBT, setCreatePBT] = useState<
+    | ((
+        chipAddress: Address,
+        signatureFromChip: Address,
+        blockNumberUsedInSig: bigint,
+        tokenURI: ArweaveURI
+      ) => Promise<PBTPassportMetadata>)
+    | undefined
+  >(undefined);
   const [updateTokenURI, setUpdateTokenURI] = useState<
     ((tokenId: bigint, tokenURI: ArweaveURI) => Promise<void>) | undefined
   >(undefined);
 
   useEffect(() => {
     if (!walletClient) {
-      // console.error("useNFTRegistry - walletClient not available");
+      // console.error("usePBTRegistry - walletClient not available");
       return;
     }
 
     const chainId = walletClient.chain.id;
-    const contractInfo = PermaPassNFTRegistry[chainId as keyof typeof PermaPassNFTRegistry];
+    const contractInfo = PermaPassPBTRegistry[chainId as keyof typeof PermaPassPBTRegistry];
 
     if (!contractInfo) {
-      console.error(`useNFTRegistry - Contract info not found for chain id: ${chainId}`);
+      console.error(`usePBTRegistry - Contract info not found for chain id: ${chainId}`);
       return;
     }
 
@@ -33,21 +39,25 @@ export function useNFTRegistry() {
       throw new Error(`Unsupported chain id: ${chainId}`);
     }
 
-    const handleCreateNFT = async (tokenURI: ArweaveURI) => {
+    const handleCreatePBT = async (
+      chipAddress: Address,
+      signatureFromChip: Address,
+      blockNumberUsedInSig: bigint,
+      tokenURI: ArweaveURI
+    ) => {
       try {
-        const to = walletClient.account.address;
         const tokenIdPromise = new Promise<bigint>((resolve, reject) => {
-          console.log("Watching for mint event...");
+          console.log("Watching for PBTMint event...");
           const unwatch = watchContractEvent(
             {
               address: contractInfo.address,
               abi: contractInfo.abi,
-              eventName: "Minted",
+              eventName: "PBTMint",
             },
             (logs) => {
               for (const log of logs.reverse()) {
-                if (log.args.to === to && log.args.uri === tokenURI) {
-                  console.log("Mint event detected:", log.args.tokenId);
+                if (log.args.chipAddress === chipAddress) {
+                  console.log("PBTMint event detected:", log.args);
                   resolve(log.args.tokenId!);
                   unwatch();
                   break;
@@ -58,27 +68,27 @@ export function useNFTRegistry() {
 
           setTimeout(() => {
             unwatch();
-            reject(new Error("Mint event watch timed out"));
+            reject(new Error("PBTMint event watch timed out"));
           }, 60000);
         });
 
-        console.log(`Minting NFT with tokenURI: ${tokenURI}...`);
+        console.log(`Minting PBT with tokenURI: ${tokenURI}...`);
         const txHash = await walletClient.writeContract({
           address: contractInfo.address,
           abi: contractInfo.abi,
-          functionName: "safeMint",
-          args: [to, tokenURI],
+          functionName: "mintPBT",
+          args: [chipAddress, signatureFromChip, blockNumberUsedInSig, tokenURI],
         });
-        console.log(`createDID transaction Hash: ${txHash}`);
+        console.log(`mintPBT transaction Hash: ${txHash}`);
 
         await publicClient.waitForTransactionReceipt({ hash: txHash });
-        console.log("createDID transaction confirmed");
-        console.log("NFT minted successfully.");
+        console.log("mintPBT transaction confirmed");
+        console.log("PBT minted successfully.");
 
         const tokenId = await tokenIdPromise;
 
-        const metadata: NFTPassportMetadata = {
-          type: "nft",
+        const metadata: PBTPassportMetadata = {
+          type: "pbt",
           chainId,
           address: contractInfo.address,
           tokenId,
@@ -86,7 +96,7 @@ export function useNFTRegistry() {
 
         return metadata;
       } catch (error) {
-        console.error("Failed to mint NFT:", error);
+        console.error("Failed to mint PBT:", error);
         throw error;
       }
     };
@@ -110,11 +120,11 @@ export function useNFTRegistry() {
       }
     };
 
-    setCreateNFT(() => handleCreateNFT);
+    setCreatePBT(() => handleCreatePBT);
     setUpdateTokenURI(() => handleUpdateTokenURI);
   }, [walletClient, isError, isLoading]);
 
-  const readNFTPassportHistory = useCallback(async (metadata: NFTPassportMetadata): Promise<PassportVersion[]> => {
+  const readPBTPassportHistory = useCallback(async (metadata: PBTPassportMetadata): Promise<PassportVersion[]> => {
     const { tokenId, chainId, address } = metadata;
 
     const publicClient = getPublicClient(chainId);
@@ -127,7 +137,7 @@ export function useNFTRegistry() {
         chainId,
         address: address as Address,
         // TODO put abi on metadata?
-        abi: PermaPassNFTRegistry[chainId as keyof typeof PermaPassNFTRegistry].abi,
+        abi: PermaPassPBTRegistry[chainId as keyof typeof PermaPassPBTRegistry].abi,
         functionName: "changed",
         args: [tokenId],
       });
@@ -137,7 +147,7 @@ export function useNFTRegistry() {
         const events = await publicClient.getContractEvents({
           address: address as Address,
           // TODO put abi on metadata?
-          abi: PermaPassNFTRegistry[chainId as keyof typeof PermaPassNFTRegistry].abi,
+          abi: PermaPassPBTRegistry[chainId as keyof typeof PermaPassPBTRegistry].abi,
           eventName: "TokenURIChanged",
           args: { tokenId },
           fromBlock: previousChange,
@@ -149,7 +159,6 @@ export function useNFTRegistry() {
           passportVersions.push({
             uri: event.args.uri! as ArweaveURI,
             timestamp: block.timestamp,
-            version: event.args.version!,
             sender: event.args.sender!,
           });
         });
@@ -160,16 +169,16 @@ export function useNFTRegistry() {
 
       return passportVersions;
     } catch (error) {
-      console.error("Failed to read NFT passport URI history:", error);
+      console.error("Failed to read PBT passport URI history:", error);
       throw error;
     }
   }, []);
 
   return {
-    nftRegistry: {
-      createNFT,
+    pbtRegistry: {
+      createPBT,
       updateTokenURI,
-      readNFTPassportHistory,
+      readPBTPassportHistory,
     },
   };
 }

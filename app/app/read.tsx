@@ -4,8 +4,8 @@ import { usePassportMetadata } from "../hooks/usePassportMetadata";
 import { useReadQueryParams } from "../hooks/useReadQueryParams";
 import { usePassportHistory } from "../hooks/usePassportHistory";
 import { api } from "../lib/web-api";
-import { useNFTRegistry } from "../hooks/useNFTRegistry";
-import { useDIDRegistry } from "../hooks/useDIDRegistry";
+import { useNFTRegistry } from "../hooks/blockchain/useNFTRegistry";
+import { useDIDRegistry } from "../hooks/blockchain/useDIDRegistry";
 import ViewWithWalletConnector from "../components/ui/ViewWithWalletConnector";
 import { Passport, PassportMetadata } from "../types";
 

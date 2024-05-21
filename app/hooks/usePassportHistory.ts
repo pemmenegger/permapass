@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { Passport, PassportMetadata } from "../types";
-import { useNFTRegistry } from "./useNFTRegistry";
+import { useNFTRegistry } from "./blockchain/useNFTRegistry";
 import { api } from "../lib/web-api";
-import { useDIDRegistry } from "./useDIDRegistry";
+import { useDIDRegistry } from "./blockchain/useDIDRegistry";
 
 interface UsePassportHistoryProps {
   passportMetadata: PassportMetadata | undefined;
