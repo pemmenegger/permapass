@@ -33,7 +33,6 @@ createWeb3Modal({
   projectId,
   chains,
   wagmiConfig,
-  enableAnalytics: true, // Optional - defaults to your Cloud configuration
 });
 
 export default function Layout() {

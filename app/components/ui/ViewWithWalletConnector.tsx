@@ -1,17 +1,28 @@
-import { SafeAreaView, View } from "react-native";
+import { SafeAreaView, View, StyleSheet } from "react-native";
 import { PropsWithChildren } from "react";
-import Container from "./Container";
 import WalletConnector from "../WalletConnector";
+import { commonColors, commonStyles } from "../../styles";
 
 export default function ViewWithWalletConnector(props: PropsWithChildren) {
   return (
-    <Container>
-      <SafeAreaView>
+    <View style={styles.container}>
+      <SafeAreaView style={styles.safeArea}>
         <View style={{ marginBottom: 30 }}>
           <WalletConnector />
         </View>
         {props.children}
       </SafeAreaView>
-    </Container>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: commonColors.bg,
+    paddingHorizontal: commonStyles.marginHorizontal,
+  },
+  safeArea: {
+    flex: 1,
+  },
+});
