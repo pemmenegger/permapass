@@ -13,6 +13,8 @@ import StepFooter from "../../components/stepper/StepFooter";
 import { commonColors, commonStyles } from "../../styles";
 import { usePBTRegistry } from "../../hooks/blockchain/usePBTRegistry";
 import { useHaLoNFCChip } from "../../hooks/useHaloNFCChip";
+import { useModal } from "../../context/InfoModalContext";
+import InfoButton from "../../components/ui/InfoButton";
 
 export default function Page() {
   const { didRegistry } = useDIDRegistry();
@@ -151,8 +153,12 @@ export default function Page() {
             <View style={styles.stepText}>
               <Text style={styles.stepTitle}>Uploading passport data</Text>
               <Text style={styles.stepDescription}>
-                Passport data will be uploaded to <Text style={styles.link}>Arweave</Text>, where it will be permanently
-                stored.
+                Passport data will be uploaded to{" "}
+                <InfoButton
+                  label="Arweave"
+                  description="Arweave is a decentralized storage network that enables permanent storage of data."
+                />
+                , where it will be permanently stored.
               </Text>
             </View>
           </View>
@@ -165,8 +171,12 @@ export default function Page() {
                 Creating {state.userInput.digitalIdentifier?.toUpperCase()} as digital identifier
               </Text>
               <Text style={styles.stepDescription}>
-                An NFT will be minted on the <Text style={styles.link}>Sepolia Blockchain</Text> and will permanently
-                exist there.
+                An NFT will be minted on the{" "}
+                <InfoButton
+                  label="Sepolia Blockchain"
+                  description="Sepolia is a decentralized blockchain network that enables the minting of NFTs. Currently, only Sepolia is supported."
+                />{" "}
+                and will permanently exist there.
               </Text>
             </View>
           </View>
@@ -243,9 +253,5 @@ const styles = StyleSheet.create({
   stepDescription: {
     ...commonStyles.h4,
     marginTop: 4,
-  },
-  link: {
-    color: commonColors.primary,
-    textDecorationLine: "underline",
   },
 });

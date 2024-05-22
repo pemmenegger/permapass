@@ -11,8 +11,9 @@ import { chains } from "../lib/wagmi";
 import { createWeb3Modal, defaultWagmiConfig, Web3Modal } from "@web3modal/wagmi-react-native";
 import { CreationProvider } from "../context/CreationContext";
 import config from "../lib/config";
-import { UrlProvider } from "../context/CreationContext/UrlContext";
+import { UrlProvider } from "../context/UrlContext";
 import { useFonts } from "expo-font";
+import { ModalProvider } from "../context/InfoModalContext";
 
 const projectId = config.WALLETCONNECT_CLOUD_PROJECT_ID;
 
@@ -50,13 +51,15 @@ export default function Layout() {
     <WagmiConfig config={wagmiConfig}>
       <UrlProvider>
         <CreationProvider>
-          <StatusBar style="auto" />
-          <Stack
-            screenOptions={{
-              headerShown: false,
-            }}
-          />
-          <Web3Modal />
+          <ModalProvider>
+            <StatusBar style="auto" />
+            <Stack
+              screenOptions={{
+                headerShown: false,
+              }}
+            />
+            <Web3Modal />
+          </ModalProvider>
         </CreationProvider>
       </UrlProvider>
     </WagmiConfig>

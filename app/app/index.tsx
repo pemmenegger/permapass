@@ -11,6 +11,7 @@ import { QRCodeIcon } from "../components/icons/QRCodeIcon";
 import { NFCIcon } from "../components/icons/NFCIcon";
 import NfcManager, { NfcTech } from "react-native-nfc-manager";
 import { execHaloCmdRN } from "@arx-research/libhalo/api/react-native.js";
+import InfoButton from "../components/ui/InfoButton";
 
 NfcManager.start();
 

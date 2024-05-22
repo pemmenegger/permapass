@@ -1,7 +1,7 @@
 import { parse } from "expo-linking";
 import { useState, useEffect } from "react";
 import { ArweaveURI } from "../types";
-import { useURL } from "../context/CreationContext/UrlContext";
+import { useURL } from "../context/UrlContext";
 
 export function useReadQueryParams() {
   const [metadataURI, setMetadataURI] = useState<ArweaveURI | undefined>(undefined);
