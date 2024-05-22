@@ -14,6 +14,7 @@ import config from "../lib/config";
 import { UrlProvider } from "../context/UrlContext";
 import { useFonts } from "expo-font";
 import { ModalProvider } from "../context/InfoModalContext";
+import { PropsWithChildren } from "react";
 
 const projectId = config.WALLETCONNECT_CLOUD_PROJECT_ID;
 
@@ -36,6 +37,16 @@ createWeb3Modal({
   wagmiConfig,
 });
 
+const Providers = ({ children }: PropsWithChildren) => {
+  return (
+    <UrlProvider>
+      <CreationProvider>
+        <ModalProvider>{children}</ModalProvider>
+      </CreationProvider>
+    </UrlProvider>
+  );
+};
+
 export default function Layout() {
   const [fontsLoaded] = useFonts({
     "Inter-Regular": require("../assets/fonts/Inter-Regular.ttf"),
@@ -49,19 +60,15 @@ export default function Layout() {
 
   return (
     <WagmiConfig config={wagmiConfig}>
-      <UrlProvider>
-        <CreationProvider>
-          <ModalProvider>
-            <StatusBar style="auto" />
-            <Stack
-              screenOptions={{
-                headerShown: false,
-              }}
-            />
-            <Web3Modal />
-          </ModalProvider>
-        </CreationProvider>
-      </UrlProvider>
+      <Providers>
+        <StatusBar style="auto" />
+        <Stack
+          screenOptions={{
+            headerShown: false,
+          }}
+        />
+        <Web3Modal />
+      </Providers>
     </WagmiConfig>
   );
 }

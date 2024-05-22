@@ -13,7 +13,7 @@ export default function StepFooter({ handleNext, isInvalid }: StepFooterProps) {
   return (
     <View style={styles.container}>
       <View style={styles.leftButtonContainer}>
-        <DefaultButton type="secondary" text="Back" onPress={router.back} />
+        <DefaultButton type="secondary" text="Previous" onPress={router.back} />
       </View>
       <View style={styles.rightButtonContainer}>
         <DefaultButton type="primary" text="Next" onPress={handleNext} disabled={isInvalid} />

@@ -1,6 +1,4 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, Button } from "react-native";
-import ViewWithWalletConnector from "../components/ui/ViewWithWalletConnector";
+import React from "react";
 import StepOption from "../components/stepper/StepOption";
 import { router } from "expo-router";
 import { commonColors } from "../styles";
@@ -11,7 +9,7 @@ import { QRCodeIcon } from "../components/icons/QRCodeIcon";
 import { NFCIcon } from "../components/icons/NFCIcon";
 import NfcManager, { NfcTech } from "react-native-nfc-manager";
 import { execHaloCmdRN } from "@arx-research/libhalo/api/react-native.js";
-import InfoButton from "../components/ui/InfoButton";
+import ViewWithHeader from "../components/ViewWithHeader";
 
 NfcManager.start();
 
@@ -27,7 +25,7 @@ export default function Page() {
   };
 
   return (
-    <ViewWithWalletConnector withScrollView>
+    <ViewWithHeader useScrollView>
       <StepTitle text="Welcome to PermaPass" highlight="PermaPass" />
       <StepSubtitle text="A permanent passport system for construction products using decentralized technologies." />
       <StepOption
@@ -49,6 +47,6 @@ export default function Page() {
         onPress={readNdef}
         Icon={<NFCIcon height={48} strokeWidth={1.1} color={commonColors.black} />}
       />
-    </ViewWithWalletConnector>
+    </ViewWithHeader>
   );
 }

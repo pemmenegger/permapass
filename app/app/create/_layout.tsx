@@ -1,11 +1,11 @@
 import { Slot, Stack } from "expo-router";
-import ViewWithWalletConnector from "../../components/ui/ViewWithWalletConnector";
+import ViewWithHeader from "../../components/ViewWithHeader";
 
 export default function Layout() {
   return (
-    <ViewWithWalletConnector>
-      {/* <Stack screenOptions={{ animation: "slide_from_right", headerShown: false }} /> */}
+    <ViewWithHeader>
+      {/* <Stack screenOptions={{ animation: "fade", headerShown: false }} /> */}
       <Slot />
-    </ViewWithWalletConnector>
+    </ViewWithHeader>
   );
 }

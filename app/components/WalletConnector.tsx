@@ -21,7 +21,7 @@ export default function WalletConnector() {
   const networkName = getNetworkName(selectedNetworkId);
 
   // only 4 decimals
-  const balance = data ? `${data.formatted.slice(0, -data.decimals + 4)} ${data.symbol}` : 0;
+  const balance = data ? `${data.formatted.slice(0, -data.decimals + 4)}...` : 0;
 
   return (
     <Pressable style={styles.button} onPress={async () => await open()}>
@@ -32,7 +32,7 @@ export default function WalletConnector() {
             <Text style={styles.text}>{shortenedAddress}</Text>
           </View>
           <View>
-            <Text style={styles.subtext}>Balance</Text>
+            <Text style={styles.subtext}>{data?.symbol}</Text>
             <Text style={styles.text}>{balance}</Text>
           </View>
           <View>

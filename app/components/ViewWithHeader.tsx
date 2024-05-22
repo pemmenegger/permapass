@@ -1,29 +1,25 @@
 import React from "react";
 import { SafeAreaView, View, StyleSheet, ScrollView } from "react-native";
-import WalletConnector from "../WalletConnector";
-import { commonColors, commonStyles } from "../../styles";
+import { commonColors, commonStyles } from "../styles";
+import Header from "./Header";
 
-export interface ViewWithWalletConnectorProps extends React.PropsWithChildren {
-  withScrollView?: boolean;
+export interface ViewWithHeaderProps extends React.PropsWithChildren {
+  useScrollView?: boolean;
 }
 
-export default function ViewWithWalletConnector(props: ViewWithWalletConnectorProps) {
+export default function ViewWithHeader({ useScrollView, children }: ViewWithHeaderProps) {
   return (
     <View style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
-        {props.withScrollView ? (
+        {useScrollView ? (
           <ScrollView contentContainerStyle={styles.scrollViewContent}>
-            <View style={styles.walletConnector}>
-              <WalletConnector />
-            </View>
-            <View style={styles.children}>{props.children}</View>
+            <Header />
+            <View style={styles.children}>{children}</View>
           </ScrollView>
         ) : (
           <View style={styles.content}>
-            <View style={styles.walletConnector}>
-              <WalletConnector />
-            </View>
-            <View style={styles.children}>{props.children}</View>
+            <Header />
+            <View style={styles.children}>{children}</View>
           </View>
         )}
       </SafeAreaView>
@@ -38,10 +34,6 @@ const styles = StyleSheet.create({
   },
   safeArea: {
     flex: 1,
-  },
-  walletConnector: {
-    marginTop: 12,
-    marginBottom: 30,
   },
   children: {
     flex: 1,

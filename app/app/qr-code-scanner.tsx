@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Text, View, StyleSheet, Button, TouchableOpacity } from "react-native";
 import { BarCodeScanner } from "expo-barcode-scanner";
 import { router } from "expo-router";
-import { ChevronLeftIcon } from "../components/icons/ChevronLeftIcon";
 import { CrossIcon } from "../components/icons/CrossIcon";
 
 export default function Page() {

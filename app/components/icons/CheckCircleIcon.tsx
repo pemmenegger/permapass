@@ -1,9 +1,9 @@
 import { IconProps } from "../../types";
 import Svg, { Path } from "react-native-svg";
 
-export const ChevronLeftIcon = (props: IconProps) => {
-  const width = 8;
-  const height = 14;
+export const CheckCircleIcon = (props: IconProps) => {
+  const width = 22;
+  const height = 22;
   const aspectRatio = width / height;
 
   return (
@@ -15,7 +15,7 @@ export const ChevronLeftIcon = (props: IconProps) => {
       preserveAspectRatio="xMidYMid meet"
     >
       <Path
-        d="M7 13L1 7L7 1"
+        d="M6.5 11L9.5 14L15.5 8M21 11C21 16.5228 16.5228 21 11 21C5.47715 21 1 16.5228 1 11C1 5.47715 5.47715 1 11 1C16.5228 1 21 5.47715 21 11Z"
         stroke={props.color}
         strokeWidth={props.strokeWidth || 1}
         strokeLinecap="round"

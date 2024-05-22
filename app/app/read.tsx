@@ -1,13 +1,13 @@
 import React, { useState } from "react";
-import { Button, Text, View } from "react-native";
+import { Button, Text } from "react-native";
 import { usePassportMetadata } from "../hooks/usePassportMetadata";
 import { useReadQueryParams } from "../hooks/useReadQueryParams";
 import { usePassportHistory } from "../hooks/usePassportHistory";
 import { api } from "../lib/web-api";
 import { useNFTRegistry } from "../hooks/blockchain/useNFTRegistry";
 import { useDIDRegistry } from "../hooks/blockchain/useDIDRegistry";
-import ViewWithWalletConnector from "../components/ui/ViewWithWalletConnector";
 import { Passport, PassportMetadata } from "../types";
+import ViewWithHeader from "../components/ViewWithHeader";
 
 const MetadataDisplay = ({
   isLoading,
@@ -81,11 +81,11 @@ export default function Page() {
   };
 
   return (
-    <ViewWithWalletConnector>
+    <ViewWithHeader>
       <MetadataDisplay isLoading={isMetadataLoading} error={metadataError} metadata={passportMetadata} />
       <Text>-----</Text>
       <HistoryDisplay isLoading={isPassportHistoryLoading} error={passportHistoryError} history={passportHistory} />
       <Button title="Update" onPress={update} />
-    </ViewWithWalletConnector>
+    </ViewWithHeader>
   );
 }
