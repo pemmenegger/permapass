@@ -60,17 +60,17 @@ export default function Page() {
     if (!didRegistry.addDIDService) return console.log("addDIDService not available");
 
     const passport = passportHistory[0];
-    const passportURI = await api.arweave.uploadPassport({
+    const passportDataURI = await api.arweave.uploadPassport({
       name: `${passport.name} UPDATED`,
       condition: `${passport.condition} UPDATED`,
     });
 
     switch (passportMetadata.type) {
       case "nft":
-        await nftRegistry.updateTokenURI(passportMetadata.tokenId, passportURI);
+        await nftRegistry.updateTokenURI(passportMetadata.tokenId, passportDataURI);
         break;
       case "did":
-        await didRegistry.addDIDService(passportMetadata.did, passportURI);
+        await didRegistry.addDIDService(passportMetadata.did, passportDataURI);
         break;
       default:
         throw new Error(`Unknown passport type`);

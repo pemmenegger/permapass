@@ -11,7 +11,7 @@ const hardhat = defineChain({
   },
 });
 
-const chains = [sepolia, hardhat];
+const chains = [hardhat, sepolia];
 
 // const walletClient = createWalletClient({
 //   account: privateKeyToAccount(config.PRIVATE_KEY as Address),

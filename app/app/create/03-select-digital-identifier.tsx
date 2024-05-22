@@ -17,7 +17,7 @@ export default function Page() {
   const isInvalid = !digitalIdentifier;
 
   const handleNext = async () => {
-    dispatch({ type: "DIGITAL_IDENTIFIER_CHANGED", digitalIdentifier: digitalIdentifier! });
+    dispatch({ type: "USER_INPUT_CHANGED", digitalIdentifier: digitalIdentifier! });
     router.push("/create/04-summary-and-creation");
   };
 

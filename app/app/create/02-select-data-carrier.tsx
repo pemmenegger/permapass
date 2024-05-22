@@ -15,7 +15,7 @@ export default function Page() {
   const isInvalid = !dataCarrier;
 
   const handleNext = async () => {
-    dispatch({ type: "DATA_CARRIER_CHANGED", dataCarrier: dataCarrier! });
+    dispatch({ type: "USER_INPUT_CHANGED", dataCarrier: dataCarrier! });
     router.push("/create/03-select-digital-identifier");
   };
 

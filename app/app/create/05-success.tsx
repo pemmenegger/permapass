@@ -6,3 +6,17 @@ export default function Page() {
 }
 
 const styles = StyleSheet.create({});
+
+{
+  /* <Button title="Create" onPress={handleCreation} />
+      {creationProgress.length > 0 && (
+        <>
+          <Text>Creation Progress:</Text>
+          {creationProgress.map((step, i) => (
+            <Text key={i}>{step}</Text>
+          ))}
+        </>
+      )}
+      {urlToEncode && state.userInput.dataCarrier === "qr" && <QRCode value={urlToEncode} size={200} />}
+      {urlToEncode && <Text>urlToEncode: {urlToEncode}</Text>} */
+}

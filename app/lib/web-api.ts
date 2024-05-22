@@ -43,16 +43,16 @@ export const api = {
   arweave: {
     uploadPassport: async (passport: Passport) => {
       const txid = await uploadToArweave(passport);
-      const passportURI = fromTxidToURI(txid);
-      return passportURI;
+      const passportDataURI = fromTxidToURI(txid);
+      return passportDataURI;
     },
     uploadPassportMetadata: async (metadata: PassportMetadata) => {
       const txid = await uploadToArweave(metadata);
       const metadataURI = fromTxidToURI(txid);
       return metadataURI;
     },
-    fetchPassport: async (passportURI: ArweaveURI): Promise<Passport> => {
-      const passportURL = fromURIToURL(passportURI);
+    fetchPassport: async (passportDataURI: ArweaveURI): Promise<Passport> => {
+      const passportURL = fromURIToURL(passportDataURI);
       const data = await fetchUrl(passportURL);
       return JSON.parse(data) as Passport;
     },

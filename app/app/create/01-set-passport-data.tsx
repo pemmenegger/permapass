@@ -15,7 +15,7 @@ export default function Page() {
 
   const handleNext = async () => {
     dispatch({
-      type: "PASSPORT_DATA_CHANGED",
+      type: "USER_INPUT_CHANGED",
       passportData: { name, condition },
     });
     router.push("/create/02-select-data-carrier");

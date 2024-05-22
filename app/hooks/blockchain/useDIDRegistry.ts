@@ -12,7 +12,7 @@ export function useDIDRegistry() {
   const { data: walletClient, isError, isLoading } = useWalletClient();
   const [createDID, setCreateDID] = useState<(() => Promise<DIDPassportMetadata>) | undefined>(undefined);
   const [addDIDService, setAddDIDService] = useState<
-    ((didUrl: string, passportURI: ArweaveURI) => Promise<void>) | undefined
+    ((didUrl: string, passportDataURI: ArweaveURI) => Promise<void>) | undefined
   >(undefined);
 
   useEffect(() => {
@@ -89,11 +89,11 @@ export function useDIDRegistry() {
       }
     };
 
-    const handleAddDIDService = async (didUrl: string, passportURI: ArweaveURI) => {
+    const handleAddDIDService = async (didUrl: string, passportDataURI: ArweaveURI) => {
       const identity = didUrl.split(":")[3];
 
       const key = "did/svc/ProductPassport";
-      const value = passportURI;
+      const value = passportDataURI;
 
       const attrNameBytes = stringToBytes(key);
       const attrNameBytesPadded = pad(attrNameBytes, { size: 32, dir: "right" });

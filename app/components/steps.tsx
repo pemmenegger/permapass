@@ -1,6 +1,9 @@
+import { useCreation } from "../context/CreationContext";
 import InfoButton from "./ui/InfoButton";
 
-export const UploadPassportDataStep = ({ isLoading, isCompleted }: { isLoading: boolean; isCompleted: boolean }) => {
+export const UploadPassportDataStep = () => {
+  const { state } = useCreation();
+
   return {
     title: "Uploading passport data",
     description: (
@@ -13,12 +16,14 @@ export const UploadPassportDataStep = ({ isLoading, isCompleted }: { isLoading: 
         , where it will be permanently stored.
       </>
     ),
-    isLoading,
-    isCompleted,
+    isLoading: state.status === "CREATION_STARTED",
+    isCompleted: state.status === "PASSPORT_DATA_UPLOADED",
   };
 };
 
-export const CreateNFTStep = ({ isLoading, isCompleted }: { isLoading: boolean; isCompleted: boolean }) => {
+export const CreateNFTStep = () => {
+  const { state } = useCreation();
+
   return {
     title: "Creating NFT as digital identifier",
     description: (
@@ -31,12 +36,14 @@ export const CreateNFTStep = ({ isLoading, isCompleted }: { isLoading: boolean; 
         and will permanently exist there.
       </>
     ),
-    isLoading,
-    isCompleted,
+    isLoading: state.userInput.digitalIdentifier === "nft" && state.status === "PASSPORT_DATA_UPLOADED",
+    isCompleted: state.userInput.digitalIdentifier === "nft" && state.status === "DIGITAL_IDENTIFIER_CREATED",
   };
 };
 
-export const CreatePBTStep = ({ isLoading, isCompleted }: { isLoading: boolean; isCompleted: boolean }) => {
+export const CreatePBTStep = () => {
+  const { state } = useCreation();
+
   return {
     title: "Creating PBT as digital identifier",
     description: (
@@ -49,25 +56,49 @@ export const CreatePBTStep = ({ isLoading, isCompleted }: { isLoading: boolean; 
         and will permanently exist there.
       </>
     ),
-    isLoading,
-    isCompleted,
+    isLoading: state.userInput.digitalIdentifier === "pbt" && state.status === "PASSPORT_DATA_UPLOADED",
+    isCompleted: state.userInput.digitalIdentifier === "pbt" && state.status === "DIGITAL_IDENTIFIER_CREATED",
   };
 };
 
-export const GenerateQRCodeStep = ({ isLoading, isCompleted }: { isLoading: boolean; isCompleted: boolean }) => {
+export const CreateDIDStep = () => {
+  const { state } = useCreation();
+
+  return {
+    title: "Creating DID as digital identifier",
+    description: (
+      <>
+        A PBT will be created on the{" "}
+        <InfoButton
+          label="Sepolia Blockchain"
+          description="Sepolia is a decentralized blockchain network that enables the minting of PBTs. Currently, only Sepolia is supported."
+        />{" "}
+        and will permanently exist there.
+      </>
+    ),
+    isLoading: state.userInput.digitalIdentifier === "did" && state.status === "PASSPORT_DATA_UPLOADED",
+    isCompleted: state.userInput.digitalIdentifier === "did" && state.status === "DIGITAL_IDENTIFIER_CREATED",
+  };
+};
+
+export const GenerateQRCodeStep = () => {
+  const { state } = useCreation();
+
   return {
     title: "Generating QR Code as data carrier",
     description: <>A QR Code linking to the digital identifier and passport data will be generated.</>,
-    isLoading,
-    isCompleted,
+    isLoading: state.userInput.dataCarrier === "qr" && state.status === "DIGITAL_IDENTIFIER_CREATED",
+    isCompleted: state.status === "QR_CODE_GENERATED",
   };
 };
 
-export const WriteHaLoChipStep = ({ isLoading, isCompleted }: { isLoading: boolean; isCompleted: boolean }) => {
+export const WriteHaLoChipStep = () => {
+  const { state } = useCreation();
+
   return {
     title: "Writing to HaLo NFC Chip",
     description: <>The passport data will be written to the HaLo NFC chip.</>,
-    isLoading,
-    isCompleted,
+    isLoading: state.userInput.dataCarrier === "nfc" && state.status === "QR_CODE_GENERATED",
+    isCompleted: state.status === "HALO_NFC_WRITTEN",
   };
 };

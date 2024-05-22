@@ -1,4 +1,4 @@
-import { PassportCreate, DataCarrierType, DigitalIdentifierType } from "../../types";
+import { PassportCreate, DataCarrierType, DigitalIdentifierType, ArweaveURI } from "../../types";
 
 export type CreationState = {
   userInput: {
@@ -6,61 +6,72 @@ export type CreationState = {
     dataCarrier?: DataCarrierType;
     digitalIdentifier?: DigitalIdentifierType;
   };
+  requirementNotMetMessage?: string;
+  results: {
+    passportDataURI?: ArweaveURI;
+    dataCarrierURL?: string;
+  };
   status?:
     | "CREATION_STARTED"
     | "PASSPORT_DATA_UPLOADED"
+    | "DID_OWNER_CHANGED"
+    | "DID_SERVICE_ADDED"
     | "DIGITAL_IDENTIFIER_CREATED"
-    | "DATA_CARRIER_SET_UP"
+    | "QR_CODE_GENERATED"
+    | "HALO_NFC_WRITTEN"
     | "CREATION_ERROR";
   errorMessage?: string;
 };
 
 export type CreationAction =
   | {
-      type: "PASSPORT_DATA_CHANGED";
-      passportData: PassportCreate;
+      type: "USER_INPUT_CHANGED";
+      passportData?: PassportCreate;
+      dataCarrier?: DataCarrierType;
+      digitalIdentifier?: DigitalIdentifierType;
     }
   | {
-      type: "DATA_CARRIER_CHANGED";
-      dataCarrier: DataCarrierType;
+      type: "REQUIREMENT_NOT_MET";
+      requirementNotMetMessage?: string;
     }
   | {
-      type: "DIGITAL_IDENTIFIER_CHANGED";
-      digitalIdentifier: DigitalIdentifierType;
+      type: "RESULTS_CHANGED";
+      passportDataURI?: ArweaveURI;
+      dataCarrierURL?: string;
     }
   | {
       type: "CREATION_STATUS_CHANGED";
       status: CreationState["status"];
     }
   | {
-      type: "CREATION_ERROR";
-      errorMessage?: string;
+      type: "CREATION_ERROR_OCCURRED";
+      errorMessage: string;
     };
 
 export function creationReducer(state: CreationState, action: CreationAction): CreationState {
   switch (action.type) {
-    case "PASSPORT_DATA_CHANGED":
+    case "USER_INPUT_CHANGED":
       return {
         ...state,
         userInput: {
           ...state.userInput,
-          passportData: action.passportData,
+          passportData: action.passportData ? action.passportData : state.userInput.passportData,
+          dataCarrier: action.dataCarrier ? action.dataCarrier : state.userInput.dataCarrier,
+          digitalIdentifier: action.digitalIdentifier ? action.digitalIdentifier : state.userInput.digitalIdentifier,
         },
       };
-    case "DATA_CARRIER_CHANGED":
+    case "REQUIREMENT_NOT_MET":
       return {
         ...state,
-        userInput: {
-          ...state.userInput,
-          dataCarrier: action.dataCarrier,
-        },
+        requirementNotMetMessage: action.requirementNotMetMessage,
       };
-    case "DIGITAL_IDENTIFIER_CHANGED":
+    case "RESULTS_CHANGED":
       return {
         ...state,
-        userInput: {
-          ...state.userInput,
-          digitalIdentifier: action.digitalIdentifier,
+        results: {
+          ...state.results,
+          passportDataURI: action.passportDataURI ? action.passportDataURI : state.results.passportDataURI,
+          dataCarrierURL: action.dataCarrierURL ? action.dataCarrierURL : state.results.dataCarrierURL,
         },
       };
     case "CREATION_STATUS_CHANGED":
@@ -68,7 +79,7 @@ export function creationReducer(state: CreationState, action: CreationAction): C
         ...state,
         status: action.status,
       };
-    case "CREATION_ERROR":
+    case "CREATION_ERROR_OCCURRED":
       return {
         ...state,
         status: "CREATION_ERROR",

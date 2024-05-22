@@ -3,7 +3,6 @@ import { commonColors, commonStyles } from "../../styles";
 import { LoadingSpinnerIcon } from "../icons/LoadingSpinnerIcon";
 import { CheckCircleIcon } from "../icons/CheckCircleIcon";
 import React from "react";
-import InfoButton from "../ui/InfoButton";
 
 interface StepProps {
   title: string;
@@ -15,61 +14,6 @@ interface StepProps {
 interface StepOverviewProps {
   steps: StepProps[];
 }
-
-const allSteps = {
-  uploadData: {
-    title: "Uploading passport data",
-    description: (
-      <>
-        Passport data will be uploaded to{" "}
-        <InfoButton
-          label="Arweave"
-          description="Arweave is a decentralized storage network that enables permanent storage of data."
-        />
-        , where it will be permanently stored.
-      </>
-    ),
-  },
-  nft: {
-    title: "Creating NFT as digital identifier",
-    description: (
-      <>
-        An NFT will be minted on the{" "}
-        <InfoButton
-          label="Sepolia Blockchain"
-          description="Sepolia is a decentralized blockchain network that enables the minting of NFTs. Currently, only Sepolia is supported."
-        />{" "}
-        and will permanently exist there.
-      </>
-    ),
-  },
-  pbt: {
-    title: "Creating PBT as digital identifier",
-    description: (
-      <>
-        A PBT will be created on the{" "}
-        <InfoButton
-          label="Sepolia Blockchain"
-          description="Sepolia is a decentralized blockchain network that enables the minting of PBTs. Currently, only Sepolia is supported."
-        />{" "}
-        and will permanently exist there.
-      </>
-    ),
-  },
-  qr: {
-    title: "Generating QR Code as data carrier",
-    description: <>A QR Code linking to the digital identifier and passport data will be generated.</>,
-  },
-  nfc: {
-    title: "Setting up HaLo NFC Chip as data carrier",
-    description: (
-      <>
-        The HaLo NFC Chip will be programmed with the digital identifier that links to the passport data. This chip can
-        be scanned by any NFC-enabled device to access the passport data.
-      </>
-    ),
-  },
-};
 
 export default function StepOverview({ steps }: StepOverviewProps) {
   return (

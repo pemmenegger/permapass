@@ -14,8 +14,10 @@ const initialState: CreationState = {
     dataCarrier: undefined,
     digitalIdentifier: undefined,
   },
-  status: undefined,
-  errorMessage: undefined,
+  results: {
+    passportDataURI: undefined,
+    dataCarrierURL: undefined,
+  },
 };
 
 function CreationProvider({ children }: PropsWithChildren) {

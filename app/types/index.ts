@@ -1,7 +1,5 @@
 import { Address } from "viem";
 
-export type PassportType = "nft" | "did";
-
 export type PassportMetadata = NFTPassportMetadata | DIDPassportMetadata | PBTPassportMetadata;
 
 export type PBTPassportMetadata = {
