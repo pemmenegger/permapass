@@ -2,23 +2,18 @@ import React from "react";
 import { StyleSheet, Text } from "react-native";
 import { commonColors } from "../../styles";
 import { useModal } from "../../context/InfoModalContext";
-import { InfoModal } from "../../context/InfoModalContext/modals";
+import { InfoModal, ModalProps } from "../../context/InfoModalContext/modals";
 
-interface InfoButtonProps {
-  label: string;
-  description: string;
-}
-
-export default function InfoButton({ label, description }: InfoButtonProps) {
+export default function InfoButton({ title, content }: ModalProps) {
   const { openModal } = useModal();
 
   const onPress = () => {
-    openModal(<InfoModal title={label} description={<Text style={styles.description}>{description}</Text>} />);
+    openModal(<InfoModal title={title} content={content} />);
   };
 
   return (
     <Text style={styles.link} onPress={onPress}>
-      {label}
+      {title}
     </Text>
   );
 }

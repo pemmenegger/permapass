@@ -17,62 +17,50 @@ export function useDIDRegistry() {
 
   useEffect(() => {
     if (!walletClient) {
-      // console.error("useDIDRegistry - walletClient not available");
       return;
     }
 
     const chainId = walletClient.chain.id;
     const chainName = walletClient.chain.name;
-    const contractInfo = PermaPassDIDRegistry[chainId as keyof typeof PermaPassDIDRegistry];
 
-    if (!contractInfo) {
-      console.error(`useDIDRegistry - Contract info not found for chain id: ${chainId}`);
-      return;
-    }
+    const contractInfo = PermaPassDIDRegistry[chainId as keyof typeof PermaPassDIDRegistry];
+    if (!contractInfo) throw new Error(`useDIDRegistry - Contract info not found for chain id: ${chainId}`);
 
     const publicClient = getPublicClient(chainId);
-    if (!publicClient) {
-      throw new Error(`Unsupported chain id: ${chainId}`);
-    }
+    if (!publicClient) throw new Error(`useDIDRegistry - Public client unsupported chain id: ${chainId}`);
 
     const handleCreateDID = async () => {
       try {
         const privateKey = generatePrivateKey();
         const account = privateKeyToAccount(privateKey as Address);
+        const identity = account.address;
         const identityOwner = account.address;
-        const registryAddress = contractInfo.address;
+        const newOwner = walletClient.account.address;
 
         const nonce = await readContract({
           chainId: chainId,
-          address: registryAddress,
+          address: contractInfo.address,
           abi: contractInfo.abi,
           functionName: "nonce",
           args: [identityOwner],
         });
 
-        const identity = account.address;
-        const newOwner = walletClient.account.address;
-
         const msgHash = keccak256(
           encodePacked(
             ["bytes1", "bytes1", "address", "uint", "address", "string", "address"],
-            ["0x19", "0x00", registryAddress, nonce, identity, "changeOwner", newOwner]
+            ["0x19", "0x00", contractInfo.address, nonce, identity, "changeOwner", newOwner]
           )
         );
 
-        const sig = await sign({ hash: msgHash, privateKey });
+        const signature = await sign({ hash: msgHash, privateKey });
 
         const txHash = await walletClient.writeContract({
           address: contractInfo.address,
           abi: contractInfo.abi,
           functionName: "changeOwnerSigned",
-          args: [identity, Number(sig.v), sig.r, sig.s, newOwner],
+          args: [identity, Number(signature.v), signature.r, signature.s, newOwner],
         });
-
-        console.log(`createDID transaction Hash: ${txHash}`);
-
         await publicClient.waitForTransactionReceipt({ hash: txHash });
-        console.log("createDID transaction confirmed");
 
         const metadata: DIDPassportMetadata = {
           type: "did",
@@ -108,11 +96,7 @@ export function useDIDRegistry() {
         functionName: "setAttribute",
         args: [identity as Address, attrName as Address, attrValue as Address, BigInt(86400)],
       });
-
-      console.log(`updateDIDService transaction Hash: ${txHash}`);
-
       await publicClient.waitForTransactionReceipt({ hash: txHash });
-      console.log("updateDIDService transaction confirmed");
     };
 
     setCreateDID(() => handleCreateDID);
@@ -123,9 +107,7 @@ export function useDIDRegistry() {
     const { did, chainId, address } = metadata;
 
     const publicClient = getPublicClient(chainId);
-    if (!publicClient) {
-      throw new Error(`Unsupported chain id: ${chainId}`);
-    }
+    if (!publicClient) throw new Error(`useDIDRegistry - Public client unsupported chain id: ${chainId}`);
 
     const identity = fromDIDToIdentity(did);
 
@@ -157,10 +139,8 @@ export function useDIDRegistry() {
         for (const event of events) {
           const name = fromHex(event.args.name!, "string").replace(/\0/g, "");
           if (name !== "did/svc/ProductPassport") {
-            console.log("Attribute name is not ProductPassport, skipping.");
             continue;
           }
-
           passportVersions.push({
             uri: fromHex(event.args.value!, "string") as ArweaveURI,
             timestamp: block.timestamp,

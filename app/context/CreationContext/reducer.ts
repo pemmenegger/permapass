@@ -17,8 +17,7 @@ export type CreationState = {
     | "DID_OWNER_CHANGED"
     | "DID_SERVICE_ADDED"
     | "DIGITAL_IDENTIFIER_CREATED"
-    | "QR_CODE_GENERATED"
-    | "HALO_NFC_WRITTEN"
+    | "CREATION_DONE"
     | "CREATION_ERROR";
   errorMessage?: string;
 };

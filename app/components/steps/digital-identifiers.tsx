@@ -1,8 +1,7 @@
-import { Address } from "viem";
 import { useCreation } from "../../context/CreationContext";
 import { CreationAction, CreationState } from "../../context/CreationContext/reducer";
 import { useModal } from "../../context/InfoModalContext";
-import { OpenWalletModal } from "../../context/InfoModalContext/modals";
+import { ConfirmModal } from "../../context/InfoModalContext/modals";
 import { useDIDRegistry } from "../../hooks/blockchain/useDIDRegistry";
 import { useNFTRegistry } from "../../hooks/blockchain/useNFTRegistry";
 import { usePBTRegistry } from "../../hooks/blockchain/usePBTRegistry";
@@ -10,9 +9,16 @@ import { useAsyncEffect } from "../../hooks/useAsyncEffect";
 import { HaLoNFCChipSignatureOutput, useHaLoNFCChip } from "../../hooks/useHaloNFCChip";
 import { encodeDataCarrierURL } from "../../lib/utils";
 import { api } from "../../lib/web-api";
-import { ArweaveURI, PassportMetadata } from "../../types";
+import {
+  ArweaveURI,
+  DIDPassportMetadata,
+  NFTPassportMetadata,
+  PBTPassportMetadata,
+  PassportMetadata,
+} from "../../types";
 import InfoButton from "../ui/InfoButton";
 import { Text } from "react-native";
+import { useState } from "react";
 
 const createDigitalIdentifier = async (
   createFn: (passportDataURI: ArweaveURI) => Promise<PassportMetadata>,
@@ -45,16 +51,17 @@ const createDigitalIdentifier = async (
 };
 
 export const CreateNFTStep = () => {
+  const [isCompleted, setIsCompleted] = useState(false);
   const { state, dispatch } = useCreation();
   const { nftRegistry } = useNFTRegistry();
   const { openModal } = useModal();
 
   const createNFT = (passportDataURI: ArweaveURI) => {
-    return new Promise<PassportMetadata>((resolve, reject) => {
+    return new Promise<NFTPassportMetadata>((resolve, reject) => {
       openModal(
-        <OpenWalletModal
+        <ConfirmModal
           title="Creating NFTs cost gas fees"
-          description={<Text>Do you want to pay for the gas fees to mint the NFT with your wallet?</Text>}
+          content="Do you want to pay for the gas fees to mint the NFT with your wallet?"
           onConfirm={async () => {
             try {
               const passportMetadata = await nftRegistry.createNFT!(passportDataURI);
@@ -64,14 +71,20 @@ export const CreateNFTStep = () => {
               throw new Error("Failed to create NFT");
             }
           }}
+          onReject={async () => {
+            dispatch({ type: "CREATION_ERROR_OCCURRED", errorMessage: "User rejected gas fees" });
+          }}
         />
       );
     });
   };
 
   useAsyncEffect(async () => {
-    if (state.status === "PASSPORT_DATA_UPLOADED" && state.userInput.digitalIdentifier === "nft") {
+    if (state.userInput.digitalIdentifier === "nft" && state.status === "PASSPORT_DATA_UPLOADED") {
       await createDigitalIdentifier(createNFT, state, dispatch);
+    }
+    if (state.userInput.digitalIdentifier === "nft" && state.status === "DIGITAL_IDENTIFIER_CREATED") {
+      setIsCompleted(true);
     }
   }, [state.status, state.userInput.digitalIdentifier]);
 
@@ -81,18 +94,19 @@ export const CreateNFTStep = () => {
       <>
         An NFT will be minted on the{" "}
         <InfoButton
-          label="Sepolia Blockchain"
-          description="Sepolia is a decentralized blockchain network that enables the minting of NFTs. Currently, only Sepolia is supported."
+          title="Sepolia Blockchain"
+          content="Sepolia is a decentralized blockchain network that enables the minting of NFTs. Currently, only Sepolia is supported."
         />{" "}
         and will permanently exist there.
       </>
     ),
     isLoading: state.userInput.digitalIdentifier === "nft" && state.status === "PASSPORT_DATA_UPLOADED",
-    isCompleted: state.userInput.digitalIdentifier === "nft" && state.status === "DIGITAL_IDENTIFIER_CREATED",
+    isCompleted,
   };
 };
 
 export const CreatePBTStep = () => {
+  const [isCompleted, setIsCompleted] = useState(false);
   const { state, dispatch } = useCreation();
   const { pbtRegistry } = usePBTRegistry();
   const { haloNFCChip } = useHaLoNFCChip();
@@ -101,22 +115,13 @@ export const CreatePBTStep = () => {
   const computeSignatureFromChip = () => {
     return new Promise<HaLoNFCChipSignatureOutput>((resolve, reject) => {
       openModal(
-        <OpenWalletModal
+        <ConfirmModal
           title="Halo NFC chip signature"
-          description={
-            <Text>
-              Before a PBT can be minted, a signature from the HaLo NFC chip is required to map a chip on a blockchain.
-              Click the button below and tap your smartphone on the HaLo NFC chip to obtain this signature.
-            </Text>
+          content={
+            "Before a PBT can be minted, a signature from the HaLo NFC chip is required to map a chip on a blockchain. Click the button below and tap your smartphone on the HaLo NFC chip to obtain this signature."
           }
           onConfirm={async () => {
             try {
-              console.log("Computing signature from chip");
-              // const result: HaLoNFCChipSignatureOutput = {
-              //   chipAddress: "0x123",
-              //   signatureFromChip: "0x456",
-              //   blockNumberUsedInSig: 123n,
-              // };
               const result = await haloNFCChip.computeSignatureFromChip!();
               if (!result) {
                 throw new Error();
@@ -127,17 +132,20 @@ export const CreatePBTStep = () => {
               throw new Error("Failed to compute signature from chip");
             }
           }}
+          onReject={async () => {
+            dispatch({ type: "CREATION_ERROR_OCCURRED", errorMessage: "User rejected signature from chip" });
+          }}
         />
       );
     });
   };
 
   const createPBT = async (passportDataURI: ArweaveURI, chipSignature: HaLoNFCChipSignatureOutput) => {
-    return new Promise<PassportMetadata>((resolve, reject) => {
+    return new Promise<PBTPassportMetadata>((resolve, reject) => {
       openModal(
-        <OpenWalletModal
+        <ConfirmModal
           title="Creating PBT cost gas fees"
-          description={<Text>Do you want to pay for the gas fees to mint the PBT with your wallet?</Text>}
+          content={"Do you want to pay for the gas fees to mint the PBT with your wallet?"}
           onConfirm={async () => {
             try {
               const passportMetadata = await pbtRegistry.createPBT!(
@@ -151,6 +159,9 @@ export const CreatePBTStep = () => {
               reject(error);
               throw new Error("Failed to create PBT");
             }
+          }}
+          onReject={async () => {
+            dispatch({ type: "CREATION_ERROR_OCCURRED", errorMessage: "User rejected gas fees" });
           }}
         />
       );
@@ -168,8 +179,11 @@ export const CreatePBTStep = () => {
   };
 
   useAsyncEffect(async () => {
-    if (state.status === "PASSPORT_DATA_UPLOADED" && state.userInput.digitalIdentifier === "pbt") {
+    if (state.userInput.digitalIdentifier === "pbt" && state.status === "PASSPORT_DATA_UPLOADED") {
       await createDigitalIdentifier(handlePBTCreation, state, dispatch);
+    }
+    if (state.userInput.digitalIdentifier === "pbt" && state.status === "DIGITAL_IDENTIFIER_CREATED") {
+      setIsCompleted(true);
     }
   }, [state.status, state.userInput.digitalIdentifier]);
 
@@ -179,32 +193,82 @@ export const CreatePBTStep = () => {
       <>
         A PBT will be created on the{" "}
         <InfoButton
-          label="Sepolia Blockchain"
-          description="Sepolia is a decentralized blockchain network that enables the minting of PBTs. Currently, only Sepolia is supported."
+          title="Sepolia Blockchain"
+          content="Sepolia is a decentralized blockchain network that enables the minting of PBTs. Currently, only Sepolia is supported."
         />{" "}
         and will permanently exist there.
       </>
     ),
     isLoading: state.userInput.digitalIdentifier === "pbt" && state.status === "PASSPORT_DATA_UPLOADED",
-    isCompleted: state.userInput.digitalIdentifier === "pbt" && state.status === "DIGITAL_IDENTIFIER_CREATED",
+    isCompleted,
   };
 };
 
 export const CreateDIDStep = () => {
+  const [isCompleted, setIsCompleted] = useState(false);
   const { state, dispatch } = useCreation();
   const { didRegistry } = useDIDRegistry();
+  const { openModal } = useModal();
 
   const createDID = async (passportDataURI: ArweaveURI) => {
-    // TODO prompt use to pay for gas fees (modal)
-    const passportMetadata = await didRegistry.createDID!();
-    // TODO prompt use to pay for gas fees (modal)
-    await didRegistry.addDIDService!(passportMetadata.did, passportDataURI);
+    return new Promise<DIDPassportMetadata>((resolve, reject) => {
+      openModal(
+        <ConfirmModal
+          title="Creating DID cost gas fees"
+          content={"Do you want to pay for the gas fees to mint the DID with your wallet?"}
+          onConfirm={async () => {
+            try {
+              const passportMetadata = await didRegistry.createDID!();
+              await didRegistry.addDIDService!(passportMetadata.did, passportDataURI);
+              resolve(passportMetadata);
+            } catch (error) {
+              reject(error);
+              throw new Error("Failed to create DID");
+            }
+          }}
+          onReject={async () => {
+            dispatch({ type: "CREATION_ERROR_OCCURRED", errorMessage: "User rejected gas fees" });
+          }}
+        />
+      );
+    });
+  };
+
+  const addDIDService = async (passportMetadata: DIDPassportMetadata, passportDataURI: ArweaveURI) => {
+    return new Promise<void>((resolve, reject) => {
+      openModal(
+        <ConfirmModal
+          title="Adding DID service cost gas fees"
+          content={"Do you want to pay for the gas fees to add the DID service with your wallet?"}
+          onConfirm={async () => {
+            try {
+              await didRegistry.addDIDService!(passportMetadata.did, passportDataURI);
+              resolve();
+            } catch (error) {
+              reject(error);
+              throw new Error("Failed to add DID service");
+            }
+          }}
+          onReject={async () => {
+            dispatch({ type: "CREATION_ERROR_OCCURRED", errorMessage: "User rejected gas fees" });
+          }}
+        />
+      );
+    });
+  };
+
+  const handleDIDCreation = async (passportDataURI: ArweaveURI) => {
+    const passportMetadata = await createDID(passportDataURI);
+    await addDIDService(passportMetadata, passportDataURI);
     return passportMetadata;
   };
 
   useAsyncEffect(async () => {
-    if (state.status === "PASSPORT_DATA_UPLOADED" && state.userInput.digitalIdentifier === "did") {
-      await createDigitalIdentifier(createDID, state, dispatch);
+    if (state.userInput.digitalIdentifier === "did" && state.status === "PASSPORT_DATA_UPLOADED") {
+      await createDigitalIdentifier(handleDIDCreation, state, dispatch);
+    }
+    if (state.userInput.digitalIdentifier === "did" && state.status === "DIGITAL_IDENTIFIER_CREATED") {
+      setIsCompleted(true);
     }
   }, [state.status, state.userInput.digitalIdentifier]);
 
@@ -214,13 +278,13 @@ export const CreateDIDStep = () => {
       <>
         A DID will be created on the{" "}
         <InfoButton
-          label="Sepolia Blockchain"
-          description="Sepolia is a decentralized blockchain network that enables the creation of DIDs. Currently, only Sepolia is supported."
+          title="Sepolia Blockchain"
+          content="Sepolia is a decentralized blockchain network that enables the creation of DIDs. Currently, only Sepolia is supported."
         />{" "}
         and will permanently exist there.
       </>
     ),
     isLoading: state.userInput.digitalIdentifier === "did" && state.status === "PASSPORT_DATA_UPLOADED",
-    isCompleted: state.userInput.digitalIdentifier === "did" && state.status === "DIGITAL_IDENTIFIER_CREATED",
+    isCompleted,
   };
 };

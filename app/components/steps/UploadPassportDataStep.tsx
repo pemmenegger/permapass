@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { useCreation } from "../../context/CreationContext";
 import { useAsyncEffect } from "../../hooks/useAsyncEffect";
 import { api } from "../../lib/web-api";
 import InfoButton from "../ui/InfoButton";
 
 export const UploadPassportDataStep = () => {
+  const [isCompleted, setIsCompleted] = useState(false);
   const { state, dispatch } = useCreation();
 
   const uploadPassportData = async () => {
@@ -22,6 +24,9 @@ export const UploadPassportDataStep = () => {
     if (state.status === "CREATION_STARTED") {
       await uploadPassportData();
     }
+    if (state.status === "PASSPORT_DATA_UPLOADED") {
+      setIsCompleted(true);
+    }
   }, [state.status]);
 
   return {
@@ -30,13 +35,13 @@ export const UploadPassportDataStep = () => {
       <>
         Passport data will be uploaded to{" "}
         <InfoButton
-          label="Arweave"
-          description="Arweave is a decentralized storage network that enables permanent storage of data."
+          title="Arweave"
+          content="Arweave is a decentralized storage network that enables permanent storage of data."
         />
         , where it will be permanently stored.
       </>
     ),
     isLoading: state.status === "CREATION_STARTED",
-    isCompleted: state.status === "PASSPORT_DATA_UPLOADED",
+    isCompleted,
   };
 };

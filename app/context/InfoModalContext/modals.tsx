@@ -1,16 +1,16 @@
-import { View, Text, Pressable, StyleSheet } from "react-native";
+import { View, Text, Pressable, StyleSheet, SafeAreaView } from "react-native";
 import { ReactNode } from "react";
 import { CrossIcon } from "../../components/icons/CrossIcon";
 import { commonColors, commonStyles } from "../../styles";
 import { useModal } from ".";
 import DefaultButton from "../../components/ui/DefaultButton";
 
-interface InfoModalProps {
+export interface ModalProps {
   title: string;
-  description: ReactNode;
+  content: string | ReactNode;
 }
 
-export function InfoModal({ title, description }: InfoModalProps) {
+export function InfoModal({ title, content }: ModalProps) {
   const { closeModal } = useModal();
   return (
     <View style={styles.modalContent}>
@@ -20,44 +20,51 @@ export function InfoModal({ title, description }: InfoModalProps) {
           <CrossIcon height={20} strokeWidth={1.5} color={commonColors.vercelWhite} />
         </Pressable>
       </View>
-      {description}
+      {typeof content === "string" ? <Text style={styles.description}>{content}</Text> : content}
     </View>
   );
 }
 
-interface OpenWalletModalProps {
-  title: string;
-  description: ReactNode;
+interface ConfirmModalProps extends ModalProps {
   onConfirm: () => Promise<void>;
-  // onReject: () => void;
+  onReject: () => Promise<void>;
 }
 
-export function OpenWalletModal({ title, description, onConfirm }: OpenWalletModalProps) {
+export function ConfirmModal({ title, content, onConfirm, onReject }: ConfirmModalProps) {
   const { closeModal } = useModal();
 
   return (
     <View style={styles.modalContent}>
-      <View>
-        <View style={styles.titleContainer}>
-          <Text style={styles.title}>{title}</Text>
+      <SafeAreaView style={{ flex: 1, justifyContent: "space-between" }}>
+        <View>
+          <View style={styles.titleContainer}>
+            <Text style={styles.title}>{title}</Text>
+            <Pressable
+              onPress={async () => {
+                closeModal();
+                await onReject();
+              }}
+            >
+              <CrossIcon height={20} strokeWidth={1.5} color={commonColors.vercelWhite} />
+            </Pressable>
+          </View>
+          {typeof content === "string" ? <Text style={styles.description}>{content}</Text> : content}
         </View>
-        {description}
-      </View>
-      <DefaultButton
-        text="Open Wallet"
-        onPress={async () => {
-          closeModal();
-          await onConfirm();
-        }}
-        type="secondary"
-      />
+        <DefaultButton
+          text="Ok"
+          onPress={async () => {
+            closeModal();
+            await onConfirm();
+          }}
+          type="secondary"
+        />
+      </SafeAreaView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   modalContent: {
-    flex: 1,
     height: "40%",
     width: "100%",
     backgroundColor: commonColors.vercelBlack,
@@ -77,11 +84,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     paddingTop: 18,
+
     paddingBottom: 24,
   },
   title: {
     fontFamily: "Inter-Medium",
     color: commonColors.vercelWhite,
     fontSize: 18,
+  },
+  description: {
+    color: commonColors.vercelWhite,
+    fontSize: 16,
   },
 });

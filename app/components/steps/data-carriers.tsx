@@ -1,33 +1,33 @@
-import { router } from "expo-router";
 import { useCreation } from "../../context/CreationContext";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export const GenerateQRCodeStep = () => {
+  const [isCompleted, setIsCompleted] = useState(false);
   const { state, dispatch } = useCreation();
 
   const generateQRCode = () => {
-    dispatch({ type: "CREATION_STATUS_CHANGED", status: "QR_CODE_GENERATED" });
-    router.push({
-      pathname: "/create/05-success",
-      params: { qrCodeURL: state.results.dataCarrierURL! },
-    });
+    dispatch({ type: "CREATION_STATUS_CHANGED", status: "CREATION_DONE" });
   };
 
   useEffect(() => {
     if (state.userInput.dataCarrier === "qr" && state.status === "DIGITAL_IDENTIFIER_CREATED") {
       generateQRCode();
     }
-  }, [state.status]);
+    if (state.userInput.dataCarrier === "qr" && state.status === "CREATION_DONE") {
+      setIsCompleted(true);
+    }
+  }, [state.status, state.userInput.dataCarrier]);
 
   return {
     title: "Generating QR Code as data carrier",
     description: <>A QR Code linking to the digital identifier and passport data will be generated.</>,
     isLoading: state.userInput.dataCarrier === "qr" && state.status === "DIGITAL_IDENTIFIER_CREATED",
-    isCompleted: state.status === "QR_CODE_GENERATED",
+    isCompleted,
   };
 };
 
 export const WriteHaLoChipStep = () => {
+  const [isCompleted, setIsCompleted] = useState(false);
   const { state, dispatch } = useCreation();
 
   const writeHaLoNFCChip = () => {
@@ -35,23 +35,22 @@ export const WriteHaLoChipStep = () => {
 
     // TODO write to HaLo NFC chip
 
-    dispatch({ type: "CREATION_STATUS_CHANGED", status: "HALO_NFC_WRITTEN" });
-
-    router.push({
-      pathname: "/create/05-success",
-    });
+    dispatch({ type: "CREATION_STATUS_CHANGED", status: "CREATION_DONE" });
   };
 
   useEffect(() => {
-    if (state.userInput.dataCarrier === "nfc" && state.status === "QR_CODE_GENERATED") {
+    if (state.userInput.dataCarrier === "nfc" && state.status === "DIGITAL_IDENTIFIER_CREATED") {
       writeHaLoNFCChip();
     }
-  }, [state.status]);
+    if (state.userInput.dataCarrier === "nfc" && state.status === "CREATION_DONE") {
+      setIsCompleted(true);
+    }
+  }, [state.status, state.userInput.dataCarrier]);
 
   return {
     title: "Writing to HaLo NFC Chip",
     description: <>The passport data will be written to the HaLo NFC chip.</>,
-    isLoading: state.userInput.dataCarrier === "nfc" && state.status === "QR_CODE_GENERATED",
-    isCompleted: state.status === "HALO_NFC_WRITTEN",
+    isLoading: state.userInput.dataCarrier === "nfc" && state.status === "DIGITAL_IDENTIFIER_CREATED",
+    isCompleted,
   };
 };

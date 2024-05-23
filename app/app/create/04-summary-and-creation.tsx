@@ -8,8 +8,9 @@ import StepOverview from "../../components/stepper/StepOverview";
 import { useWalletClient } from "wagmi";
 import { DataCarrierType, DigitalIdentifierType } from "../../types";
 import { CreateDIDStep, CreateNFTStep, CreatePBTStep } from "../../components/steps/digital-identifiers";
-import { GenerateQRCodeStep } from "../../components/steps/data-carriers";
+import { GenerateQRCodeStep, WriteHaLoChipStep } from "../../components/steps/data-carriers";
 import { UploadPassportDataStep } from "../../components/steps/UploadPassportDataStep";
+import { router } from "expo-router";
 
 export default function Page() {
   const { data: walletClient, isError, isLoading } = useWalletClient();
@@ -44,7 +45,7 @@ export default function Page() {
   const getDataCarrierStep = (type: DataCarrierType) => {
     switch (type) {
       case "nfc":
-        return GenerateQRCodeStep();
+        return WriteHaLoChipStep();
       case "qr":
         return GenerateQRCodeStep();
       default:
@@ -75,6 +76,21 @@ export default function Page() {
               type="primary"
               text="Create"
               onPress={() => dispatch({ type: "CREATION_STATUS_CHANGED", status: "CREATION_STARTED" })}
+            />
+          )}
+          {state.status === "CREATION_DONE" && (
+            <DefaultButton
+              type="primary"
+              text="Finish"
+              onPress={() => {
+                dispatch({ type: "RESET" });
+                router.push({
+                  pathname: "/create/05-success",
+                  params: {
+                    qrCodeURL: state.userInput.dataCarrier === "qr" ? state.results.dataCarrierURL! : undefined,
+                  },
+                });
+              }}
             />
           )}
         </>
