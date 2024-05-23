@@ -9,7 +9,7 @@ contract PermaPassNFTRegistry is ERC721, ERC721URIStorage, Ownable {
 	uint256 private _nextTokenId;
 	mapping(uint256 => uint256) public changed;
 
-	event Minted(address indexed to, string uri, uint256 tokenId);
+	event Minted(address indexed to, string indexed uri, uint256 tokenId);
 	event TokenURIChanged(
 		uint256 indexed tokenId,
 		address sender,

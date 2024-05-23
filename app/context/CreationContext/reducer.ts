@@ -46,6 +46,9 @@ export type CreationAction =
   | {
       type: "CREATION_ERROR_OCCURRED";
       errorMessage: string;
+    }
+  | {
+      type: "RESET";
     };
 
 export function creationReducer(state: CreationState, action: CreationAction): CreationState {
@@ -84,6 +87,11 @@ export function creationReducer(state: CreationState, action: CreationAction): C
         ...state,
         status: "CREATION_ERROR",
         errorMessage: action.errorMessage,
+      };
+    case "RESET":
+      return {
+        userInput: state.userInput,
+        results: {},
       };
   }
 }

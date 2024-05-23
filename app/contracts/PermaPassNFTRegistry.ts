@@ -67,7 +67,7 @@ export const PermaPassNFTRegistry = {
             type: "address",
           },
           {
-            indexed: false,
+            indexed: true,
             internalType: "string",
             name: "uri",
             type: "string",

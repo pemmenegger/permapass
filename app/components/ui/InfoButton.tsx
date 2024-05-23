@@ -1,7 +1,8 @@
-import React, { PropsWithChildren } from "react";
-import { Pressable, StyleSheet, Text } from "react-native";
+import React from "react";
+import { StyleSheet, Text } from "react-native";
 import { commonColors } from "../../styles";
 import { useModal } from "../../context/InfoModalContext";
+import { InfoModal } from "../../context/InfoModalContext/modals";
 
 interface InfoButtonProps {
   label: string;
@@ -12,7 +13,7 @@ export default function InfoButton({ label, description }: InfoButtonProps) {
   const { openModal } = useModal();
 
   const onPress = () => {
-    openModal(label, <Text style={styles.description}>{description}</Text>);
+    openModal(<InfoModal title={label} description={<Text style={styles.description}>{description}</Text>} />);
   };
 
   return (

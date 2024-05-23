@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Address, useWalletClient } from "wagmi";
 import { PermaPassNFTRegistry } from "../../contracts/PermaPassNFTRegistry";
-import { readContract, watchContractEvent } from "@wagmi/core";
+import { readContract } from "@wagmi/core";
 import { ArweaveURI, NFTPassportMetadata, PassportVersion } from "../../types";
 import { getPublicClient } from "../../lib/wagmi";
 
@@ -16,97 +16,68 @@ export function useNFTRegistry() {
 
   useEffect(() => {
     if (!walletClient) {
-      // console.error("useNFTRegistry - walletClient not available");
       return;
     }
 
     const chainId = walletClient.chain.id;
-    const contractInfo = PermaPassNFTRegistry[chainId as keyof typeof PermaPassNFTRegistry];
 
-    if (!contractInfo) {
-      console.error(`useNFTRegistry - Contract info not found for chain id: ${chainId}`);
-      return;
-    }
+    const contractInfo = PermaPassNFTRegistry[chainId as keyof typeof PermaPassNFTRegistry];
+    if (!contractInfo) throw new Error(`useNFTRegistry - Contract info not found for chain id: ${chainId}`);
 
     const publicClient = getPublicClient(chainId);
-    if (!publicClient) {
-      throw new Error(`Unsupported chain id: ${chainId}`);
-    }
+    if (!publicClient) throw new Error(`useNFTRegistry - Public client unsupported chain id: ${chainId}`);
 
     const handleCreateNFT = async (tokenURI: ArweaveURI) => {
       try {
         const to = walletClient.account.address;
-        const tokenIdPromise = new Promise<bigint>((resolve, reject) => {
-          console.log("Watching for mint event...");
-          const unwatch = watchContractEvent(
-            {
-              address: contractInfo.address,
-              abi: contractInfo.abi,
-              eventName: "Minted",
-            },
-            (logs) => {
-              for (const log of logs.reverse()) {
-                if (log.args.to === to && log.args.uri === tokenURI) {
-                  console.log("Mint event detected:", log.args.tokenId);
-                  resolve(log.args.tokenId!);
-                  unwatch();
-                  break;
-                }
-              }
-            }
-          );
 
-          setTimeout(() => {
-            unwatch();
-            reject(new Error("Mint event watch timed out"));
-          }, 60000);
-        });
-
-        console.log(`Minting NFT with tokenURI: ${tokenURI}...`);
         const txHash = await walletClient.writeContract({
           address: contractInfo.address,
           abi: contractInfo.abi,
           functionName: "safeMint",
           args: [to, tokenURI],
         });
-        console.log(`createDID transaction Hash: ${txHash}`);
-
         await publicClient.waitForTransactionReceipt({ hash: txHash });
-        console.log("createDID transaction confirmed");
-        console.log("NFT minted successfully.");
 
-        const tokenId = await tokenIdPromise;
+        const events = await publicClient.getContractEvents({
+          address: contractInfo.address,
+          abi: contractInfo.abi,
+          eventName: "Minted",
+          args: { to, uri: tokenURI },
+        });
+
+        if (events.length > 1) {
+          throw new Error(`useNFTRegistry - Multiple Mint events found for token URI: ${tokenURI}`);
+        } else if (events.length === 0) {
+          throw new Error(`useNFTRegistry - Mint event not found for token URI: ${tokenURI}`);
+        }
 
         const metadata: NFTPassportMetadata = {
           type: "nft",
           chainId,
           address: contractInfo.address,
-          tokenId,
+          tokenId: events[0].args.tokenId!,
         };
 
         return metadata;
       } catch (error) {
-        console.error("Failed to mint NFT:", error);
+        console.error(`useNFTRegistry - Failed to create NFT:`, error);
         throw error;
       }
     };
 
     const handleUpdateTokenURI = async (tokenId: bigint, tokenURI: ArweaveURI) => {
       try {
-        console.log("Updating token URI...");
         const txHash = await walletClient.writeContract({
           address: contractInfo.address,
           abi: contractInfo.abi,
           functionName: "setTokenURI",
           args: [tokenId, tokenURI],
         });
-        console.log(`setTokenURI transaction Hash: ${txHash}`);
-
         await publicClient.waitForTransactionReceipt({ hash: txHash });
-        console.log("setTokenURI transaction confirmed");
-        console.log("Token URI updated successfully.");
       } catch (error) {
-        console.error("Failed to update token URI:", error);
+        console.error(`useNFTRegistry - Failed to update NFT token URI:`, error);
+        throw error;
       }
     };
 
@@ -118,9 +89,7 @@ export function useNFTRegistry() {
     const { tokenId, chainId, address } = metadata;
 
     const publicClient = getPublicClient(chainId);
-    if (!publicClient) {
-      throw new Error(`Unsupported chain id: ${chainId}`);
-    }
+    if (!publicClient) throw new Error(`useNFTRegistry - Public client unsupported chain id: ${chainId}`);
 
     try {
       let previousChange: bigint = await readContract({
@@ -159,7 +128,7 @@ export function useNFTRegistry() {
 
       return passportVersions;
     } catch (error) {
-      console.error("Failed to read NFT passport URI history:", error);
+      console.error(`useNFTRegistry - Failed to read NFT passport history:`, error);
       throw error;
     }
   }, []);

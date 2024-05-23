@@ -1,10 +1,10 @@
 import React, { createContext, useState, useContext } from "react";
 import type { PropsWithChildren, ReactNode } from "react";
-import InfoModal from "./InfoModal";
+import { Modal } from "react-native";
 
 interface ModalContextType {
   modal: { isOpen: boolean; content: ReactNode };
-  openModal: (title: string, content: ReactNode) => void;
+  openModal: (content: ReactNode) => void;
   closeModal: () => void;
 }
 
@@ -12,19 +12,17 @@ const ModalContext = createContext<ModalContextType | undefined>(undefined);
 
 interface ModalState {
   isOpen: boolean;
-  title: string;
   content: ReactNode | null;
 }
 
 function ModalProvider({ children }: PropsWithChildren) {
   const [modal, setModal] = useState<ModalState>({
     isOpen: false,
-    title: "",
     content: null,
   });
 
-  const openModal = (title: string, content: ReactNode) => {
-    setModal({ isOpen: true, title, content });
+  const openModal = (content: ReactNode) => {
+    setModal({ isOpen: true, content });
   };
 
   const closeModal = () => {
@@ -34,9 +32,9 @@ function ModalProvider({ children }: PropsWithChildren) {
   return (
     <ModalContext.Provider value={{ modal, openModal, closeModal }}>
       {children}
-      <InfoModal title={modal.title} isVisible={modal.isOpen} onClose={closeModal}>
+      <Modal animationType="slide" transparent={true} visible={modal.isOpen}>
         {modal.content}
-      </InfoModal>
+      </Modal>
     </ModalContext.Provider>
   );
 }

@@ -23,6 +23,11 @@ export default function Page() {
     dispatch({ type: "REQUIREMENT_NOT_MET", requirementNotMetMessage: undefined });
   }, [walletClient, isError, isLoading]);
 
+  useEffect(() => {
+    // reset
+    dispatch({ type: "RESET" });
+  }, []);
+
   const getDigitalIdentityStep = (type: DigitalIdentifierType) => {
     switch (type) {
       case "nft":

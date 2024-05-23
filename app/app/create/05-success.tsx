@@ -20,7 +20,7 @@ export default function Page() {
     <>
       <StepTitle text="Successfully created a passport." highlight="passport" />
       <Text>Your passport has been successfully created.</Text>
-      <Text>Gas Costs for creation: {gasCosts} ETH</Text>
+      <Text>Gas Costs for creation: {gasCosts} ETH (TODO: compute)</Text>
       {qrCodeURL && QRCodeView(qrCodeURL as string)}
       <DefaultButton text="Home" onPress={() => router.push("/")} type="primary" />
     </>
