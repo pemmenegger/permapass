@@ -11,13 +11,7 @@ const hardhat = defineChain({
   },
 });
 
-const chains = [hardhat, sepolia];
-
-// const walletClient = createWalletClient({
-//   account: privateKeyToAccount(config.PRIVATE_KEY as Address),
-//   chain: hardhat,
-//   transport: http(),
-// });
+const chains = config.ENVIRONMENT === "dev" ? [hardhat, sepolia] : [sepolia];
 
 const getPublicClient = (chainId?: number) => {
   switch (chainId) {
@@ -26,8 +20,13 @@ const getPublicClient = (chainId?: number) => {
         chain: hardhat,
         transport: http(),
       });
+    case sepolia.id:
+      return createPublicClient({
+        chain: sepolia,
+        transport: http(),
+      });
     default:
-      return null;
+      throw new Error(`Unsupported chainId: ${chainId}`);
   }
 };
 
