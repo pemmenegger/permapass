@@ -32,8 +32,14 @@ export const WriteHaLoChipStep = () => {
 
   const writeHaLoNFCChip = () => {
     const urlToEncode = state.results.dataCarrierURL!;
-    // Write to HaLo NFC chip
+
+    // TODO write to HaLo NFC chip
+
     dispatch({ type: "CREATION_STATUS_CHANGED", status: "HALO_NFC_WRITTEN" });
+
+    router.push({
+      pathname: "/create/05-success",
+    });
   };
 
   useEffect(() => {

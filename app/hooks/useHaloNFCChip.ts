@@ -8,7 +8,7 @@ import { Address, encodePacked, keccak256 } from "viem";
 
 NfcManager.start();
 
-interface HaLoNFCChipSignatureOutput {
+export interface HaLoNFCChipSignatureOutput {
   chipAddress: Address;
   signatureFromChip: Address;
   blockNumberUsedInSig: bigint;

@@ -1,3 +1,4 @@
+import { Address } from "viem";
 import { useCreation } from "../../context/CreationContext";
 import { CreationAction, CreationState } from "../../context/CreationContext/reducer";
 import { useModal } from "../../context/InfoModalContext";
@@ -6,7 +7,7 @@ import { useDIDRegistry } from "../../hooks/blockchain/useDIDRegistry";
 import { useNFTRegistry } from "../../hooks/blockchain/useNFTRegistry";
 import { usePBTRegistry } from "../../hooks/blockchain/usePBTRegistry";
 import { useAsyncEffect } from "../../hooks/useAsyncEffect";
-import { useHaLoNFCChip } from "../../hooks/useHaloNFCChip";
+import { HaLoNFCChipSignatureOutput, useHaLoNFCChip } from "../../hooks/useHaloNFCChip";
 import { encodeDataCarrierURL } from "../../lib/utils";
 import { api } from "../../lib/web-api";
 import { ArweaveURI, PassportMetadata } from "../../types";
@@ -56,9 +57,7 @@ export const CreateNFTStep = () => {
           description={<Text>Do you want to pay for the gas fees to mint the NFT with your wallet?</Text>}
           onConfirm={async () => {
             try {
-              console.log("Opening wallet modal");
               const passportMetadata = await nftRegistry.createNFT!(passportDataURI);
-              console.log("NFT created");
               resolve(passportMetadata);
             } catch (error) {
               reject(error);
@@ -97,27 +96,80 @@ export const CreatePBTStep = () => {
   const { state, dispatch } = useCreation();
   const { pbtRegistry } = usePBTRegistry();
   const { haloNFCChip } = useHaLoNFCChip();
+  const { openModal } = useModal();
 
-  const createPBT = async (passportDataURI: ArweaveURI) => {
-    // TODO prompt use to pay for gas fees (modal)
-    const result = await haloNFCChip.computeSignatureFromChip!();
-    if (!result) {
-      throw new Error("Failed to compute signature from chip");
-    }
-    const { chipAddress, signatureFromChip, blockNumberUsedInSig } = result;
-    // TODO prompt use to pay for gas fees (modal)
-    const passportMetadata = await pbtRegistry.createPBT!(
+  const computeSignatureFromChip = () => {
+    return new Promise<HaLoNFCChipSignatureOutput>((resolve, reject) => {
+      openModal(
+        <OpenWalletModal
+          title="Halo NFC chip signature"
+          description={
+            <Text>
+              Before a PBT can be minted, a signature from the HaLo NFC chip is required to map a chip on a blockchain.
+              Click the button below and tap your smartphone on the HaLo NFC chip to obtain this signature.
+            </Text>
+          }
+          onConfirm={async () => {
+            try {
+              console.log("Computing signature from chip");
+              // const result: HaLoNFCChipSignatureOutput = {
+              //   chipAddress: "0x123",
+              //   signatureFromChip: "0x456",
+              //   blockNumberUsedInSig: 123n,
+              // };
+              const result = await haloNFCChip.computeSignatureFromChip!();
+              if (!result) {
+                throw new Error();
+              }
+              resolve(result);
+            } catch (error) {
+              reject(error);
+              throw new Error("Failed to compute signature from chip");
+            }
+          }}
+        />
+      );
+    });
+  };
+
+  const createPBT = async (passportDataURI: ArweaveURI, chipSignature: HaLoNFCChipSignatureOutput) => {
+    return new Promise<PassportMetadata>((resolve, reject) => {
+      openModal(
+        <OpenWalletModal
+          title="Creating PBT cost gas fees"
+          description={<Text>Do you want to pay for the gas fees to mint the PBT with your wallet?</Text>}
+          onConfirm={async () => {
+            try {
+              const passportMetadata = await pbtRegistry.createPBT!(
+                chipSignature.chipAddress,
+                chipSignature.signatureFromChip,
+                chipSignature.blockNumberUsedInSig,
+                passportDataURI
+              );
+              resolve(passportMetadata);
+            } catch (error) {
+              reject(error);
+              throw new Error("Failed to create PBT");
+            }
+          }}
+        />
+      );
+    });
+  };
+
+  const handlePBTCreation = async (passportDataURI: ArweaveURI) => {
+    const { chipAddress, signatureFromChip, blockNumberUsedInSig } = await computeSignatureFromChip();
+    const passportMetadata = await createPBT(passportDataURI, {
       chipAddress,
       signatureFromChip,
       blockNumberUsedInSig,
-      passportDataURI
-    );
+    });
     return passportMetadata;
   };
 
   useAsyncEffect(async () => {
     if (state.status === "PASSPORT_DATA_UPLOADED" && state.userInput.digitalIdentifier === "pbt") {
-      await createDigitalIdentifier(createPBT, state, dispatch);
+      await createDigitalIdentifier(handlePBTCreation, state, dispatch);
     }
   }, [state.status, state.userInput.digitalIdentifier]);
 
