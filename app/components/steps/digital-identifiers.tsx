@@ -16,8 +16,7 @@ import {
   PBTPassportMetadata,
   PassportMetadata,
 } from "../../types";
-import InfoButton from "../ui/InfoButton";
-import { Text } from "react-native";
+import InfoText from "../ui/InfoText";
 import { useState } from "react";
 
 const createDigitalIdentifier = async (
@@ -93,7 +92,7 @@ export const CreateNFTStep = () => {
     description: (
       <>
         An NFT will be minted on the{" "}
-        <InfoButton
+        <InfoText
           title="Sepolia Blockchain"
           content="Sepolia is a decentralized blockchain network that enables the minting of NFTs. Currently, only Sepolia is supported."
         />{" "}
@@ -192,7 +191,7 @@ export const CreatePBTStep = () => {
     description: (
       <>
         A PBT will be created on the{" "}
-        <InfoButton
+        <InfoText
           title="Sepolia Blockchain"
           content="Sepolia is a decentralized blockchain network that enables the minting of PBTs. Currently, only Sepolia is supported."
         />{" "}
@@ -277,7 +276,7 @@ export const CreateDIDStep = () => {
     description: (
       <>
         A DID will be created on the{" "}
-        <InfoButton
+        <InfoText
           title="Sepolia Blockchain"
           content="Sepolia is a decentralized blockchain network that enables the creation of DIDs. Currently, only Sepolia is supported."
         />{" "}

@@ -1,24 +1,23 @@
 import React, { createContext, useState, useContext } from "react";
 import type { PropsWithChildren, ReactNode } from "react";
-import { Modal } from "react-native";
+import { Modal, View, StyleSheet } from "react-native";
+
+interface ModalState {
+  isOpen: boolean;
+  content?: ReactNode;
+}
 
 interface ModalContextType {
-  modal: { isOpen: boolean; content: ReactNode };
+  modal: ModalState;
   openModal: (content: ReactNode) => void;
   closeModal: () => void;
 }
 
 const ModalContext = createContext<ModalContextType | undefined>(undefined);
 
-interface ModalState {
-  isOpen: boolean;
-  content: ReactNode | null;
-}
-
 function ModalProvider({ children }: PropsWithChildren) {
   const [modal, setModal] = useState<ModalState>({
     isOpen: false,
-    content: null,
   });
 
   const openModal = (content: ReactNode) => {
@@ -26,18 +25,36 @@ function ModalProvider({ children }: PropsWithChildren) {
   };
 
   const closeModal = () => {
-    setModal((prev) => ({ ...prev, isOpen: false }));
+    setModal((prev) => ({ ...prev, isOpen: false, content: undefined }));
   };
 
   return (
     <ModalContext.Provider value={{ modal, openModal, closeModal }}>
-      {children}
+      <View style={styles.container}>
+        {modal.isOpen && <View style={styles.overlay} />}
+        {children}
+      </View>
       <Modal animationType="slide" transparent={true} visible={modal.isOpen}>
         {modal.content}
       </Modal>
     </ModalContext.Provider>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  overlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
+    zIndex: 1,
+  },
+});
 
 const useModal = (): ModalContextType => {
   const context = useContext(ModalContext);

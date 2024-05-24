@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useCreation } from "../../context/CreationContext";
 import { useAsyncEffect } from "../../hooks/useAsyncEffect";
 import { api } from "../../lib/web-api";
-import InfoButton from "../ui/InfoButton";
+import InfoText from "../ui/InfoText";
 
 export const UploadPassportDataStep = () => {
   const [isCompleted, setIsCompleted] = useState(false);
@@ -34,7 +34,7 @@ export const UploadPassportDataStep = () => {
     description: (
       <>
         Passport data will be uploaded to{" "}
-        <InfoButton
+        <InfoText
           title="Arweave"
           content="Arweave is a decentralized storage network that enables permanent storage of data."
         />

@@ -3,7 +3,7 @@ import { View, Text, StyleSheet } from "react-native";
 import { useCreation } from "../../context/CreationContext";
 import StepTitle from "../../components/stepper/StepTitle";
 import StepSubtitle from "../../components/stepper/StepSubtitle";
-import DefaultButton from "../../components/ui/DefaultButton";
+import { PrimaryButton } from "../../components/ui/buttons";
 import StepOverview from "../../components/stepper/StepOverview";
 import { useWalletClient } from "wagmi";
 import { DataCarrierType, DigitalIdentifierType } from "../../types";
@@ -17,17 +17,16 @@ export default function Page() {
   const { state, dispatch } = useCreation();
 
   useEffect(() => {
+    dispatch({ type: "RESET" });
+  }, []);
+
+  useEffect(() => {
     if (!walletClient) {
       dispatch({ type: "REQUIREMENT_NOT_MET", requirementNotMetMessage: "You must first connect to your wallet" });
       return;
     }
     dispatch({ type: "REQUIREMENT_NOT_MET", requirementNotMetMessage: undefined });
   }, [walletClient, isError, isLoading]);
-
-  useEffect(() => {
-    // reset
-    dispatch({ type: "RESET" });
-  }, []);
 
   const getDigitalIdentityStep = (type: DigitalIdentifierType) => {
     switch (type) {
@@ -72,16 +71,14 @@ export default function Page() {
       ) : (
         <>
           {!state.status && (
-            <DefaultButton
-              type="primary"
-              text="Create"
+            <PrimaryButton
+              title="Create"
               onPress={() => dispatch({ type: "CREATION_STATUS_CHANGED", status: "CREATION_STARTED" })}
             />
           )}
           {state.status === "CREATION_DONE" && (
-            <DefaultButton
-              type="primary"
-              text="Finish"
+            <PrimaryButton
+              title="Finish"
               onPress={() => {
                 dispatch({ type: "RESET" });
                 router.push({

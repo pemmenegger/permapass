@@ -4,7 +4,7 @@ import { useCreation } from "../../context/CreationContext";
 import { router } from "expo-router";
 import StepTitle from "../../components/stepper/StepTitle";
 import StepSubtitle from "../../components/stepper/StepSubtitle";
-import DefaultButton from "../../components/ui/DefaultButton";
+import { PrimaryButton } from "../../components/ui/buttons";
 
 export default function Page() {
   const { state, dispatch } = useCreation();
@@ -43,7 +43,7 @@ export default function Page() {
           style={styles.input}
         />
       </View>
-      <DefaultButton type="primary" text="Continue" onPress={handleNext} disabled={isInvalid} />
+      <PrimaryButton title="Continue" onPress={handleNext} disabled={isInvalid} />
     </View>
   );
 }

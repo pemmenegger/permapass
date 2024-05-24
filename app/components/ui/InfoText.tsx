@@ -2,9 +2,9 @@ import React from "react";
 import { StyleSheet, Text } from "react-native";
 import { commonColors } from "../../styles";
 import { useModal } from "../../context/InfoModalContext";
-import { InfoModal, ModalProps } from "../../context/InfoModalContext/modals";
+import { InfoModal, InfoModalProps } from "../../context/InfoModalContext/modals";
 
-export default function InfoButton({ title, content }: ModalProps) {
+export default function InfoText({ title, content }: InfoModalProps) {
   const { openModal } = useModal();
 
   const onPress = () => {

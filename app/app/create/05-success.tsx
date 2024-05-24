@@ -3,8 +3,7 @@ import React, { useEffect } from "react";
 import { Text, StyleSheet, View } from "react-native";
 import QRCode from "react-native-qrcode-svg";
 import StepTitle from "../../components/stepper/StepTitle";
-import DefaultButton from "../../components/ui/DefaultButton";
-import { useCreation } from "../../context/CreationContext";
+import { PrimaryButton } from "../../components/ui/buttons";
 
 const QRCodeView = (value: string) => (
   <View>
@@ -24,7 +23,7 @@ export default function Page() {
         <Text>Gas Costs for creation: {gasCosts} ETH (TODO: compute)</Text>
       </View>
       {qrCodeURL && QRCodeView(qrCodeURL as string)}
-      <DefaultButton text="Home" onPress={() => router.push("/")} type="primary" />
+      <PrimaryButton title="Home" onPress={() => router.push("/")} />
     </View>
   );
 }
