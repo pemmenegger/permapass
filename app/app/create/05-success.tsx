@@ -1,26 +1,35 @@
 import { router, useLocalSearchParams } from "expo-router";
-import React, { useEffect } from "react";
-import { Text, StyleSheet, View } from "react-native";
+import React from "react";
+import { Text, StyleSheet, View, Alert } from "react-native";
 import QRCode from "react-native-qrcode-svg";
 import StepTitle from "../../components/stepper/StepTitle";
-import { PrimaryButton } from "../../components/ui/buttons";
+import { PrimaryButton, SecondaryButton } from "../../components/ui/buttons";
+import { commonColors } from "../../styles";
 
 const QRCodeView = (value: string) => (
-  <View>
-    <QRCode value={value} size={200} />
+  <View style={{ alignItems: "center" }}>
+    <View style={{ width: 200 }}>
+      <QRCode value={value} size={200} backgroundColor={commonColors.bg} />
+      <View style={{ height: 20 }} />
+      <SecondaryButton title="Share QR Code" onPress={() => Alert.alert("To be implemented")} />
+    </View>
   </View>
 );
 
 export default function Page() {
   const { qrCodeURL } = useLocalSearchParams();
-  const gasCosts = 0.0028;
-
   return (
     <View style={styles.container}>
       <View>
         <StepTitle text="Successfully created a passport." highlight="passport" />
         <Text>Your passport has been successfully created.</Text>
-        <Text>Gas Costs for creation: {gasCosts} ETH (TODO: compute)</Text>
+        {qrCodeURL ? (
+          <Text style={styles.qrCodeText}>
+            Attach the following QR Code to your construction product to make the passport accessible:
+          </Text>
+        ) : (
+          <Text>Attach the HaLo NFC chip to your construction product to make the passport accessible.</Text>
+        )}
       </View>
       {qrCodeURL && QRCodeView(qrCodeURL as string)}
       <PrimaryButton title="Home" onPress={() => router.push("/")} />
@@ -32,5 +41,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "space-between",
+  },
+  qrCodeText: {
+    paddingBottom: 10,
   },
 });
