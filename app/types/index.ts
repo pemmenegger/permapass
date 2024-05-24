@@ -24,31 +24,25 @@ export type DIDPassportMetadata = {
   serviceType: string;
 };
 
-export interface Passport {
-  name: string;
-  condition: string;
-}
-
 export interface PassportCreate {
   name: string;
   condition: string;
 }
 
-export interface PassportRead extends PassportCreate {
-  version: bigint;
-  timestamp: bigint;
-  sender: string;
+export type PassportVersion = {
+  uri: ArweaveURI;
+  blockTimestamp: bigint;
+  sender?: Address;
+};
+
+export interface PassportRead {
+  data: PassportCreate;
+  version: PassportVersion;
 }
 
 export type DataCarrierType = "qr" | "nfc";
 
 export type DigitalIdentifierType = "nft" | "pbt" | "did";
-
-export type PassportVersion = {
-  uri: ArweaveURI;
-  timestamp: bigint;
-  sender?: Address;
-};
 
 export type ArweaveURI = `ar://${string}`;
 

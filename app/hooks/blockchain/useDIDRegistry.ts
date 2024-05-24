@@ -143,7 +143,7 @@ export function useDIDRegistry() {
           }
           passportVersions.push({
             uri: fromHex(event.args.value!, "string") as ArweaveURI,
-            timestamp: block.timestamp,
+            blockTimestamp: block.timestamp,
           });
         }
 

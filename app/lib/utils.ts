@@ -52,3 +52,20 @@ export const goToHome = () => {
   }
   router.push("/");
 };
+
+export const fromBlockTimestampToDateTime = (blockTimestamp: bigint) => {
+  const readableDate = new Date(Number(blockTimestamp) * 1000);
+  const formattedDate = readableDate.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+  });
+  return formattedDate;
+};
+
+export const fromCamelCaseToTitleCase = (camelCase: string) => {
+  const result = camelCase.replace(/([A-Z])/g, " $1");
+  return result.charAt(0).toUpperCase() + result.slice(1);
+};

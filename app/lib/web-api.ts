@@ -1,5 +1,5 @@
 import config from "./config";
-import { ArweaveURI, DIDPassportMetadata, NFTPassportMetadata, Passport, PassportMetadata } from "../types";
+import { ArweaveURI, PassportCreate, PassportMetadata } from "../types";
 import { DIDDocument } from "../types/did";
 import { fromTxidToURI, fromURIToURL } from "./utils";
 
@@ -24,7 +24,7 @@ const fetchWebApi = async (
   return await fetchUrl(fullUrl, { method, headers, ...(body && { body: JSON.stringify(body) }) });
 };
 
-const uploadToArweave = async (body: Passport | PassportMetadata) => {
+const uploadToArweave = async (body: PassportCreate | PassportMetadata) => {
   const data = await fetchWebApi(`/arweave`, { method: "POST", body });
   if (!data.txid) throw new Error("uploadToArweave - no txid in response");
   console.log("uploadToArweave - uploaded with txid:", data.txid);
@@ -41,7 +41,7 @@ const resolveDID = async (didUrl: string, registryAddress?: string) => {
 
 export const api = {
   arweave: {
-    uploadPassport: async (passport: Passport) => {
+    uploadPassport: async (passport: PassportCreate) => {
       const txid = await uploadToArweave(passport);
       const passportDataURI = fromTxidToURI(txid);
       return passportDataURI;
@@ -51,12 +51,12 @@ export const api = {
       const metadataURI = fromTxidToURI(txid);
       return metadataURI;
     },
-    fetchPassport: async (passportDataURI: ArweaveURI): Promise<Passport> => {
+    fetchPassport: async (passportDataURI: ArweaveURI) => {
       const passportURL = fromURIToURL(passportDataURI);
       const data = await fetchUrl(passportURL);
-      return JSON.parse(data) as Passport;
+      return JSON.parse(data) as PassportCreate;
     },
-    fetchPassportMetadata: async (metadataURI: ArweaveURI): Promise<PassportMetadata> => {
+    fetchPassportMetadata: async (metadataURI: ArweaveURI) => {
       const metadataURL = fromURIToURL(metadataURI);
       const data = await fetchUrl(metadataURL);
       return JSON.parse(data) as PassportMetadata;

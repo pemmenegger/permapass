@@ -12,7 +12,7 @@ export default function Page() {
   const { passportMetadata, isLoading: isMetadataLoading, error: metadataError } = usePassportMetadata({ metadataURI });
 
   return (
-    <ViewWithHeader onBack={goToHome}>
+    <ViewWithHeader onBack={goToHome} withScrollView>
       {passportMetadata && (
         <StepTitle
           text={`You have read a ${passportMetadata.type.toUpperCase()}-based passport.`}

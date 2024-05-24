@@ -3,6 +3,7 @@ import { CrossIcon } from "../../components/icons/CrossIcon";
 import { commonColors, commonStyles } from "../../styles";
 import { useModal } from ".";
 import { SecondaryButton } from "../../components/ui/buttons";
+import { useWalletClient } from "wagmi";
 
 interface ModalProps {
   title: string;

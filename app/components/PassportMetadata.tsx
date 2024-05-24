@@ -1,10 +1,10 @@
 import React from "react";
 import { Text, View, StyleSheet } from "react-native";
 import { PassportMetadata as Metadata } from "../types";
-import { commonColors, commonStyles } from "../styles";
+import { commonColors } from "../styles";
 import LoadingText from "./LoadingText";
-import { useNetwork } from "wagmi";
 import { formatAddress, formatDID, formatNetworkName } from "../lib/utils";
+import { chains } from "../lib/wagmi";
 
 interface PassportMetadataProps {
   metadata?: Metadata;
@@ -20,8 +20,6 @@ const InfoBlock = ({ label, value }: { label: string; value: string }) => (
 );
 
 export default function PassportMetadata({ metadata, isLoading, error }: PassportMetadataProps) {
-  const { chains } = useNetwork();
-
   if (isLoading) {
     return <LoadingText isLoading={true} text="Loading Passport Metadata" />;
   }

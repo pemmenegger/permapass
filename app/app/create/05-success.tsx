@@ -1,4 +1,4 @@
-import { router, useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import React from "react";
 import { Text, StyleSheet, View, Alert } from "react-native";
 import QRCode from "react-native-qrcode-svg";
@@ -23,7 +23,6 @@ export default function Page() {
     <View style={styles.container}>
       <View>
         <StepTitle text="Successfully created a passport." highlight="passport" />
-        <Text>Your passport has been successfully created.</Text>
         {qrCodeURL ? (
           <Text style={styles.qrCodeText}>
             Attach the following QR Code to your construction product to make the passport accessible:

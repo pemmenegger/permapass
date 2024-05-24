@@ -5,7 +5,7 @@ import LoadingText from "../LoadingText";
 
 interface StepProps {
   title: string;
-  description: string;
+  description: string | React.ReactNode;
   isLoading: boolean;
   isCompleted: boolean;
 }

@@ -28,8 +28,7 @@ export default function Header({ onBack }: HeaderProps) {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 12,
-    marginBottom: 30,
+    marginVertical: 12,
     flexDirection: "row",
     alignItems: "center",
   },

@@ -117,7 +117,7 @@ export function useNFTRegistry() {
         events.forEach((event) => {
           passportVersions.push({
             uri: event.args.uri! as ArweaveURI,
-            timestamp: block.timestamp,
+            blockTimestamp: block.timestamp,
             sender: event.args.sender!,
           });
         });

@@ -7,7 +7,7 @@ import { commonColors, commonStyles } from "../styles";
 interface LoadingTextProps {
   isLoading: boolean;
   isCompleted?: boolean;
-  text: string;
+  text: string | React.ReactNode;
 }
 
 export default function LoadingText({ isLoading, isCompleted, text }: LoadingTextProps) {

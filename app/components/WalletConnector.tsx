@@ -1,10 +1,11 @@
 import React, { useMemo } from "react";
-import { useAccount, useBalance, useNetwork } from "wagmi";
+import { useAccount, useBalance } from "wagmi";
 import { useWeb3Modal, useWeb3ModalState } from "@web3modal/wagmi-react-native";
 import { Pressable, View, StyleSheet, Text } from "react-native";
 import { commonColors, commonStyles } from "../styles";
 import { WalletIcon } from "./icons/WalletIcon";
 import { formatAddress, formatBalance, formatNetworkName } from "../lib/utils";
+import { chains } from "../lib/wagmi";
 
 const ConnectedView = ({
   address,
@@ -44,7 +45,6 @@ export default function WalletConnector() {
   const { open } = useWeb3Modal();
   const { selectedNetworkId } = useWeb3ModalState();
   const { isConnected, address } = useAccount();
-  const { chains } = useNetwork();
   const { data, error } = useBalance({ address });
 
   const formattedAddress = useMemo(() => formatAddress(address), [address]);
@@ -74,10 +74,10 @@ export default function WalletConnector() {
 const styles = StyleSheet.create({
   button: {
     borderRadius: 12,
-    paddingVertical: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
     borderWidth: 1,
     backgroundColor: commonColors.primary,
-    paddingHorizontal: commonStyles.innerMarginHorizontal,
     borderColor: commonColors.secondary,
   },
   isConnectedContainer: {

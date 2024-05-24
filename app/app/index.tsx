@@ -25,7 +25,7 @@ export default function Page() {
   };
 
   return (
-    <ViewWithHeader useScrollView>
+    <ViewWithHeader withScrollView>
       <StepTitle text="Welcome to PermaPass" highlight="PermaPass" />
       <StepSubtitle text="A permanent passport system for construction products using decentralized technologies." />
       <StepOption

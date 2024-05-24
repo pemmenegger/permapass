@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Passport, PassportMetadata } from "../types";
+import { PassportMetadata, PassportRead } from "../types";
 import { useNFTRegistry } from "./blockchain/useNFTRegistry";
 import { api } from "../lib/web-api";
 import { useDIDRegistry } from "./blockchain/useDIDRegistry";
@@ -10,7 +10,7 @@ interface UsePassportHistoryProps {
 }
 
 export function usePassportHistory({ passportMetadata, version }: UsePassportHistoryProps) {
-  const [passportHistory, setPassportHistory] = useState<Passport[]>([]);
+  const [passportHistory, setPassportHistory] = useState<PassportRead[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | undefined>(undefined);
   const { nftRegistry } = useNFTRegistry();
@@ -42,10 +42,13 @@ export function usePassportHistory({ passportMetadata, version }: UsePassportHis
           return [];
         }
 
-        const passportHistory = await Promise.all(
+        const passportHistory: PassportRead[] = await Promise.all(
           passportVersions.map(async (passportVersion) => {
             const passport = await api.arweave.fetchPassport(passportVersion.uri);
-            return passport;
+            return {
+              data: passport,
+              version: passportVersion,
+            };
           })
         );
 

@@ -1,51 +1,65 @@
 import React from "react";
-import { SafeAreaView, View, StyleSheet, ScrollView } from "react-native";
+import { SafeAreaView, View, StyleSheet, ScrollView, Platform } from "react-native";
 import { commonColors, commonStyles } from "../styles";
 import Header from "./Header";
 
 export interface ViewWithHeaderProps extends React.PropsWithChildren {
-  useScrollView?: boolean;
+  withScrollView?: boolean;
   onBack?: () => void;
 }
 
-export default function ViewWithHeader({ useScrollView, children, onBack }: ViewWithHeaderProps) {
+export default function ViewWithHeader({ withScrollView, children, onBack }: ViewWithHeaderProps) {
   return (
-    <View style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        {useScrollView ? (
-          <ScrollView contentContainerStyle={styles.scrollViewContent}>
-            <Header onBack={onBack} />
-            <View style={styles.children}>{children}</View>
-          </ScrollView>
-        ) : (
-          <View style={styles.content}>
-            <Header onBack={onBack} />
-            <View style={styles.children}>{children}</View>
-          </View>
-        )}
+    <SafeAreaView style={styles.mainSafeArea}>
+      <SafeAreaView style={styles.innerSafeArea}>
+        <View style={styles.headerWrapper}>
+          <Header onBack={onBack} />
+        </View>
       </SafeAreaView>
-    </View>
+      {withScrollView ? (
+        <ScrollView contentContainerStyle={styles.scrollViewContentContainer}>
+          <View style={styles.childrenContainer}>{children}</View>
+        </ScrollView>
+      ) : (
+        <View style={styles.contentContainer}>
+          <View style={styles.childrenContainer}>{children}</View>
+        </View>
+      )}
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  mainSafeArea: {
     flex: 1,
     backgroundColor: commonColors.bg,
   },
-  safeArea: {
-    flex: 1,
+  innerSafeArea: {
+    zIndex: 10,
   },
-  children: {
+  headerWrapper: {
+    position: "absolute",
+    top: 0,
+    width: "100%",
+    paddingHorizontal: commonStyles.outerMarginHorizontal,
+    backgroundColor: commonColors.bg,
+    // shadowColor: commonColors.black,
+    // shadowOffset: { width: 0, height: 2 },
+    // shadowOpacity: 0.1,
+    // shadowRadius: 4,
+  },
+  childrenContainer: {
     flex: 1,
     paddingHorizontal: commonStyles.innerMarginHorizontal,
   },
-  scrollViewContent: {
+  scrollViewContentContainer: {
     flexGrow: 1,
     paddingHorizontal: commonStyles.outerMarginHorizontal,
+    paddingTop: 90,
   },
-  content: {
+  contentContainer: {
     flex: 1,
     paddingHorizontal: commonStyles.outerMarginHorizontal,
+    paddingTop: 90,
   },
 });
