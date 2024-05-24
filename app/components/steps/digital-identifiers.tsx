@@ -1,7 +1,7 @@
 import { useCreation } from "../../context/CreationContext";
 import { CreationAction, CreationState } from "../../context/CreationContext/reducer";
 import { useModal } from "../../context/InfoModalContext";
-import { ConfirmModal } from "../../context/InfoModalContext/modals";
+import { ConfirmModal, GasFeesModal } from "../../context/InfoModalContext/modals";
 import { useDIDRegistry } from "../../hooks/blockchain/useDIDRegistry";
 import { useNFTRegistry } from "../../hooks/blockchain/useNFTRegistry";
 import { usePBTRegistry } from "../../hooks/blockchain/usePBTRegistry";
@@ -58,9 +58,8 @@ export const CreateNFTStep = () => {
   const createNFT = (passportDataURI: ArweaveURI) => {
     return new Promise<NFTPassportMetadata>((resolve, reject) => {
       openModal(
-        <ConfirmModal
-          title="Creating NFTs cost gas fees"
-          content="Do you want to pay for the gas fees to mint the NFT with your wallet?"
+        <GasFeesModal
+          content="Creating an NFT for a passport costs gas fees."
           onConfirm={async () => {
             try {
               const passportMetadata = await nftRegistry.createNFT!(passportDataURI);
@@ -115,10 +114,8 @@ export const CreatePBTStep = () => {
     return new Promise<HaLoNFCChipSignatureOutput>((resolve, reject) => {
       openModal(
         <ConfirmModal
-          title="Halo NFC chip signature"
-          content={
-            "Before a PBT can be minted, a signature from the HaLo NFC chip is required to map a chip on a blockchain. Click the button below and tap your smartphone on the HaLo NFC chip to obtain this signature."
-          }
+          title="Sign with HaLo NFC Chip"
+          content="Before creating a PBT, you need to sign a message with your HaLo NFC Chip. Click continue and hold your chip near your device to sign the message."
           onConfirm={async () => {
             try {
               const result = await haloNFCChip.computeSignatureFromChip!();
@@ -142,9 +139,8 @@ export const CreatePBTStep = () => {
   const createPBT = async (passportDataURI: ArweaveURI, chipSignature: HaLoNFCChipSignatureOutput) => {
     return new Promise<PBTPassportMetadata>((resolve, reject) => {
       openModal(
-        <ConfirmModal
-          title="Creating PBT cost gas fees"
-          content={"Do you want to pay for the gas fees to mint the PBT with your wallet?"}
+        <GasFeesModal
+          content="Creating a PBT for a passport costs gas fees."
           onConfirm={async () => {
             try {
               const passportMetadata = await pbtRegistry.createPBT!(
@@ -209,16 +205,14 @@ export const CreateDIDStep = () => {
   const { didRegistry } = useDIDRegistry();
   const { openModal } = useModal();
 
-  const createDID = async (passportDataURI: ArweaveURI) => {
+  const createDID = async () => {
     return new Promise<DIDPassportMetadata>((resolve, reject) => {
       openModal(
-        <ConfirmModal
-          title="Creating DID cost gas fees"
-          content={"Do you want to pay for the gas fees to mint the DID with your wallet?"}
+        <GasFeesModal
+          content="Creating a DID for a passport and setting your wallet as the owner cost gas fees."
           onConfirm={async () => {
             try {
               const passportMetadata = await didRegistry.createDID!();
-              await didRegistry.addDIDService!(passportMetadata.did, passportDataURI);
               resolve(passportMetadata);
             } catch (error) {
               reject(error);
@@ -236,9 +230,8 @@ export const CreateDIDStep = () => {
   const addDIDService = async (passportMetadata: DIDPassportMetadata, passportDataURI: ArweaveURI) => {
     return new Promise<void>((resolve, reject) => {
       openModal(
-        <ConfirmModal
-          title="Adding DID service cost gas fees"
-          content={"Do you want to pay for the gas fees to add the DID service with your wallet?"}
+        <GasFeesModal
+          content="Linking passport data to the passport's DID costs gas fees."
           onConfirm={async () => {
             try {
               await didRegistry.addDIDService!(passportMetadata.did, passportDataURI);
@@ -257,7 +250,7 @@ export const CreateDIDStep = () => {
   };
 
   const handleDIDCreation = async (passportDataURI: ArweaveURI) => {
-    const passportMetadata = await createDID(passportDataURI);
+    const passportMetadata = await createDID();
     await addDIDService(passportMetadata, passportDataURI);
     return passportMetadata;
   };

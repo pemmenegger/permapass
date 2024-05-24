@@ -4,13 +4,18 @@ import { ChevronLeftIcon } from "./icons/ChevronLeftIcon";
 import WalletConnector from "./WalletConnector";
 import { commonColors } from "../styles";
 
-export default function Header() {
+interface HeaderProps {
+  onBack?: () => void;
+}
+
+export default function Header({ onBack }: HeaderProps) {
   const canGoBack = router.canGoBack();
+  const showBackButton = canGoBack || onBack;
 
   return (
     <View style={styles.container}>
-      {canGoBack && (
-        <Pressable onPress={router.back} style={styles.backButton}>
+      {showBackButton && (
+        <Pressable onPress={onBack ? onBack : router.back} style={styles.backButton}>
           <ChevronLeftIcon height={24} strokeWidth={1.5} color={commonColors.black} />
         </Pressable>
       )}

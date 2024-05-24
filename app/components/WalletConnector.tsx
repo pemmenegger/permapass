@@ -4,6 +4,7 @@ import { useWeb3Modal, useWeb3ModalState } from "@web3modal/wagmi-react-native";
 import { Pressable, View, StyleSheet, Text } from "react-native";
 import { commonColors, commonStyles } from "../styles";
 import { WalletIcon } from "./icons/WalletIcon";
+import { formatAddress, formatBalance, formatNetworkName } from "../lib/utils";
 
 const ConnectedView = ({
   address,
@@ -46,32 +47,9 @@ export default function WalletConnector() {
   const { chains } = useNetwork();
   const { data, error } = useBalance({ address });
 
-  const formatNetworkName = (networkId?: number) => {
-    const chain = chains.find((chain) => chain.id === networkId);
-    return chain ? chain.name : "Unknown";
-  };
-
-  const formatBalance = (formatted?: string) => {
-    if (!formatted) {
-      return "0";
-    }
-    const num = parseFloat(formatted);
-    if (isNaN(num)) {
-      throw new Error("Invalid number format");
-    }
-    return num.toFixed(Math.min(4, (num.toString().split(".")[1] || "").length));
-  };
-
-  const formatAddress = (address?: string) => {
-    if (!address) {
-      return "";
-    }
-    return `${address.slice(0, 6)}...${address.slice(-4)}`;
-  };
-
   const formattedAddress = useMemo(() => formatAddress(address), [address]);
   const formattedBalance = useMemo(() => formatBalance(data?.formatted), [data?.formatted]);
-  const formattedNetworkName = useMemo(() => formatNetworkName(selectedNetworkId), [selectedNetworkId]);
+  const formattedNetworkName = useMemo(() => formatNetworkName(chains, selectedNetworkId), [selectedNetworkId]);
 
   if (error) {
     console.error("Error fetching wallet balance: ", error);

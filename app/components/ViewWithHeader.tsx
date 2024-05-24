@@ -5,20 +5,21 @@ import Header from "./Header";
 
 export interface ViewWithHeaderProps extends React.PropsWithChildren {
   useScrollView?: boolean;
+  onBack?: () => void;
 }
 
-export default function ViewWithHeader({ useScrollView, children }: ViewWithHeaderProps) {
+export default function ViewWithHeader({ useScrollView, children, onBack }: ViewWithHeaderProps) {
   return (
     <View style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
         {useScrollView ? (
           <ScrollView contentContainerStyle={styles.scrollViewContent}>
-            <Header />
+            <Header onBack={onBack} />
             <View style={styles.children}>{children}</View>
           </ScrollView>
         ) : (
           <View style={styles.content}>
-            <Header />
+            <Header onBack={onBack} />
             <View style={styles.children}>{children}</View>
           </View>
         )}

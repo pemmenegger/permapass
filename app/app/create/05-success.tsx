@@ -5,6 +5,7 @@ import QRCode from "react-native-qrcode-svg";
 import StepTitle from "../../components/stepper/StepTitle";
 import { PrimaryButton, SecondaryButton } from "../../components/ui/buttons";
 import { commonColors } from "../../styles";
+import { goToHome } from "../../lib/utils";
 
 const QRCodeView = (value: string) => (
   <View style={{ alignItems: "center" }}>
@@ -32,7 +33,7 @@ export default function Page() {
         )}
       </View>
       {qrCodeURL && QRCodeView(qrCodeURL as string)}
-      <PrimaryButton title="Home" onPress={() => router.push("/")} />
+      <PrimaryButton title="Home" onPress={goToHome} />
     </View>
   );
 }

@@ -1,12 +1,11 @@
 import { View, Text, StyleSheet } from "react-native";
 import { commonColors, commonStyles } from "../../styles";
-import { LoadingSpinnerIcon } from "../icons/LoadingSpinnerIcon";
-import { CheckCircleIcon } from "../icons/CheckCircleIcon";
 import React from "react";
+import LoadingText from "../LoadingText";
 
 interface StepProps {
   title: string;
-  description: React.ReactNode;
+  description: string;
   isLoading: boolean;
   isCompleted: boolean;
 }
@@ -25,18 +24,8 @@ export default function StepOverview({ steps }: StepOverviewProps) {
           </View>
           <View style={styles.stepText}>
             <Text style={styles.stepTitle}>{step.title}</Text>
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              {step.isLoading && (
-                <View style={{ marginRight: 8 }}>
-                  <LoadingSpinnerIcon height={16} color={commonColors.gray} strokeWidth={2.3} />
-                </View>
-              )}
-              {step.isCompleted && (
-                <View style={{ marginRight: 8 }}>
-                  <CheckCircleIcon height={16} color={commonColors.primary} strokeWidth={2} />
-                </View>
-              )}
-              <Text style={styles.stepDescription}>{step.description}</Text>
+            <View style={{ marginTop: 4 }}>
+              <LoadingText isLoading={step.isLoading} isCompleted={step.isCompleted} text={step.description} />
             </View>
           </View>
         </View>
@@ -74,9 +63,5 @@ const styles = StyleSheet.create({
   stepTitle: {
     ...commonStyles.p,
     fontFamily: "Inter-SemiBold",
-  },
-  stepDescription: {
-    ...commonStyles.h4,
-    marginTop: 4,
   },
 });
