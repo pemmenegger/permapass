@@ -10,6 +10,7 @@ import { NFCIcon } from "../components/icons/NFCIcon";
 import NfcManager, { NfcTech } from "react-native-nfc-manager";
 import { execHaloCmdRN } from "@arx-research/libhalo/api/react-native.js";
 import ViewWithHeader from "../components/ViewWithHeader";
+import { QRCodeView } from "./create/05-success";
 
 NfcManager.start();
 
@@ -26,6 +27,8 @@ export default function Page() {
 
   return (
     <ViewWithHeader withScrollView>
+      <QRCodeView value="https://apple.com" />
+
       <StepTitle text="Welcome to PermaPass" highlight="PermaPass" />
       <StepSubtitle text="A permanent passport system for construction products using decentralized technologies." />
       <StepOption
