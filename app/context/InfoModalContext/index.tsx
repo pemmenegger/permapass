@@ -1,15 +1,25 @@
 import React, { createContext, useState, useContext } from "react";
 import type { PropsWithChildren, ReactNode } from "react";
 import { Modal, View, StyleSheet } from "react-native";
+import { ConfirmModal, ConfirmModalProps, GasFeesModal, GasFeesModalProps, InfoModal, InfoModalProps } from "./modals";
 
 interface ModalState {
   isOpen: boolean;
   content?: ReactNode;
 }
 
+interface InfoModalExternalProps extends Omit<InfoModalProps, "closeModal"> {}
+
+interface GasFeesModalExternalProps<T> extends Omit<GasFeesModalProps<T>, "closeModal"> {}
+
+interface ConfirmModalExternalProps<T> extends Omit<ConfirmModalProps<T>, "closeModal"> {}
+
 interface ModalContextType {
   modal: ModalState;
-  openModal: (content: ReactNode) => void;
+  // openModal: (content: ReactNode) => void;
+  openInfoModal: (props: InfoModalExternalProps) => void;
+  openConfirmModal: <T>(props: ConfirmModalExternalProps<T>) => Promise<T>;
+  openGasFeesModal: <T>(props: GasFeesModalExternalProps<T>) => Promise<T>;
   closeModal: () => void;
 }
 
@@ -24,12 +34,58 @@ function ModalProvider({ children }: PropsWithChildren) {
     setModal({ isOpen: true, content });
   };
 
+  const openInfoModal = (props: InfoModalExternalProps) => {
+    openModal(<InfoModal {...props} closeModal={closeModal} />);
+  };
+
+  const openConfirmModal = <T,>(props: ConfirmModalExternalProps<T>) => {
+    return new Promise<T>((resolve, reject) => {
+      openModal(
+        <ConfirmModal
+          {...props}
+          closeModal={closeModal}
+          onConfirm={async () => {
+            const result = await props.onConfirm();
+            resolve(result);
+          }}
+          onReject={async () => {
+            if (props.onReject) {
+              await props.onReject();
+            }
+            reject();
+          }}
+        />
+      );
+    });
+  };
+
+  const openGasFeesModal = <T,>(props: GasFeesModalExternalProps<T>) => {
+    return new Promise<T>((resolve, reject) => {
+      openModal(
+        <GasFeesModal
+          {...props}
+          closeModal={closeModal}
+          onConfirm={async () => {
+            const result = await props.onConfirm();
+            resolve(result);
+          }}
+          onReject={async () => {
+            if (props.onReject) {
+              await props.onReject();
+            }
+            reject();
+          }}
+        />
+      );
+    });
+  };
+
   const closeModal = () => {
     setModal((prev) => ({ ...prev, isOpen: false, content: undefined }));
   };
 
   return (
-    <ModalContext.Provider value={{ modal, openModal, closeModal }}>
+    <ModalContext.Provider value={{ modal, openInfoModal, openConfirmModal, openGasFeesModal, closeModal }}>
       <View style={styles.container}>
         {modal.isOpen && <View style={styles.overlay} />}
         {children}

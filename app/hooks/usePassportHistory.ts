@@ -26,6 +26,7 @@ export function usePassportHistory({ passportMetadata, version }: UsePassportHis
 
       try {
         let passportVersions;
+        console.log("Passport metadata", passportMetadata);
         switch (passportMetadata.type) {
           case "nft":
             passportVersions = await nftRegistry.readNFTPassportHistory(passportMetadata);
@@ -36,6 +37,8 @@ export function usePassportHistory({ passportMetadata, version }: UsePassportHis
           default:
             throw new Error(`Unknown passport type: ${passportMetadata}`);
         }
+
+        console.log("Passport versions", passportVersions);
 
         if (!passportVersions || passportVersions.length === 0) {
           console.log("No passport version found");

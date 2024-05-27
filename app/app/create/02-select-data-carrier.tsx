@@ -1,7 +1,7 @@
 import { View, StyleSheet } from "react-native";
 import { useState } from "react";
 import { useCreation } from "../../context/CreationContext";
-import { DataCarrierType } from "../../types";
+import { DataCarrier } from "../../types";
 import { router } from "expo-router";
 import StepOption from "../../components/stepper/StepOption";
 import StepTitle from "../../components/stepper/StepTitle";
@@ -10,7 +10,7 @@ import { PrimaryButton } from "../../components/ui/buttons";
 
 export default function Page() {
   const { state, dispatch } = useCreation();
-  const [dataCarrier, setDataCarrier] = useState<DataCarrierType | undefined>(state.userInput.dataCarrier);
+  const [dataCarrier, setDataCarrier] = useState<DataCarrier | undefined>(state.userInput.dataCarrier);
 
   const isInvalid = !dataCarrier;
 

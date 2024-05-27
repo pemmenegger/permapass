@@ -3,7 +3,7 @@ import { Address, useWalletClient } from "wagmi";
 import { PermaPassDIDRegistry } from "../../contracts/PermaPassDIDRegistry";
 import { readContract } from "@wagmi/core";
 import { generatePrivateKey, privateKeyToAccount, sign } from "viem/accounts";
-import { encodePacked, fromHex, keccak256, pad, stringToBytes, toHex } from "viem";
+import { encodePacked, fromHex, keccak256, pad, stringToBytes, toHex, zeroAddress } from "viem";
 import { ArweaveURI, DIDPassportMetadata, PassportVersion } from "../../types";
 import { getPublicClient } from "../../lib/wagmi";
 import { fromDIDToIdentity } from "../../lib/utils";
@@ -14,6 +14,8 @@ export function useDIDRegistry() {
   const [addDIDService, setAddDIDService] = useState<
     ((didUrl: string, passportDataURI: ArweaveURI) => Promise<void>) | undefined
   >(undefined);
+  const [deleteDID, setDeleteDID] = useState<((didUrl: string) => Promise<void>) | undefined>(undefined);
+  const [isOwner, setIsOwner] = useState<((metadata: DIDPassportMetadata) => Promise<boolean>) | undefined>(undefined);
 
   useEffect(() => {
     if (!walletClient) {
@@ -27,12 +29,13 @@ export function useDIDRegistry() {
     if (!contractInfo) throw new Error(`useDIDRegistry - Contract info not found for chain id: ${chainId}`);
 
     const publicClient = getPublicClient(chainId);
-    if (!publicClient) throw new Error(`useDIDRegistry - Public client unsupported chain id: ${chainId}`);
 
     const handleCreateDID = async () => {
       try {
+        // generate new blockchain address
         const privateKey = generatePrivateKey();
         const account = privateKeyToAccount(privateKey as Address);
+
         const identity = account.address;
         const identityOwner = account.address;
         const newOwner = walletClient.account.address;
@@ -77,8 +80,8 @@ export function useDIDRegistry() {
       }
     };
 
-    const handleAddDIDService = async (didUrl: string, passportDataURI: ArweaveURI) => {
-      const identity = didUrl.split(":")[3];
+    const handleAddDIDService = async (did: string, passportDataURI: ArweaveURI) => {
+      const identity = fromDIDToIdentity(did);
 
       const key = "did/svc/ProductPassport";
       const value = passportDataURI;
@@ -99,15 +102,58 @@ export function useDIDRegistry() {
       await publicClient.waitForTransactionReceipt({ hash: txHash });
     };
 
+    const handleDeleteDIDService = async (did: string) => {
+      // change the ownership, i.e. controller to the zero address
+      const identity = fromDIDToIdentity(did);
+
+      const identityOwner = await readContract({
+        chainId: chainId,
+        address: contractInfo.address,
+        abi: contractInfo.abi,
+        functionName: "owners",
+        args: [identity],
+      });
+
+      if (identityOwner !== walletClient.account.address) {
+        throw new Error(`useDIDRegistry - Identity owner does not match wallet address: ${identityOwner}`);
+      }
+
+      const txHash = await walletClient.writeContract({
+        address: contractInfo.address,
+        abi: contractInfo.abi,
+        functionName: "changeOwner",
+        args: [identity, zeroAddress],
+      });
+      await publicClient.waitForTransactionReceipt({ hash: txHash });
+    };
+
+    const handleIsOwner = async (metadata: DIDPassportMetadata) => {
+      const { did, chainId, address } = metadata;
+
+      const identity = fromDIDToIdentity(did);
+
+      const owner = await readContract({
+        chainId,
+        address: address as Address,
+        // TODO from metadata?
+        abi: PermaPassDIDRegistry[chainId as keyof typeof PermaPassDIDRegistry].abi,
+        functionName: "owners",
+        args: [identity],
+      });
+
+      return owner === walletClient.account.address;
+    };
+
     setCreateDID(() => handleCreateDID);
     setAddDIDService(() => handleAddDIDService);
+    setDeleteDID(() => handleDeleteDIDService);
+    setIsOwner(() => handleIsOwner);
   }, [walletClient, isError, isLoading]);
 
   const readDIDPassportHistory = async (metadata: DIDPassportMetadata) => {
     const { did, chainId, address } = metadata;
 
     const publicClient = getPublicClient(chainId);
-    if (!publicClient) throw new Error(`useDIDRegistry - Public client unsupported chain id: ${chainId}`);
 
     const identity = fromDIDToIdentity(did);
 
@@ -121,10 +167,14 @@ export function useDIDRegistry() {
         args: [identity],
       });
 
+      console.log("DIDAttributeChanged events", previousChange);
+
       const passportVersions: PassportVersion[] = [];
 
       while (previousChange) {
-        const events = await publicClient.getContractEvents({
+        const block = await publicClient.getBlock({ blockNumber: previousChange });
+
+        const attributeChangedEvents = await publicClient.getContractEvents({
           address: address as Address,
           // TODO from metadata?
           abi: PermaPassDIDRegistry[chainId as keyof typeof PermaPassDIDRegistry].abi,
@@ -134,21 +184,37 @@ export function useDIDRegistry() {
           toBlock: previousChange,
         });
 
-        const block = await publicClient.getBlock({ blockNumber: previousChange });
-
-        for (const event of events) {
-          const name = fromHex(event.args.name!, "string").replace(/\0/g, "");
-          if (name !== "did/svc/ProductPassport") {
-            continue;
+        if (attributeChangedEvents.length > 0) {
+          for (const event of attributeChangedEvents) {
+            const name = fromHex(event.args.name!, "string").replace(/\0/g, "");
+            if (name !== "did/svc/ProductPassport") {
+              continue;
+            }
+            passportVersions.push({
+              uri: fromHex(event.args.value!, "string") as ArweaveURI,
+              blockTimestamp: block.timestamp,
+            });
           }
-          passportVersions.push({
-            uri: fromHex(event.args.value!, "string") as ArweaveURI,
-            blockTimestamp: block.timestamp,
-          });
+
+          const lastEvent = attributeChangedEvents[attributeChangedEvents.length - 1];
+          previousChange = lastEvent ? BigInt(lastEvent.args.previousChange!) : 0n;
+          break;
         }
 
-        const lastEvent = events[events.length - 1];
-        previousChange = lastEvent ? BigInt(lastEvent.args.previousChange!) : 0n;
+        const ownerChangedEvents = await publicClient.getContractEvents({
+          address: address as Address,
+          // TODO from metadata?
+          abi: PermaPassDIDRegistry[chainId as keyof typeof PermaPassDIDRegistry].abi,
+          eventName: "DIDOwnerChanged",
+          args: { identity },
+          fromBlock: previousChange,
+          toBlock: previousChange,
+        });
+
+        if (ownerChangedEvents.length > 0) {
+          const lastEvent = ownerChangedEvents[ownerChangedEvents.length - 1];
+          previousChange = lastEvent ? BigInt(lastEvent.args.previousChange!) : 0n;
+        }
       }
 
       return passportVersions;
@@ -158,11 +224,38 @@ export function useDIDRegistry() {
     }
   };
 
+  const isDeleted = async (metadata: DIDPassportMetadata) => {
+    const { chainId, address } = metadata;
+
+    const publicClient = getPublicClient(chainId);
+
+    const identity = fromDIDToIdentity(metadata.did);
+
+    try {
+      const owner = await readContract({
+        chainId,
+        address: address as Address,
+        // TODO from metadata?
+        abi: PermaPassDIDRegistry[chainId as keyof typeof PermaPassDIDRegistry].abi,
+        functionName: "owners",
+        args: [identity],
+      });
+
+      return owner === zeroAddress;
+    } catch (error) {
+      console.error("Failed to read DID owner:", error);
+      throw error;
+    }
+  };
+
   return {
     didRegistry: {
       createDID,
       addDIDService,
+      deleteDID,
       readDIDPassportHistory,
+      isOwner,
+      isDeleted,
     },
   };
 }

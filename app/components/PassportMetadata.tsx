@@ -14,8 +14,8 @@ interface PassportMetadataProps {
 
 const InfoBlock = ({ label, value }: { label: string; value: string }) => (
   <View style={styles.infoBlockContainer}>
-    <Text style={styles.subtext}>{label}</Text>
-    <Text style={styles.subtext}>{value}</Text>
+    <Text style={styles.text}>{label}</Text>
+    <Text style={styles.text}>{value}</Text>
   </View>
 );
 
@@ -74,16 +74,10 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
   },
-  subtext: {
+  text: {
     fontFamily: "Inter-SemiBold",
     letterSpacing: -0.1,
     fontSize: 12,
     color: commonColors.secondary,
   },
-  //   text: {
-  //     fontFamily: "Inter-Medium",
-  //     letterSpacing: -0.2,
-  //     fontSize: 14,
-  //     color: commonColors.black,
-  //   },
 });

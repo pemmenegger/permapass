@@ -40,9 +40,9 @@ export interface PassportRead {
   version: PassportVersion;
 }
 
-export type DataCarrierType = "qr" | "nfc";
+export type DataCarrier = "qr" | "nfc";
 
-export type DigitalIdentifierType = "nft" | "pbt" | "did";
+export type DigitalIdentifier = "nft" | "pbt" | "did";
 
 export type ArweaveURI = `ar://${string}`;
 

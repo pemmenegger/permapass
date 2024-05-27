@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useWalletClient } from "wagmi";
 import { getPublicClient } from "../lib/wagmi";
-import { Alert } from "react-native";
 import NfcManager, { NfcTech } from "react-native-nfc-manager";
 import { execHaloCmdRN } from "@arx-research/libhalo/api/react-native.js";
 import { Address, encodePacked, keccak256 } from "viem";
@@ -18,12 +17,11 @@ export function useHaLoNFCChip() {
   const KEY_NO = 1;
   const { data: walletClient, isError, isLoading } = useWalletClient();
   const [computeSignatureFromChip, setComputeSignatureFromChip] = useState<
-    (() => Promise<HaLoNFCChipSignatureOutput | undefined>) | undefined
+    (() => Promise<HaLoNFCChipSignatureOutput>) | undefined
   >(undefined);
 
   useEffect(() => {
     if (!walletClient) {
-      // console.error("useDIDRegistry - walletClient not available");
       return;
     }
 
@@ -37,9 +35,6 @@ export function useHaLoNFCChip() {
       const address = walletClient.account.address;
 
       const publicClient = getPublicClient(chainId);
-      if (!publicClient) {
-        throw new Error(`Unsupported chain id: ${chainId}`);
-      }
 
       const currentBlockNumber = await publicClient.getBlockNumber();
       console.log(`Current Block Number: ${currentBlockNumber}`);
@@ -86,8 +81,7 @@ export function useHaLoNFCChip() {
           blockNumberUsedInSig,
         };
       } catch (ex) {
-        Alert.alert("HaLo", "Error: " + String(ex));
-        console.warn("Oops!", ex);
+        throw new Error(`Failed to compute signature from chip: ${ex}`);
       } finally {
         // stop the nfc scanning
         NfcManager.cancelTechnologyRequest();

@@ -1,15 +1,24 @@
 import React from "react";
 import { usePassportMetadata } from "../hooks/usePassportMetadata";
-import { useReadQueryParams } from "../hooks/useReadQueryParams";
+import { useMetadataURIFromParams } from "../hooks/useMetadataURIFromParams";
 import ViewWithHeader from "../components/ViewWithHeader";
 import StepTitle from "../components/stepper/StepTitle";
 import PassportWithHistory from "../components/PassportWithHistory";
 import PassportMetadata from "../components/PassportMetadata";
 import { goToHome } from "../lib/utils";
+import { Text } from "react-native";
 
 export default function Page() {
-  const { metadataURI } = useReadQueryParams();
-  const { passportMetadata, isLoading: isMetadataLoading, error: metadataError } = usePassportMetadata({ metadataURI });
+  const { metadataURI, error: metadataURIError } = useMetadataURIFromParams();
+  const { passportMetadata, isLoading, error: metadataError } = usePassportMetadata({ metadataURI });
+
+  if (metadataURIError) {
+    return (
+      <ViewWithHeader onBack={goToHome}>
+        <Text>An error occurred while loading the passport.</Text>
+      </ViewWithHeader>
+    );
+  }
 
   return (
     <ViewWithHeader onBack={goToHome} withScrollView>
@@ -19,9 +28,7 @@ export default function Page() {
           highlight={`${passportMetadata.type.toUpperCase()}-based`}
         />
       )}
-      {metadataURI && (
-        <PassportMetadata isLoading={isMetadataLoading} error={metadataError} metadata={passportMetadata} />
-      )}
+      {metadataURI && <PassportMetadata isLoading={isLoading} error={metadataError} metadata={passportMetadata} />}
       {passportMetadata && <PassportWithHistory passportMetadata={passportMetadata} />}
     </ViewWithHeader>
   );

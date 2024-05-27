@@ -1,23 +1,22 @@
 import { View, Text, Pressable, StyleSheet, SafeAreaView } from "react-native";
 import { CrossIcon } from "../../components/icons/CrossIcon";
 import { commonColors, commonStyles } from "../../styles";
-import { useModal } from ".";
 import { SecondaryButton } from "../../components/ui/buttons";
-import { useWalletClient } from "wagmi";
 
 interface ModalProps {
   title: string;
   content: string;
+  closeModal: () => void;
 }
 
 export interface InfoModalProps extends ModalProps {}
 
-interface ConfirmModalProps extends ModalProps {
-  onConfirm: () => Promise<void>;
+export type ConfirmModalProps<T> = ModalProps & {
+  onConfirm: () => Promise<T>;
   onReject?: () => Promise<void>;
-}
+};
 
-export interface GasFeesModalProps extends Omit<ConfirmModalProps, "title"> {}
+export type GasFeesModalProps<T> = Omit<ConfirmModalProps<T>, "title">;
 
 const ModalHeader = ({ title, onClose }: { title: string; onClose: () => void }) => (
   <View style={styles.titleContainer}>
@@ -30,19 +29,17 @@ const ModalHeader = ({ title, onClose }: { title: string; onClose: () => void })
 
 const ModalContent = ({ content }: { content: string }) => <Text style={styles.description}>{content}</Text>;
 
-const ConfirmModal = ({ title, content, onConfirm, onReject }: ConfirmModalProps) => {
-  const { closeModal } = useModal();
-
+const ConfirmModal = <T,>({ title, content, closeModal, onConfirm, onReject }: ConfirmModalProps<T>) => {
   const handleReject = async () => {
-    closeModal();
     if (onReject) {
       await onReject();
     }
+    closeModal();
   };
 
   const handleConfirm = async () => {
-    closeModal();
     await onConfirm();
+    closeModal();
   };
 
   return (
@@ -58,8 +55,7 @@ const ConfirmModal = ({ title, content, onConfirm, onReject }: ConfirmModalProps
   );
 };
 
-const InfoModal = ({ title, content }: InfoModalProps) => {
-  const { closeModal } = useModal();
+const InfoModal = ({ title, content, closeModal }: InfoModalProps) => {
   return (
     <View style={styles.modalContent}>
       <ModalHeader title={title} onClose={closeModal} />
@@ -68,11 +64,12 @@ const InfoModal = ({ title, content }: InfoModalProps) => {
   );
 };
 
-const GasFeesModal = ({ content, onConfirm, onReject }: GasFeesModalProps) => {
+const GasFeesModal = <T,>({ content, closeModal, onConfirm, onReject }: GasFeesModalProps<T>) => {
   return (
     <ConfirmModal
       title="Gas Fees"
       content={`${content} Click continue to be redirected to your wallet app to confirm and pay gas fees for this blockchain transaction.`}
+      closeModal={closeModal}
       onConfirm={onConfirm}
       onReject={onReject}
     />

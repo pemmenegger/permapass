@@ -17,9 +17,19 @@ export default function Page() {
     void getBarCodeScannerPermissions();
   }, []);
 
-  const handleBarCodeScanned = ({ type, data }: { type: any; data: any }) => {
+  const handleBarCodeScanned = ({ data }: { type: any; data: any }) => {
     setScanned(true);
-    alert(`Bar code with type ${type} and data ${data} has been scanned!`);
+    if (data.startsWith("com.permapass.app://read?")) {
+      const queryParams = new URLSearchParams(data.split("?")[1]);
+      router.push({
+        pathname: "read",
+        params: {
+          metadataURI: queryParams.get("metadataURI"),
+        },
+      });
+    } else {
+      alert(`The scanned QR Code is not a QR Code passport.`);
+    }
   };
 
   if (hasPermission === null) {

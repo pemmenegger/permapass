@@ -7,6 +7,7 @@ export const commonColors = {
   vercelWhite: "#ededed",
   bg: "#ECF0F1",
   gray: "#A2A2A2",
+  red: "#FF0033",
   // test: "#2F4858",
   // test: "#9AB0A6",
 };

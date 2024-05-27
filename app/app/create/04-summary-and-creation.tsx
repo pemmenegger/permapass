@@ -1,12 +1,12 @@
 import React, { useEffect } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Alert } from "react-native";
 import { useCreation } from "../../context/CreationContext";
 import StepTitle from "../../components/stepper/StepTitle";
 import StepSubtitle from "../../components/stepper/StepSubtitle";
 import { PrimaryButton } from "../../components/ui/buttons";
 import StepOverview from "../../components/stepper/StepOverview";
 import { useWalletClient } from "wagmi";
-import { DataCarrierType, DigitalIdentifierType } from "../../types";
+import { DataCarrier, DigitalIdentifier } from "../../types";
 import { CreateDIDStep, CreateNFTStep, CreatePBTStep } from "../../components/steps/digital-identifiers";
 import { GenerateQRCodeStep, WriteHaLoChipStep } from "../../components/steps/data-carriers";
 import { UploadPassportDataStep } from "../../components/steps/UploadPassportDataStep";
@@ -28,7 +28,13 @@ export default function Page() {
     dispatch({ type: "REQUIREMENT_NOT_MET", requirementNotMetMessage: undefined });
   }, [walletClient, isError, isLoading]);
 
-  const getDigitalIdentityStep = (type: DigitalIdentifierType) => {
+  useEffect(() => {
+    if (state.errorMessage) {
+      Alert.alert(`An error occurred. ${state.errorMessage}`);
+    }
+  }, [state.errorMessage]);
+
+  const getDigitalIdentityStep = (type: DigitalIdentifier) => {
     switch (type) {
       case "nft":
         return CreateNFTStep();
@@ -41,7 +47,7 @@ export default function Page() {
     }
   };
 
-  const getDataCarrierStep = (type: DataCarrierType) => {
+  const getDataCarrierStep = (type: DataCarrier) => {
     switch (type) {
       case "nfc":
         return WriteHaLoChipStep();
@@ -65,7 +71,6 @@ export default function Page() {
           ]}
         />
       </View>
-      {state.errorMessage && <Text>{state.errorMessage}</Text>}
       {state.requirementNotMetMessage ? (
         <Text style={{ textAlign: "center" }}>{state.requirementNotMetMessage}</Text>
       ) : (

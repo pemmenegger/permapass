@@ -43,9 +43,17 @@ contract PermaPassNFTRegistry is ERC721, ERC721URIStorage, Ownable {
 		return super.tokenURI(tokenId);
 	}
 
+	function burn(uint256 tokenId) external {
+		_burn(tokenId);
+	}
+
 	function _burn(
 		uint256 tokenId
 	) internal override(ERC721, ERC721URIStorage) {
 		super._burn(tokenId);
+	}
+
+	function exists(uint256 tokenId) public view returns (bool) {
+		return _exists(tokenId);
 	}
 }

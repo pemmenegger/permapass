@@ -1,5 +1,5 @@
 import { useLocalSearchParams } from "expo-router";
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { Text, StyleSheet, View, Alert, Share } from "react-native";
 import QRCode from "react-native-qrcode-svg";
 import StepTitle from "../../components/stepper/StepTitle";
@@ -11,6 +11,7 @@ interface QRCodeViewProps {
 }
 
 export const QRCodeView = ({ url }: QRCodeViewProps) => {
+  const [isLoading, setIsLoading] = useState(false);
   const qrCodeSize = 200;
   const qrCodeRef = useRef();
 
@@ -19,23 +20,30 @@ export const QRCodeView = ({ url }: QRCodeViewProps) => {
       return;
     }
 
-    const svgRef = qrCodeRef.current as any;
-    svgRef.toDataURL(async (dataURL: any) => {
-      if (!dataURL) {
-        Alert.alert("Failed to generate QR Code");
-      }
+    try {
+      setIsLoading(true);
+      const svgRef = qrCodeRef.current as any;
+      svgRef.toDataURL(async (dataURL: any) => {
+        if (!dataURL) {
+          Alert.alert("Failed to generate QR Code");
+        }
 
-      const content = {
-        title: "QR Code",
-        url: `data:image/png;base64,${dataURL}`,
-      };
+        const content = {
+          title: "QR Code",
+          url: `data:image/png;base64,${dataURL}`,
+        };
 
-      const options = {
-        dialogTitle: "Share QR Code",
-      };
+        const options = {
+          dialogTitle: "Share QR Code",
+        };
 
-      Share.share(content, options);
-    });
+        Share.share(content, options);
+      });
+    } catch (error) {
+      Alert.alert("Failed to share QR Code");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -43,7 +51,7 @@ export const QRCodeView = ({ url }: QRCodeViewProps) => {
       <View style={{ width: qrCodeSize }}>
         <QRCode value={url} size={qrCodeSize} backgroundColor={"transparent"} getRef={(c) => (qrCodeRef.current = c)} />
         <View style={{ height: 20 }} />
-        <SecondaryButton title="Share QR Code" onPress={handleShare} />
+        <SecondaryButton title={isLoading ? "Loading..." : "Share QR Code"} onPress={handleShare} />
       </View>
     </View>
   );

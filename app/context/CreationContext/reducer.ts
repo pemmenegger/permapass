@@ -1,10 +1,10 @@
-import { PassportCreate, DataCarrierType, DigitalIdentifierType, ArweaveURI } from "../../types";
+import { PassportCreate, DataCarrier, DigitalIdentifier, ArweaveURI } from "../../types";
 
 export type CreationState = {
   userInput: {
     passportData?: PassportCreate;
-    dataCarrier?: DataCarrierType;
-    digitalIdentifier?: DigitalIdentifierType;
+    dataCarrier?: DataCarrier;
+    digitalIdentifier?: DigitalIdentifier;
   };
   requirementNotMetMessage?: string;
   results: {
@@ -26,8 +26,8 @@ export type CreationAction =
   | {
       type: "USER_INPUT_CHANGED";
       passportData?: PassportCreate;
-      dataCarrier?: DataCarrierType;
-      digitalIdentifier?: DigitalIdentifierType;
+      dataCarrier?: DataCarrier;
+      digitalIdentifier?: DigitalIdentifier;
     }
   | {
       type: "REQUIREMENT_NOT_MET";

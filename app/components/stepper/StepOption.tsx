@@ -7,10 +7,9 @@ interface StepOptionProps {
   subtitle: string;
   isSelected?: boolean;
   onPress: () => void;
-  Icon?: React.ReactNode;
 }
 
-export default function StepOption({ title, subtitle, isSelected = false, onPress, Icon = null }: StepOptionProps) {
+export default function StepOption({ title, subtitle, isSelected = false, onPress }: StepOptionProps) {
   const styles = useMemo(
     () =>
       StyleSheet.create({
@@ -58,7 +57,6 @@ export default function StepOption({ title, subtitle, isSelected = false, onPres
           <Text style={styles.title}>{title}</Text>
           <Text style={styles.subtitle}>{subtitle}</Text>
         </View>
-        {/* {Icon && <View style={styles.iconContainer}>{Icon}</View>} */}
       </View>
     </TouchableOpacity>
   );

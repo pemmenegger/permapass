@@ -13,6 +13,8 @@ export function useNFTRegistry() {
   const [updateTokenURI, setUpdateTokenURI] = useState<
     ((tokenId: bigint, tokenURI: ArweaveURI) => Promise<void>) | undefined
   >(undefined);
+  const [deleteNFT, setDeleteNFT] = useState<((tokenId: bigint) => Promise<void>) | undefined>(undefined);
+  const [isOwner, setIsOwner] = useState<((metadata: NFTPassportMetadata) => Promise<boolean>) | undefined>(undefined);
 
   useEffect(() => {
     if (!walletClient) {
@@ -25,7 +27,6 @@ export function useNFTRegistry() {
     if (!contractInfo) throw new Error(`useNFTRegistry - Contract info not found for chain id: ${chainId}`);
 
     const publicClient = getPublicClient(chainId);
-    if (!publicClient) throw new Error(`useNFTRegistry - Public client unsupported chain id: ${chainId}`);
 
     const handleCreateNFT = async (tokenURI: ArweaveURI) => {
       try {
@@ -81,21 +82,68 @@ export function useNFTRegistry() {
       }
     };
 
+    const handleDeleteNFT = async (tokenId: bigint) => {
+      try {
+        const txHash = await walletClient.writeContract({
+          address: contractInfo.address,
+          abi: contractInfo.abi,
+          functionName: "burn",
+          args: [tokenId],
+        });
+        await publicClient.waitForTransactionReceipt({ hash: txHash });
+      } catch (error) {
+        console.error(`useNFTRegistry - Failed to delete NFT:`, error);
+        throw error;
+      }
+    };
+
+    const handleIsOwner = async (metadata: NFTPassportMetadata) => {
+      const { tokenId, chainId, address } = metadata;
+
+      try {
+        const exists = await readContract({
+          chainId,
+          address: address as Address,
+          abi: PermaPassNFTRegistry[chainId as keyof typeof PermaPassNFTRegistry].abi,
+          functionName: "exists",
+          args: [tokenId],
+        });
+
+        if (!exists) {
+          return false;
+        }
+
+        const owner = await readContract({
+          chainId,
+          address: address as Address,
+          abi: PermaPassNFTRegistry[chainId as keyof typeof PermaPassNFTRegistry].abi,
+          functionName: "ownerOf",
+          args: [tokenId],
+        });
+
+        const walletAddress = walletClient.account.address;
+        return owner === walletAddress;
+      } catch (error) {
+        console.error(`useNFTRegistry - Failed to read NFT owner:`, error);
+        throw error;
+      }
+    };
+
     setCreateNFT(() => handleCreateNFT);
     setUpdateTokenURI(() => handleUpdateTokenURI);
+    setDeleteNFT(() => handleDeleteNFT);
+    setIsOwner(() => handleIsOwner);
   }, [walletClient, isError, isLoading]);
 
   const readNFTPassportHistory = useCallback(async (metadata: NFTPassportMetadata): Promise<PassportVersion[]> => {
     const { tokenId, chainId, address } = metadata;
 
     const publicClient = getPublicClient(chainId);
-    if (!publicClient) throw new Error(`useNFTRegistry - Public client unsupported chain id: ${chainId}`);
 
     try {
       let previousChange: bigint = await readContract({
         chainId,
         address: address as Address,
-        // TODO put abi on metadata?
         abi: PermaPassNFTRegistry[chainId as keyof typeof PermaPassNFTRegistry].abi,
         functionName: "changed",
         args: [tokenId],
@@ -105,7 +153,6 @@ export function useNFTRegistry() {
       while (previousChange) {
         const events = await publicClient.getContractEvents({
           address: address as Address,
-          // TODO put abi on metadata?
           abi: PermaPassNFTRegistry[chainId as keyof typeof PermaPassNFTRegistry].abi,
           eventName: "TokenURIChanged",
           args: { tokenId },
@@ -133,11 +180,33 @@ export function useNFTRegistry() {
     }
   }, []);
 
+  const isDeleted = useCallback(async (metadata: NFTPassportMetadata): Promise<boolean> => {
+    const { tokenId, chainId, address } = metadata;
+
+    try {
+      const exists = await readContract({
+        chainId,
+        address: address as Address,
+        abi: PermaPassNFTRegistry[chainId as keyof typeof PermaPassNFTRegistry].abi,
+        functionName: "exists",
+        args: [tokenId],
+      });
+
+      return !exists;
+    } catch (error) {
+      console.error(`useNFTRegistry - Failed to read NFT owner:`, error);
+      throw error;
+    }
+  }, []);
+
   return {
     nftRegistry: {
       createNFT,
       updateTokenURI,
       readNFTPassportHistory,
+      deleteNFT,
+      isDeleted,
+      isOwner,
     },
   };
 }

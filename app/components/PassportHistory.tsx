@@ -23,14 +23,14 @@ export default function PassportHistory({ passportHistory }: PassportHistoryProp
           const oldValue = prevPassport.data[key as keyof PassportCreate];
           const newValue = currPassport.data[key as keyof PassportCreate];
           return (
-            <>
+            <View key={key}>
               {oldValue !== newValue && (
-                <Text style={styles.changeText} key={key}>
+                <Text style={styles.changeText}>
                   {fromCamelCaseToTitleCase(key)}: <Text style={styles.strikeThrough}>{oldValue}</Text>{" "}
                   <ArrowRightIcon strokeWidth={2} color={commonColors.black} height={10} /> <Text>{newValue}</Text>
                 </Text>
               )}
-            </>
+            </View>
           );
         })}
         <Text style={styles.timelineDate}>
@@ -56,18 +56,20 @@ export default function PassportHistory({ passportHistory }: PassportHistoryProp
   return (
     <View style={styles.timelineContainer}>
       {passportHistory.map((passportVersion, index) => {
-        const isFirstVersion = index === passportHistory.length - 1;
+        const isCreationVersion = index === passportHistory.length - 1;
+        const hasOnlyOneVersion = passportHistory.length === 1;
         return (
           <View key={index} style={styles.timelineEntry}>
-            {!isFirstVersion && <View style={styles.timelineLine} />}
+            {!isCreationVersion && <View style={styles.timelineLine} />}
+            {hasOnlyOneVersion && <View style={[styles.timelineLine, styles.timelineLineOnlyOne]} />}
             <View style={styles.timelineDot} />
             <View style={styles.timelineContent}>
-              {!isFirstVersion
-                ? renderPassportChange({
+              {isCreationVersion
+                ? renderPassportCreation(passportVersion)
+                : renderPassportChange({
                     prevPassport: passportHistory[index + 1],
                     currPassport: passportVersion,
-                  })
-                : renderPassportCreation(passportVersion)}
+                  })}
             </View>
           </View>
         );
@@ -105,6 +107,9 @@ const styles = StyleSheet.create({
     left: -3,
     top: 0,
     bottom: -24,
+  },
+  timelineLineOnlyOne: {
+    bottom: 36,
   },
   timelineContent: {
     marginTop: 20,
