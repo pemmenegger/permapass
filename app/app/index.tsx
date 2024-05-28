@@ -27,11 +27,11 @@ export default function Page() {
       <StepSubtitle text="A permanent passport system for construction products using decentralized technologies." />
       <StepOption
         title="Create Passport"
-        subtitle="Use QR Codes or HaLo NFC chips as data carriers, and NFTs, PBTs, or DIDs for digital identity."
+        subtitle="Use QR Codes or HaLo NFC chips as data carriers, and NFTs, PBTs, or DIDs for digital product identity."
         onPress={() => router.push("/create/01-set-passport-data")}
       />
       <View style={{ height: 20 }} />
-      <StepSubtitle text="Scan a QR Code or HaLo NFC to read a passport. Once read, you can update or delete it if you own it. Use the buttons below or scan directly with your device." />
+      <StepSubtitle text="To read a passport, scan QR codes or tap HaLo NFC chips with your device, or use the buttons below. If you own the passport, you can update or delete it." />
       <StepOption
         title="Read QR Code Passport"
         subtitle="Open the camera to scan a QR code-based passport."

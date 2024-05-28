@@ -11,7 +11,6 @@ import { chains } from "../lib/wagmi";
 import { createWeb3Modal, defaultWagmiConfig, Web3Modal } from "@web3modal/wagmi-react-native";
 import { CreationProvider } from "../context/CreationContext";
 import config from "../lib/config";
-import { UrlProvider } from "../context/UrlContext";
 import { useFonts } from "expo-font";
 import { ModalProvider } from "../context/InfoModalContext";
 import { PropsWithChildren } from "react";
@@ -39,11 +38,9 @@ createWeb3Modal({
 
 const Providers = ({ children }: PropsWithChildren) => {
   return (
-    <UrlProvider>
-      <CreationProvider>
-        <ModalProvider>{children}</ModalProvider>
-      </CreationProvider>
-    </UrlProvider>
+    <CreationProvider>
+      <ModalProvider>{children}</ModalProvider>
+    </CreationProvider>
   );
 };
 

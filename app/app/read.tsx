@@ -7,10 +7,19 @@ import PassportWithHistory from "../components/PassportWithHistory";
 import PassportMetadata from "../components/PassportMetadata";
 import { goToHome } from "../lib/utils";
 import { Text } from "react-native";
+import LoadingText from "../components/LoadingText";
 
 export default function Page() {
-  const { metadataURI, error: metadataURIError } = useMetadataURIFromParams();
+  const { metadataURI, isLoading: isLoadingMetadataURI, error: metadataURIError } = useMetadataURIFromParams();
   const { passportMetadata, isLoading, error: metadataError } = usePassportMetadata({ metadataURI });
+
+  if (isLoadingMetadataURI) {
+    return (
+      <ViewWithHeader onBack={goToHome}>
+        <LoadingText text="Parsing metadata URI..." isLoading={isLoadingMetadataURI} />
+      </ViewWithHeader>
+    );
+  }
 
   if (metadataURIError) {
     return (

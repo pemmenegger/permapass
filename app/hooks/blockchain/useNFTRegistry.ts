@@ -39,19 +39,17 @@ export function useNFTRegistry() {
           functionName: "safeMint",
           args: [to, tokenURI],
         });
-        const txReceipt = await publicClient.waitForTransactionReceipt({ hash: txHash });
+        await publicClient.waitForTransactionReceipt({ hash: txHash });
 
         const events = await publicClient.getContractEvents({
           address: contractInfo.address,
           abi: contractInfo.abi,
-          eventName: "Transfer",
-          args: { from: zeroAddress, to },
-          fromBlock: txReceipt.blockNumber,
-          toBlock: txReceipt.blockNumber,
+          eventName: "Minted",
+          args: { to, uri: tokenURI },
         });
 
         if (events.length != 1) {
-          throw new Error(`useNFTRegistry - Transfer event not found for token URI`);
+          throw new Error(`useNFTRegistry - Minted event not found for token URI`);
         }
 
         const metadata: NFTPassportMetadata = {

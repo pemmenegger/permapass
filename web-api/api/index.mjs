@@ -46,7 +46,6 @@ app.get("/did", async (req, res) => {
     ...ethrDidResolver({ networks }),
   });
   const doc = await resolver.resolveDid({ didUrl });
-  console.log("Resolved DID: ", doc);
 
   res.json(doc.didDocument);
 });
@@ -75,13 +74,10 @@ app.post("/arweave", async (req, res) => {
   const uploadData = async (dataToUpload) => {
     const irys = await getIrys();
     try {
-      console.log("Uploading data to Arweave...");
-      console.log("Data to upload: ", dataToUpload);
       const receipt = await irys.upload(Buffer.from(JSON.stringify(dataToUpload)));
-      console.log(`Data uploaded ==> https://arweave.net/${receipt.id}`);
       return receipt.id;
     } catch (e) {
-      console.log("Error uploading data ", e);
+      console.error("Error uploading data ", e);
       throw e;
     }
   };
