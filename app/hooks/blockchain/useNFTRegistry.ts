@@ -4,6 +4,7 @@ import { PermaPassNFTRegistry } from "../../contracts/PermaPassNFTRegistry";
 import { readContract } from "@wagmi/core";
 import { ArweaveURI, NFTPassportMetadata, PassportVersion } from "../../types";
 import { getPublicClient } from "../../lib/wagmi";
+import { zeroAddress } from "viem";
 
 export function useNFTRegistry() {
   const { data: walletClient, isError, isLoading } = useWalletClient();
@@ -38,19 +39,19 @@ export function useNFTRegistry() {
           functionName: "safeMint",
           args: [to, tokenURI],
         });
-        await publicClient.waitForTransactionReceipt({ hash: txHash });
+        const txReceipt = await publicClient.waitForTransactionReceipt({ hash: txHash });
 
         const events = await publicClient.getContractEvents({
           address: contractInfo.address,
           abi: contractInfo.abi,
-          eventName: "Minted",
-          args: { to, uri: tokenURI },
+          eventName: "Transfer",
+          args: { from: zeroAddress, to },
+          fromBlock: txReceipt.blockNumber,
+          toBlock: txReceipt.blockNumber,
         });
 
-        if (events.length > 1) {
-          throw new Error(`useNFTRegistry - Multiple Mint events found for token URI: ${tokenURI}`);
-        } else if (events.length === 0) {
-          throw new Error(`useNFTRegistry - Mint event not found for token URI: ${tokenURI}`);
+        if (events.length != 1) {
+          throw new Error(`useNFTRegistry - Transfer event not found for token URI`);
         }
 
         const metadata: NFTPassportMetadata = {
