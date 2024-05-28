@@ -15,16 +15,13 @@ import "./tasks/utils/send-eth"
 import "./tasks/PermaPassNFTRegistry"
 
 const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY
-const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY
-const PRIVATE_KEY = process.env.PRIVATE_KEY
+if (!ALCHEMY_API_KEY) throw new Error("Please set ALCHEMY_API_KEY in the .env file")
 
-if (!ALCHEMY_API_KEY) {
-	throw new Error("ALCHEMY_API_KEY is not defined in environment variables.")
-} else if (!ETHERSCAN_API_KEY) {
-	throw new Error("ETHERSCAN_API_KEY is not defined in environment variables.")
-} else if (!PRIVATE_KEY) {
-	throw new Error("PRIVATE_KEY is not defined in environment variables.")
-}
+const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY
+if (!ETHERSCAN_API_KEY) throw new Error("Please set ETHERSCAN_API_KEY in the .env file")
+
+const PRIVATE_KEY = process.env.PRIVATE_KEY
+if (!PRIVATE_KEY) throw new Error("Please set PRIVATE_KEY in the .env file")
 
 const config: HardhatUserConfig = {
 	defaultNetwork: "hardhat",
