@@ -1,4 +1,9 @@
 import { task } from "hardhat/config"
+import { PermaPassNFTRegistry } from "../../app/contracts/PermaPassNFTRegistry"
+import { getWalletClient } from "helpers/getWalletClient"
+;(BigInt.prototype as any).toJSON = function () {
+	return this.toString()
+}
 
 /**
  Example:
@@ -43,4 +48,33 @@ task("PermaPassNFTRegistry-token-uri", "Get token URI for PermaPassNFTRegistry S
 
 		const tokenURI = await contract.read.tokenURI([taskArgs.id])
 		console.log(`Token URI: ${tokenURI}`)
+	})
+
+/**
+ Example:
+ npx hardhat PermaPassNFTRegistry-evaluate-safeMint \
+   --iterations 10 \
+   --network localhost
+ */
+task("PermaPassNFTRegistry-evaluate-safeMint", "Mint token for PermaPassNFTRegistry Smart Contract")
+	.addParam<number>("iterations", "Number of iterations to evaluate")
+	.setAction(async (taskArgs, { viem }) => {
+		const publicClient = await viem.getPublicClient()
+
+		const dummyTokenURI = "ar://rgiLrvb-FXtlcbrA5LP-b-ytIkUXXNnk19X-oEhprAs"
+
+		const walletClient = await getWalletClient(viem)
+		for (let i = 0; i < taskArgs.iterations; i++) {
+			const txHash = await walletClient.writeContract({
+				address: PermaPassNFTRegistry["31337"],
+				abi: PermaPassNFTRegistry.abi,
+				functionName: "safeMint",
+				args: [walletClient.account.address, dummyTokenURI],
+			})
+			// const txHash = await walletClient.write.safeMint([dummyRecipient, dummyTokenURI])
+			console.log(`txHash: ${txHash}`)
+			const txReceipt = await publicClient.waitForTransactionReceipt({ hash: txHash })
+			console.log(txReceipt.gasUsed)
+			// console.log(`txReceipt: ${JSON.stringify(txReceipt, null, 2)}`)
+		}
 	})
