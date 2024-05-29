@@ -26,11 +26,11 @@ const CreateDigitalIdentifierStep = ({ createFn, description }: CreateDigitalIde
   const { chain } = useNetwork();
 
   const createDigitalIdentifier = async () => {
-    if (!state.results.passportDataURI) {
+    const passportDataURI = state.results.passportDataURI;
+    if (!passportDataURI) {
       dispatch({ type: "CREATION_ERROR_OCCURRED", errorMessage: "Passport URI not available" });
       return;
     }
-    const passportDataURI = state.results.passportDataURI;
 
     const passportMetadata = await createFn(passportDataURI);
     if (!passportMetadata) {
@@ -187,7 +187,7 @@ export const CreateDIDStep = () => {
 
   const createDID = () => {
     return openGasFeesModal({
-      content: "Creating a DID for a passport costs gas fees.",
+      content: "Creating a DID for a passport that you control costs gas fees.",
       onConfirm: async () => {
         try {
           if (!didRegistry.createDID) {

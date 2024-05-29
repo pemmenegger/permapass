@@ -16,7 +16,6 @@ interface ConfirmModalExternalProps<T> extends Omit<ConfirmModalProps<T>, "close
 
 interface ModalContextType {
   modal: ModalState;
-  // openModal: (content: ReactNode) => void;
   openInfoModal: (props: InfoModalExternalProps) => void;
   openConfirmModal: <T>(props: ConfirmModalExternalProps<T>) => Promise<T>;
   openGasFeesModal: <T>(props: GasFeesModalExternalProps<T>) => Promise<T>;

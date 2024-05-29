@@ -31,15 +31,15 @@ const ModalContent = ({ content }: { content: string }) => <Text style={styles.d
 
 const ConfirmModal = <T,>({ title, content, closeModal, onConfirm, onReject }: ConfirmModalProps<T>) => {
   const handleReject = async () => {
+    closeModal();
     if (onReject) {
       await onReject();
     }
-    closeModal();
   };
 
   const handleConfirm = async () => {
-    await onConfirm();
     closeModal();
+    await onConfirm();
   };
 
   return (
