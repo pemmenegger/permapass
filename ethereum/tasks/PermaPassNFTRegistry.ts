@@ -1,6 +1,6 @@
 import { task } from "hardhat/config"
 import { PermaPassNFTRegistry } from "../../app/contracts/PermaPassNFTRegistry"
-import { getWalletClient } from "helpers/getWalletClient"
+import { getWalletClient } from "../helpers/getWalletClient"
 ;(BigInt.prototype as any).toJSON = function () {
 	return this.toString()
 }
