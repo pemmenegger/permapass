@@ -1,0 +1,169 @@
+{
+  "31337": [
+    {
+      "deployment": {
+        "gasUsed": 1591944,
+        "performance": {
+          "durationInMs": 8,
+          "startDateTime": "2024-05-31T14:54:03.805+02:00",
+          "endDateTime": "2024-05-31T14:54:03.813+02:00"
+        }
+      },
+      "create": {
+        "gasUsed": 187738,
+        "performance": {
+          "durationInMs": 5,
+          "startDateTime": "2024-05-31T14:54:03.814+02:00",
+          "endDateTime": "2024-05-31T14:54:03.819+02:00"
+        }
+      },
+      "read": {
+        "performance": {
+          "durationInMs": 2,
+          "startDateTime": "2024-05-31T14:54:03.820+02:00",
+          "endDateTime": "2024-05-31T14:54:03.822+02:00"
+        }
+      },
+      "update": {
+        "gasUsed": 44049,
+        "performance": {
+          "durationInMs": 3,
+          "startDateTime": "2024-05-31T14:54:03.822+02:00",
+          "endDateTime": "2024-05-31T14:54:03.825+02:00"
+        }
+      },
+      "delete": {
+        "gasUsed": 43689,
+        "performance": {
+          "durationInMs": 3,
+          "startDateTime": "2024-05-31T14:54:03.826+02:00",
+          "endDateTime": "2024-05-31T14:54:03.829+02:00"
+        }
+      }
+    },
+    {
+      "deployment": {
+        "gasUsed": 1591944,
+        "performance": {
+          "durationInMs": 8,
+          "startDateTime": "2024-05-31T14:54:12.601+02:00",
+          "endDateTime": "2024-05-31T14:54:12.609+02:00"
+        }
+      },
+      "create": {
+        "gasUsed": 187738,
+        "performance": {
+          "durationInMs": 6,
+          "startDateTime": "2024-05-31T14:54:12.609+02:00",
+          "endDateTime": "2024-05-31T14:54:12.615+02:00"
+        }
+      },
+      "read": {
+        "performance": {
+          "durationInMs": 2,
+          "startDateTime": "2024-05-31T14:54:12.615+02:00",
+          "endDateTime": "2024-05-31T14:54:12.617+02:00"
+        }
+      },
+      "update": {
+        "gasUsed": 44049,
+        "performance": {
+          "durationInMs": 3,
+          "startDateTime": "2024-05-31T14:54:12.617+02:00",
+          "endDateTime": "2024-05-31T14:54:12.620+02:00"
+        }
+      },
+      "delete": {
+        "gasUsed": 43689,
+        "performance": {
+          "durationInMs": 4,
+          "startDateTime": "2024-05-31T14:54:12.620+02:00",
+          "endDateTime": "2024-05-31T14:54:12.624+02:00"
+        }
+      }
+    },
+    {
+      "deployment": {
+        "gasUsed": 1591944,
+        "performance": {
+          "durationInMs": 7,
+          "startDateTime": "2024-05-31T14:58:12.846+02:00",
+          "endDateTime": "2024-05-31T14:58:12.853+02:00"
+        }
+      },
+      "create": {
+        "gasUsed": 187738,
+        "performance": {
+          "durationInMs": 5,
+          "startDateTime": "2024-05-31T14:58:12.854+02:00",
+          "endDateTime": "2024-05-31T14:58:12.859+02:00"
+        }
+      },
+      "read": {
+        "performance": {
+          "durationInMs": 2,
+          "startDateTime": "2024-05-31T14:58:12.859+02:00",
+          "endDateTime": "2024-05-31T14:58:12.861+02:00"
+        }
+      },
+      "update": {
+        "gasUsed": 44049,
+        "performance": {
+          "durationInMs": 3,
+          "startDateTime": "2024-05-31T14:58:12.862+02:00",
+          "endDateTime": "2024-05-31T14:58:12.865+02:00"
+        }
+      },
+      "delete": {
+        "gasUsed": 43689,
+        "performance": {
+          "durationInMs": 4,
+          "startDateTime": "2024-05-31T14:58:12.865+02:00",
+          "endDateTime": "2024-05-31T14:58:12.869+02:00"
+        }
+      }
+    },
+    {
+      "deployment": {
+        "gasUsed": 1591944,
+        "performance": {
+          "durationInMs": 8,
+          "startDateTime": "2024-05-31T14:58:14.859+02:00",
+          "endDateTime": "2024-05-31T14:58:14.867+02:00"
+        }
+      },
+      "create": {
+        "gasUsed": 187738,
+        "performance": {
+          "durationInMs": 6,
+          "startDateTime": "2024-05-31T14:58:14.867+02:00",
+          "endDateTime": "2024-05-31T14:58:14.873+02:00"
+        }
+      },
+      "read": {
+        "performance": {
+          "durationInMs": 2,
+          "startDateTime": "2024-05-31T14:58:14.873+02:00",
+          "endDateTime": "2024-05-31T14:58:14.875+02:00"
+        }
+      },
+      "update": {
+        "gasUsed": 44049,
+        "performance": {
+          "durationInMs": 4,
+          "startDateTime": "2024-05-31T14:58:14.875+02:00",
+          "endDateTime": "2024-05-31T14:58:14.879+02:00"
+        }
+      },
+      "delete": {
+        "gasUsed": 43689,
+        "performance": {
+          "durationInMs": 4,
+          "startDateTime": "2024-05-31T14:58:14.879+02:00",
+          "endDateTime": "2024-05-31T14:58:14.883+02:00"
+        }
+      }
+    }
+  ],
+  "contractName": "PermaPassNFTRegistry"
+}

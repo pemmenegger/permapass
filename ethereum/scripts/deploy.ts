@@ -22,7 +22,7 @@ const deployContract = async ({
 
 /*
  * Run this script using the following command:
- * npx hardhat run scripts/deploy.ts --network <localhost | sepolia>
+ * npx hardhat run scripts/deploy.ts --network <network>
  */
 async function main() {
   console.log("Compiling contracts...");

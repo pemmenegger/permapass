@@ -5,7 +5,6 @@ export interface EvaluationPerformance {
 }
 
 export interface Evaluation {
-  contractName: string;
   deployment?: {
     gasUsed: number;
     performance: EvaluationPerformance;
