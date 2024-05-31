@@ -1,5 +1,5 @@
 export const PermaPassDIDRegistry = {
-  "31337": "0xEB0c10ADbB2982A99bcf90F1F787732db1e2c174",
+  "31337": "0xeb0c10adbb2982a99bcf90f1f787732db1e2c174",
   abi: [
     {
       anonymous: false,

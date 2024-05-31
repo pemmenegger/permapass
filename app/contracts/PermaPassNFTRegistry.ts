@@ -1,5 +1,5 @@
 export const PermaPassNFTRegistry = {
-  "31337": "0x17e0860618Ec91519704d6C7Fbf1809E173AcC94",
+  "31337": "0x17e0860618ec91519704d6c7fbf1809e173acc94",
   abi: [
     {
       inputs: [],

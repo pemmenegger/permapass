@@ -1,5 +1,5 @@
 export const PermaPassPBTRegistry = {
-  "31337": "0xa304d89fec68FC2fA8C3325B96F53dBD2B5A1bFa",
+  "31337": "0xa304d89fec68fc2fa8c3325b96f53dbd2b5a1bfa",
   abi: [
     {
       inputs: [],
@@ -94,25 +94,6 @@ export const PermaPassPBTRegistry = {
         },
       ],
       name: "ApprovalForAll",
-      type: "event",
-    },
-    {
-      anonymous: false,
-      inputs: [
-        {
-          indexed: true,
-          internalType: "address",
-          name: "previousOwner",
-          type: "address",
-        },
-        {
-          indexed: true,
-          internalType: "address",
-          name: "newOwner",
-          type: "address",
-        },
-      ],
-      name: "OwnershipTransferred",
       type: "event",
     },
     {
@@ -398,19 +379,6 @@ export const PermaPassPBTRegistry = {
       type: "function",
     },
     {
-      inputs: [],
-      name: "owner",
-      outputs: [
-        {
-          internalType: "address",
-          name: "",
-          type: "address",
-        },
-      ],
-      stateMutability: "view",
-      type: "function",
-    },
-    {
       inputs: [
         {
           internalType: "uint256",
@@ -427,13 +395,6 @@ export const PermaPassPBTRegistry = {
         },
       ],
       stateMutability: "view",
-      type: "function",
-    },
-    {
-      inputs: [],
-      name: "renounceOwnership",
-      outputs: [],
-      stateMutability: "nonpayable",
       type: "function",
     },
     {
@@ -631,19 +592,6 @@ export const PermaPassPBTRegistry = {
         },
       ],
       name: "transferFrom",
-      outputs: [],
-      stateMutability: "nonpayable",
-      type: "function",
-    },
-    {
-      inputs: [
-        {
-          internalType: "address",
-          name: "newOwner",
-          type: "address",
-        },
-      ],
-      name: "transferOwnership",
       outputs: [],
       stateMutability: "nonpayable",
       type: "function",
