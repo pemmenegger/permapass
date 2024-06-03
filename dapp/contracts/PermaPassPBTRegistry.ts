@@ -1,5 +1,5 @@
 export const PermaPassPBTRegistry = {
-  "31337": "0xddefa6216246df0ec80f2529eb0225c6cc3c1f04",
+  "31337": "0xa304d89fec68fc2fa8c3325b96f53dbd2b5a1bfa",
   abi: [
     {
       inputs: [],

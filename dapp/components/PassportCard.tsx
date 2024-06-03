@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Text, View, StyleSheet } from "react-native";
 import { api } from "../lib/web-api";
 import { PassportMetadata, PassportCreate } from "../types";
-import { SecondaryButton } from "../components/ui/buttons";
+import { SecondaryButton } from "./ui/buttons";
 import { commonColors } from "../styles";
 import { useContracts } from "../hooks/blockchain/useContracts";
 import { useAsyncEffect } from "../hooks/useAsyncEffect";

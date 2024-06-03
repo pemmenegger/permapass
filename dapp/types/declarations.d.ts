@@ -8,7 +8,7 @@ declare module "@env" {
 
 declare module "@arx-research/libhalo/api/react-native.js" {
   import { NfcManager } from "react-native-nfc-manager";
-  import { Buffer } from "buffer/";
+  import { Buffer } from "buffer";
 
   interface HaloResult {
     result: string;

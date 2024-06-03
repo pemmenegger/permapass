@@ -11,7 +11,7 @@ import { View } from "react-native";
 NfcManager.start();
 
 export default function Page() {
-  const readNdef = async () => {
+  const readHaLoNfc = async () => {
     await NfcManager.requestTechnology(NfcTech.IsoDep);
 
     console.log("Reading NDEF...");
@@ -31,7 +31,7 @@ export default function Page() {
         onPress={() => router.push("/create/01-set-passport-data")}
       />
       <View style={{ height: 20 }} />
-      <StepSubtitle text="To read a passport, scan QR codes or tap HaLo NFC chips with your device, or use the buttons below. If you own the passport, you can update or delete it." />
+      <StepSubtitle text="To read a passport, scan QR codes with your device or use the buttons below. If you own the passport, you can update or delete it." />
       <StepOption
         title="Read QR Code Passport"
         subtitle="Open the camera to scan a QR code-based passport."
@@ -40,7 +40,7 @@ export default function Page() {
       <StepOption
         title="Read HaLo NFC Passport"
         subtitle="Open the NFC reader to scan a HaLo NFC-based passport."
-        onPress={readNdef}
+        onPress={readHaLoNfc}
       />
     </ViewWithHeader>
   );
