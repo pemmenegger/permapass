@@ -27,8 +27,8 @@ export function usePBTRegistry() {
 
     const chainId = walletClient.chain.id;
 
-    const contractInfo = PermaPassPBTRegistry[chainId as keyof typeof PermaPassPBTRegistry];
-    if (!contractInfo) throw new Error(`usePBTRegistry - Contract info not found for chain id: ${chainId}`);
+    const contractAddress = PermaPassPBTRegistry[chainId.toString() as keyof typeof PermaPassPBTRegistry] as Address;
+    if (!contractAddress) throw new Error(`usePBTRegistry - No contract address found for chainId: ${chainId}`);
 
     const publicClient = getPublicClient(chainId);
 
@@ -40,16 +40,16 @@ export function usePBTRegistry() {
     ) => {
       try {
         const txHash = await walletClient.writeContract({
-          address: contractInfo.address,
-          abi: contractInfo.abi,
+          address: contractAddress,
+          abi: PermaPassPBTRegistry.abi,
           functionName: "mintPBT",
           args: [chipAddress, signatureFromChip, blockNumberUsedInSig, tokenURI],
         });
         await publicClient.waitForTransactionReceipt({ hash: txHash });
 
         const events = await publicClient.getContractEvents({
-          address: contractInfo.address,
-          abi: contractInfo.abi,
+          address: contractAddress,
+          abi: PermaPassPBTRegistry.abi,
           eventName: "PBTMint",
           args: { chipAddress },
         });
@@ -63,7 +63,7 @@ export function usePBTRegistry() {
         const metadata: PBTPassportMetadata = {
           type: "pbt",
           chainId,
-          address: contractInfo.address,
+          address: contractAddress,
           tokenId: events[0].args.tokenId!,
         };
 
@@ -77,8 +77,8 @@ export function usePBTRegistry() {
     const handleUpdateTokenURI = async (tokenId: bigint, tokenURI: ArweaveURI) => {
       try {
         const txHash = await walletClient.writeContract({
-          address: contractInfo.address,
-          abi: contractInfo.abi,
+          address: contractAddress,
+          abi: PermaPassPBTRegistry.abi,
           functionName: "setTokenURI",
           args: [tokenId, tokenURI],
         });
@@ -101,7 +101,7 @@ export function usePBTRegistry() {
       let previousChange: bigint = await readContract({
         chainId,
         address: address as Address,
-        abi: PermaPassPBTRegistry[chainId as keyof typeof PermaPassPBTRegistry].abi,
+        abi: PermaPassPBTRegistry.abi,
         functionName: "changed",
         args: [tokenId],
       });
@@ -110,7 +110,7 @@ export function usePBTRegistry() {
       while (previousChange) {
         const events = await publicClient.getContractEvents({
           address: address as Address,
-          abi: PermaPassPBTRegistry[chainId as keyof typeof PermaPassPBTRegistry].abi,
+          abi: PermaPassPBTRegistry.abi,
           eventName: "TokenURIChanged",
           args: { tokenId },
           fromBlock: previousChange,

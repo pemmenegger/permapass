@@ -23,8 +23,8 @@ export function useNFTRegistry() {
 
     const chainId = walletClient.chain.id;
 
-    const contractInfo = PermaPassNFTRegistry[chainId as keyof typeof PermaPassNFTRegistry];
-    if (!contractInfo) throw new Error(`useNFTRegistry - Contract info not found for chain id: ${chainId}`);
+    const contractAddress = PermaPassNFTRegistry[chainId.toString() as keyof typeof PermaPassNFTRegistry] as Address;
+    if (!contractAddress) throw new Error(`useNFTRegistry - No contract address found for chainId: ${chainId}`);
 
     const publicClient = getPublicClient(chainId);
 
@@ -33,30 +33,28 @@ export function useNFTRegistry() {
         const to = walletClient.account.address;
 
         const txHash = await walletClient.writeContract({
-          address: contractInfo.address,
-          abi: contractInfo.abi,
+          address: contractAddress,
+          abi: PermaPassNFTRegistry.abi,
           functionName: "safeMint",
           args: [to, tokenURI],
         });
         await publicClient.waitForTransactionReceipt({ hash: txHash });
 
         const events = await publicClient.getContractEvents({
-          address: contractInfo.address,
-          abi: contractInfo.abi,
+          address: contractAddress,
+          abi: PermaPassNFTRegistry.abi,
           eventName: "Minted",
           args: { to, uri: tokenURI },
         });
 
-        if (events.length > 1) {
-          throw new Error(`useNFTRegistry - Multiple Mint events found for token URI: ${tokenURI}`);
-        } else if (events.length === 0) {
-          throw new Error(`useNFTRegistry - Mint event not found for token URI: ${tokenURI}`);
+        if (events.length != 1) {
+          throw new Error(`useNFTRegistry - Minted event not found for token URI`);
         }
 
         const metadata: NFTPassportMetadata = {
           type: "nft",
           chainId,
-          address: contractInfo.address,
+          address: contractAddress,
           tokenId: events[0].args.tokenId!,
         };
 
@@ -70,8 +68,8 @@ export function useNFTRegistry() {
     const handleUpdateTokenURI = async (tokenId: bigint, tokenURI: ArweaveURI) => {
       try {
         const txHash = await walletClient.writeContract({
-          address: contractInfo.address,
-          abi: contractInfo.abi,
+          address: contractAddress,
+          abi: PermaPassNFTRegistry.abi,
           functionName: "setTokenURI",
           args: [tokenId, tokenURI],
         });
@@ -85,8 +83,8 @@ export function useNFTRegistry() {
     const handleDeleteNFT = async (tokenId: bigint) => {
       try {
         const txHash = await walletClient.writeContract({
-          address: contractInfo.address,
-          abi: contractInfo.abi,
+          address: contractAddress,
+          abi: PermaPassNFTRegistry.abi,
           functionName: "burn",
           args: [tokenId],
         });
@@ -104,7 +102,7 @@ export function useNFTRegistry() {
         const exists = await readContract({
           chainId,
           address: address as Address,
-          abi: PermaPassNFTRegistry[chainId as keyof typeof PermaPassNFTRegistry].abi,
+          abi: PermaPassNFTRegistry.abi,
           functionName: "exists",
           args: [tokenId],
         });
@@ -116,7 +114,7 @@ export function useNFTRegistry() {
         const owner = await readContract({
           chainId,
           address: address as Address,
-          abi: PermaPassNFTRegistry[chainId as keyof typeof PermaPassNFTRegistry].abi,
+          abi: PermaPassNFTRegistry.abi,
           functionName: "ownerOf",
           args: [tokenId],
         });
@@ -144,7 +142,7 @@ export function useNFTRegistry() {
       let previousChange: bigint = await readContract({
         chainId,
         address: address as Address,
-        abi: PermaPassNFTRegistry[chainId as keyof typeof PermaPassNFTRegistry].abi,
+        abi: PermaPassNFTRegistry.abi,
         functionName: "changed",
         args: [tokenId],
       });
@@ -153,7 +151,7 @@ export function useNFTRegistry() {
       while (previousChange) {
         const events = await publicClient.getContractEvents({
           address: address as Address,
-          abi: PermaPassNFTRegistry[chainId as keyof typeof PermaPassNFTRegistry].abi,
+          abi: PermaPassNFTRegistry.abi,
           eventName: "TokenURIChanged",
           args: { tokenId },
           fromBlock: previousChange,
@@ -187,7 +185,7 @@ export function useNFTRegistry() {
       const exists = await readContract({
         chainId,
         address: address as Address,
-        abi: PermaPassNFTRegistry[chainId as keyof typeof PermaPassNFTRegistry].abi,
+        abi: PermaPassNFTRegistry.abi,
         functionName: "exists",
         args: [tokenId],
       });

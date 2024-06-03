@@ -25,8 +25,8 @@ export function useDIDRegistry() {
     const chainId = walletClient.chain.id;
     const chainName = walletClient.chain.name;
 
-    const contractInfo = PermaPassDIDRegistry[chainId as keyof typeof PermaPassDIDRegistry];
-    if (!contractInfo) throw new Error(`useDIDRegistry - Contract info not found for chain id: ${chainId}`);
+    const contractAddress = PermaPassDIDRegistry[chainId.toString() as keyof typeof PermaPassDIDRegistry] as Address;
+    if (!contractAddress) throw new Error(`useDIDRegistry - No contract address found for chainId: ${chainId}`);
 
     const publicClient = getPublicClient(chainId);
 
@@ -42,8 +42,8 @@ export function useDIDRegistry() {
 
         const nonce = await readContract({
           chainId: chainId,
-          address: contractInfo.address,
-          abi: contractInfo.abi,
+          address: contractAddress,
+          abi: PermaPassDIDRegistry.abi,
           functionName: "nonce",
           args: [identityOwner],
         });
@@ -51,15 +51,15 @@ export function useDIDRegistry() {
         const msgHash = keccak256(
           encodePacked(
             ["bytes1", "bytes1", "address", "uint", "address", "string", "address"],
-            ["0x19", "0x00", contractInfo.address, nonce, identity, "changeOwner", newOwner]
+            ["0x19", "0x00", contractAddress, nonce, identity, "changeOwner", newOwner]
           )
         );
 
         const signature = await sign({ hash: msgHash, privateKey });
 
         const txHash = await walletClient.writeContract({
-          address: contractInfo.address,
-          abi: contractInfo.abi,
+          address: contractAddress,
+          abi: PermaPassDIDRegistry.abi,
           functionName: "changeOwnerSigned",
           args: [identity, Number(signature.v), signature.r, signature.s, newOwner],
         });
@@ -68,7 +68,7 @@ export function useDIDRegistry() {
         const metadata: DIDPassportMetadata = {
           type: "did",
           chainId,
-          address: contractInfo.address,
+          address: contractAddress,
           did: `did:ethr:${chainName.toLowerCase()}:${identity}`,
           serviceType: "ProductPassport",
         };
@@ -94,8 +94,8 @@ export function useDIDRegistry() {
       const attrValue = toHex(attrValueBytes);
 
       const txHash = await walletClient.writeContract({
-        address: contractInfo.address,
-        abi: contractInfo.abi,
+        address: contractAddress,
+        abi: PermaPassDIDRegistry.abi,
         functionName: "setAttribute",
         args: [identity as Address, attrName as Address, attrValue as Address, BigInt(86400)],
       });
@@ -108,8 +108,8 @@ export function useDIDRegistry() {
 
       const identityOwner = await readContract({
         chainId: chainId,
-        address: contractInfo.address,
-        abi: contractInfo.abi,
+        address: contractAddress,
+        abi: PermaPassDIDRegistry.abi,
         functionName: "owners",
         args: [identity],
       });
@@ -119,8 +119,8 @@ export function useDIDRegistry() {
       }
 
       const txHash = await walletClient.writeContract({
-        address: contractInfo.address,
-        abi: contractInfo.abi,
+        address: contractAddress,
+        abi: PermaPassDIDRegistry.abi,
         functionName: "changeOwner",
         args: [identity, zeroAddress],
       });
@@ -136,7 +136,7 @@ export function useDIDRegistry() {
         chainId,
         address: address as Address,
         // TODO from metadata?
-        abi: PermaPassDIDRegistry[chainId as keyof typeof PermaPassDIDRegistry].abi,
+        abi: PermaPassDIDRegistry.abi,
         functionName: "owners",
         args: [identity],
       });
@@ -162,7 +162,7 @@ export function useDIDRegistry() {
         chainId,
         address: address as Address,
         // TODO from metadata?
-        abi: PermaPassDIDRegistry[chainId as keyof typeof PermaPassDIDRegistry].abi,
+        abi: PermaPassDIDRegistry.abi,
         functionName: "changed",
         args: [identity],
       });
@@ -177,7 +177,7 @@ export function useDIDRegistry() {
         const attributeChangedEvents = await publicClient.getContractEvents({
           address: address as Address,
           // TODO from metadata?
-          abi: PermaPassDIDRegistry[chainId as keyof typeof PermaPassDIDRegistry].abi,
+          abi: PermaPassDIDRegistry.abi,
           eventName: "DIDAttributeChanged",
           args: { identity },
           fromBlock: previousChange,
@@ -204,7 +204,7 @@ export function useDIDRegistry() {
         const ownerChangedEvents = await publicClient.getContractEvents({
           address: address as Address,
           // TODO from metadata?
-          abi: PermaPassDIDRegistry[chainId as keyof typeof PermaPassDIDRegistry].abi,
+          abi: PermaPassDIDRegistry.abi,
           eventName: "DIDOwnerChanged",
           args: { identity },
           fromBlock: previousChange,
@@ -227,8 +227,6 @@ export function useDIDRegistry() {
   const isDeleted = async (metadata: DIDPassportMetadata) => {
     const { chainId, address } = metadata;
 
-    const publicClient = getPublicClient(chainId);
-
     const identity = fromDIDToIdentity(metadata.did);
 
     try {
@@ -236,7 +234,7 @@ export function useDIDRegistry() {
         chainId,
         address: address as Address,
         // TODO from metadata?
-        abi: PermaPassDIDRegistry[chainId as keyof typeof PermaPassDIDRegistry].abi,
+        abi: PermaPassDIDRegistry.abi,
         functionName: "owners",
         args: [identity],
       });

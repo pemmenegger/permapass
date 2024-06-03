@@ -1,6 +1,17 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
+/**
+ * @dev This contract is a copy of the EthereumDIDRegistry contract from the Veramo Identity
+ * library (formerly uPort): https://github.com/uport-project/ethr-did-registry
+ *
+ * It adheres to the Ethereum DID specification:
+ * https://github.com/decentralized-identity/ethr-did-resolver/blob/master/doc/did-method-spec.md
+ *
+ * This contract allows for resolving DID documents on the Ethereum blockchain using Veramo's
+ * ethr DID Resolver. DID documents are constructed by querying events emitted by this contract,
+ * storing only the DID identity (address) and DID controller (owner) in the owners mapping on chain.
+ */
 contract PermaPassDIDRegistry {
 	mapping(address => address) public owners;
 	mapping(address => mapping(bytes32 => mapping(address => uint)))

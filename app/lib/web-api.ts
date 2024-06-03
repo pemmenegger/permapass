@@ -4,7 +4,6 @@ import { DIDDocument } from "../types/did";
 import { fromTxidToURI, fromURIToURL } from "./utils";
 
 const fetchUrl = async (url: string, requestInit?: RequestInit) => {
-  console.log(`fetching ${url}`);
   const response = await fetch(url, requestInit);
   if (!response.ok) {
     console.error(JSON.stringify(response));
@@ -27,7 +26,6 @@ const fetchWebApi = async (
 const uploadToArweave = async (body: PassportCreate | PassportMetadata) => {
   const data = await fetchWebApi(`/arweave`, { method: "POST", body });
   if (!data.txid) throw new Error("uploadToArweave - no txid in response");
-  console.log("uploadToArweave - uploaded with txid:", data.txid);
   return data.txid as string;
 };
 

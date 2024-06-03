@@ -1,76 +1,45 @@
-import { HardhatUserConfig } from "hardhat/config"
-import "@nomicfoundation/hardhat-toolbox-viem"
+import type { HardhatUserConfig } from "hardhat/config";
+import "@nomicfoundation/hardhat-toolbox-viem";
 
-import "hardhat-deploy"
-import "@nomiclabs/hardhat-solhint"
-import "solidity-coverage"
+import "dotenv/config";
 
-import "dotenv/config"
+const INFURA_API_KEY = process.env.INFURA_API_KEY;
+if (!INFURA_API_KEY) throw new Error("Please set INFURA_API_KEY in the .env file");
 
-import "./tasks/utils/accounts"
-import "./tasks/utils/balance"
-import "./tasks/utils/block-number"
-import "./tasks/utils/send-eth"
-
-import "./tasks/PermaPassNFTRegistry"
-
-const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY
-const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY
-const PRIVATE_KEY = process.env.PRIVATE_KEY
-
-if (!ALCHEMY_API_KEY) {
-	throw new Error("ALCHEMY_API_KEY is not defined in environment variables.")
-} else if (!ETHERSCAN_API_KEY) {
-	throw new Error("ETHERSCAN_API_KEY is not defined in environment variables.")
-} else if (!PRIVATE_KEY) {
-	throw new Error("PRIVATE_KEY is not defined in environment variables.")
-}
+const PRIVATE_KEY = process.env.PRIVATE_KEY;
+if (!PRIVATE_KEY) throw new Error("Please set PRIVATE_KEY in the .env file");
 
 const config: HardhatUserConfig = {
-	defaultNetwork: "hardhat",
-	networks: {
-		hardhat: {
-			accounts: [
-				{
-					privateKey: PRIVATE_KEY,
-					balance: "10000000000000000000000",
-				},
-				{
-					privateKey: "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
-					balance: "10000000000000000000000",
-				},
-			],
-			chainId: 31337,
-		},
-		sepolia: {
-			url: `https://eth-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY}`,
-			accounts: [PRIVATE_KEY],
-		},
-	},
-	etherscan: {
-		// Your API key for Etherscan
-		// Obtain one at https://etherscan.io/
-		apiKey: {
-			mainnet: ETHERSCAN_API_KEY,
-			sepolia: ETHERSCAN_API_KEY,
-		},
-	},
-	namedAccounts: {
-		deployer: {
-			default: 0, // here this will by default take the first account as deployer
-			mainnet: 0, // similarly on mainnet it will take the first account as deployer.
-		},
-		owner: {
-			default: 0,
-		},
-	},
-	solidity: {
-		compilers: [
-			{
-				version: "0.8.20",
-			},
-		],
-	},
-}
+  defaultNetwork: "hardhat",
+  networks: {
+    hardhat: {
+      accounts: [
+        {
+          privateKey: PRIVATE_KEY,
+          balance: "10000000000000000000000",
+        },
+      ],
+      chainId: 31337,
+    },
+    sepolia: {
+      url: `https://sepolia.infura.io/v3/${INFURA_API_KEY}`,
+      accounts: [PRIVATE_KEY],
+      chainId: 11155111,
+    },
+  },
+  solidity: {
+    compilers: [
+      {
+        version: "0.8.20",
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200,
+          },
+        },
+      },
+    ],
+  },
+};
 
-export default config
+export default config;

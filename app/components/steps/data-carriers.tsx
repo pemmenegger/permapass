@@ -10,10 +10,10 @@ export const GenerateQRCodeStep = () => {
   };
 
   useEffect(() => {
-    if (state.userInput.dataCarrier === "qr" && state.status === "DIGITAL_IDENTIFIER_CREATED") {
+    if (state.status === "DIGITAL_IDENTIFIER_CREATED") {
       generateQRCode();
     }
-    if (state.userInput.dataCarrier === "qr" && state.status === "CREATION_DONE") {
+    if (state.status === "CREATION_DONE") {
       setIsCompleted(true);
     }
   }, [state.status, state.userInput.dataCarrier]);
@@ -21,7 +21,7 @@ export const GenerateQRCodeStep = () => {
   return {
     title: "Generating QR Code as data carrier",
     description: <>A QR Code linking to the digital identifier and passport data will be generated.</>,
-    isLoading: state.userInput.dataCarrier === "qr" && state.status === "DIGITAL_IDENTIFIER_CREATED",
+    isLoading: state.status === "DIGITAL_IDENTIFIER_CREATED",
     isCompleted,
   };
 };
@@ -39,10 +39,10 @@ export const WriteHaLoChipStep = () => {
   };
 
   useEffect(() => {
-    if (state.userInput.dataCarrier === "nfc" && state.status === "DIGITAL_IDENTIFIER_CREATED") {
+    if (state.status === "DIGITAL_IDENTIFIER_CREATED") {
       writeHaLoNFCChip();
     }
-    if (state.userInput.dataCarrier === "nfc" && state.status === "CREATION_DONE") {
+    if (state.status === "CREATION_DONE") {
       setIsCompleted(true);
     }
   }, [state.status, state.userInput.dataCarrier]);
@@ -50,7 +50,7 @@ export const WriteHaLoChipStep = () => {
   return {
     title: "Writing to HaLo NFC Chip",
     description: <>The passport data will be written to the HaLo NFC chip.</>,
-    isLoading: state.userInput.dataCarrier === "nfc" && state.status === "DIGITAL_IDENTIFIER_CREATED",
+    isLoading: state.status === "DIGITAL_IDENTIFIER_CREATED",
     isCompleted,
   };
 };
