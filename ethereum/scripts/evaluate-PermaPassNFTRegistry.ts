@@ -63,7 +63,7 @@ async function main() {
   try {
     console.log(`Evaluate Creation...`);
     const { txReceipt, performance } = await evaluateTransaction(async () => {
-      const txHash = await contract.write.safeMint([
+      const txHash = await contract.write.mintNFT([
         walletClient.account.address,
         "ar://rgiLrvb-FXtlcbrA5LP-b-ytIkUXXNnk19X-oEhprAs",
       ]);

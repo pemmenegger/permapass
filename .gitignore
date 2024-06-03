@@ -1,7 +1,7 @@
 .DS_Store
 
 **/node_modules
-app/.env
+**/.env*.local
 app/ios
 app/android
 # app/contracts

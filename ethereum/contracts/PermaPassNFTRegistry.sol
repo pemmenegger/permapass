@@ -38,13 +38,25 @@ contract PermaPassNFTRegistry is ERC721URIStorage {
 
     constructor() ERC721("PermaPassNFTRegistry", "PPNFT") {}
 
-    function safeMint(address to, string memory uri) external {
+    /**
+     * @dev This function mints an NFT with the given first owner and token URI.
+     */
+    function mintNFT(address to, string memory uri) external {
+        // get next token ID
         uint256 tokenId = ++_nextTokenId;
+
+        // mint token
         _safeMint(to, tokenId);
         emit Minted(to, uri, tokenId);
+
+        // set token URI
         setTokenURI(tokenId, uri);
     }
 
+    /**
+     * @dev This function updates the token URI and
+     * tracks the change in the `changed` mapping.
+     */
     function setTokenURI(
         uint256 tokenId,
         string memory uri
@@ -54,10 +66,16 @@ contract PermaPassNFTRegistry is ERC721URIStorage {
         changed[tokenId] = block.number;
     }
 
+    /**
+     * @dev This function checks if a token exists.
+     */
     function exists(uint256 tokenId) external view returns (bool) {
         return _exists(tokenId);
     }
 
+    /**
+     * @dev This function "deletes" a token by burning it.
+     */
     function burn(uint256 tokenId) external onlyTokenOwner(tokenId) {
         _burn(tokenId);
     }

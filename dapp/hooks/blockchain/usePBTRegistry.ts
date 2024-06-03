@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { Address, useWalletClient } from "wagmi";
+import { Address, sepolia, useWalletClient } from "wagmi";
 import { PermaPassPBTRegistry } from "../../contracts/PermaPassPBTRegistry";
 import { readContract } from "@wagmi/core";
 import { ArweaveURI, PBTPassportMetadata, PassportVersion } from "../../types";
@@ -18,6 +18,9 @@ export function usePBTRegistry() {
   >(undefined);
   const [updateTokenURI, setUpdateTokenURI] = useState<
     ((tokenId: bigint, tokenURI: ArweaveURI) => Promise<void>) | undefined
+  >(undefined);
+  const [initMetadataURI, setInitMetadataURI] = useState<
+    ((signatureFromChip: Address, blockNumberUsedInSig: bigint, metadataURI: ArweaveURI) => Promise<void>) | undefined
   >(undefined);
 
   useEffect(() => {
@@ -88,8 +91,27 @@ export function usePBTRegistry() {
       }
     };
 
+    const handleInitMetadataURI = async (
+      signatureFromChip: Address,
+      blockNumberUsedInSig: bigint,
+      metadataURI: ArweaveURI
+    ) => {
+      try {
+        const txHash = await walletClient.writeContract({
+          address: contractAddress,
+          abi: PermaPassPBTRegistry.abi,
+          functionName: "initMetadataURI",
+          args: [signatureFromChip, blockNumberUsedInSig, metadataURI],
+        });
+        await publicClient.waitForTransactionReceipt({ hash: txHash });
+      } catch (error) {
+        console.error("Failed to set metadata URI:", error);
+      }
+    };
+
     setCreatePBT(() => handleCreatePBT);
     setUpdateTokenURI(() => handleUpdateTokenURI);
+    setInitMetadataURI(() => handleInitMetadataURI);
   }, [walletClient, isError, isLoading]);
 
   const readPBTPassportHistory = useCallback(async (metadata: PBTPassportMetadata): Promise<PassportVersion[]> => {
@@ -137,11 +159,39 @@ export function usePBTRegistry() {
     }
   }, []);
 
+  const readMetadataURI = useCallback(async (chipAddress: Address): Promise<ArweaveURI> => {
+    let chainId = walletClient?.chain.id;
+    if (!chainId) {
+      // default to sepolia
+      chainId = sepolia.id;
+    }
+
+    const contractAddress = PermaPassPBTRegistry[chainId.toString() as keyof typeof PermaPassPBTRegistry] as Address;
+    if (!contractAddress) throw new Error(`usePBTRegistry - No contract address found for chainId: ${chainId}`);
+
+    try {
+      const metadataURI = await readContract({
+        chainId,
+        address: contractAddress,
+        abi: PermaPassPBTRegistry.abi,
+        functionName: "metadataURIs",
+        args: [chipAddress],
+      });
+
+      return metadataURI as ArweaveURI;
+    } catch (error) {
+      console.error("Failed to read PBT metadata URI:", error);
+      throw error;
+    }
+  }, []);
+
   return {
     pbtRegistry: {
       createPBT,
+      initMetadataURI,
       updateTokenURI,
       readPBTPassportHistory,
+      readMetadataURI,
     },
   };
 }

@@ -3,22 +3,31 @@ import StepOption from "../components/stepper/StepOption";
 import { router } from "expo-router";
 import StepTitle from "../components/stepper/StepTitle";
 import StepSubtitle from "../components/stepper/StepSubtitle";
-import NfcManager, { NfcTech } from "react-native-nfc-manager";
-import { execHaloCmdRN } from "@arx-research/libhalo/api/react-native.js";
 import ViewWithHeader from "../components/ViewWithHeader";
-import { View } from "react-native";
-
-NfcManager.start();
+import { Alert, View } from "react-native";
+import { useHaLoNFCChip } from "../hooks/useHaloNFCChip";
+import { usePBTRegistry } from "../hooks/blockchain/usePBTRegistry";
 
 export default function Page() {
-  const readHaLoNfc = async () => {
-    await NfcManager.requestTechnology(NfcTech.IsoDep);
+  const { haloNFCChip } = useHaLoNFCChip();
+  const { pbtRegistry } = usePBTRegistry();
 
-    console.log("Reading NDEF...");
-    let ndef = await execHaloCmdRN(NfcManager, { name: "read_ndef" });
-    console.log("read_ndef", JSON.stringify(ndef, null, 2));
+  const readMetadataURI = async () => {
+    try {
+      const chipAddress = await haloNFCChip.readChipAddress();
+      console.log(`Chip address: ${chipAddress}`);
+      const metadataURI = await pbtRegistry.readMetadataURI(chipAddress);
+      console.log(`Metadata URI: ${metadataURI}`);
 
-    // TODO: read uri and open reading view
+      // router.push({
+      //   pathname: "read",
+      //   params: {
+      //     metadataURI,
+      //   },
+      // });
+    } catch (error) {
+      Alert.alert("Failed to read metadata URI");
+    }
   };
 
   return (
@@ -40,7 +49,7 @@ export default function Page() {
       <StepOption
         title="Read HaLo NFC Passport"
         subtitle="Open the NFC reader to scan a HaLo NFC-based passport."
-        onPress={readHaLoNfc}
+        onPress={readMetadataURI}
       />
     </ViewWithHeader>
   );

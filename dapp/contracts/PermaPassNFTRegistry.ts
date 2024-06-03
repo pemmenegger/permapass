@@ -1,5 +1,5 @@
 export const PermaPassNFTRegistry = {
-  "31337": "0x17e0860618ec91519704d6c7fbf1809e173acc94",
+  "31337": "0x624f79f4e0994fb67555a34aa5ef8abf108ead2b",
   abi: [
     {
       inputs: [],
@@ -274,6 +274,24 @@ export const PermaPassNFTRegistry = {
       type: "function",
     },
     {
+      inputs: [
+        {
+          internalType: "address",
+          name: "to",
+          type: "address",
+        },
+        {
+          internalType: "string",
+          name: "uri",
+          type: "string",
+        },
+      ],
+      name: "mintNFT",
+      outputs: [],
+      stateMutability: "nonpayable",
+      type: "function",
+    },
+    {
       inputs: [],
       name: "name",
       outputs: [
@@ -303,24 +321,6 @@ export const PermaPassNFTRegistry = {
         },
       ],
       stateMutability: "view",
-      type: "function",
-    },
-    {
-      inputs: [
-        {
-          internalType: "address",
-          name: "to",
-          type: "address",
-        },
-        {
-          internalType: "string",
-          name: "uri",
-          type: "string",
-        },
-      ],
-      name: "safeMint",
-      outputs: [],
-      stateMutability: "nonpayable",
       type: "function",
     },
     {

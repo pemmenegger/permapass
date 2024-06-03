@@ -26,11 +26,6 @@ export function useHaLoNFCChip() {
     }
 
     const generateDigestToSign = async () => {
-      if (!walletClient) {
-        console.error("walletClient not available");
-        return;
-      }
-
       const chainId = walletClient.chain.id;
       const address = walletClient.account.address;
 
@@ -60,19 +55,12 @@ export function useHaLoNFCChip() {
       try {
         await NfcManager.requestTechnology(NfcTech.IsoDep);
 
-        const result = await generateDigestToSign();
-        if (!result) {
-          throw new Error("generateDigestToSign failed");
-        }
-        const { commandDigest, blockNumberUsedInSig } = result;
+        const { commandDigest, blockNumberUsedInSig } = await generateDigestToSign();
 
-        // You should specify exactly one of the following keys: message, digest or typedData.
         let signature = await execHaloCmdRN(NfcManager, {
           name: "sign",
           digest: commandDigest.startsWith("0x") ? commandDigest.slice(2) : commandDigest,
-          // message: "010203",
           keyNo: KEY_NO,
-          // legacySignCommand: true,
         });
 
         return {
@@ -83,7 +71,6 @@ export function useHaLoNFCChip() {
       } catch (ex) {
         throw new Error(`Failed to compute signature from chip: ${ex}`);
       } finally {
-        // stop the nfc scanning
         NfcManager.cancelTechnologyRequest();
       }
     };
@@ -91,9 +78,28 @@ export function useHaLoNFCChip() {
     setComputeSignatureFromChip(() => handleComputeSignatureFromChip);
   }, [walletClient, isError, isLoading]);
 
+  const readChipAddress = async () => {
+    try {
+      await NfcManager.requestTechnology(NfcTech.IsoDep);
+
+      let dummySignatureToReadChipAddress = await execHaloCmdRN(NfcManager, {
+        name: "sign",
+        message: "Dummy Message",
+        keyNo: KEY_NO,
+      });
+
+      return dummySignatureToReadChipAddress.etherAddress as Address;
+    } catch (ex) {
+      throw new Error(`Failed to compute signature from chip: ${ex}`);
+    } finally {
+      NfcManager.cancelTechnologyRequest();
+    }
+  };
+
   return {
     haloNFCChip: {
       computeSignatureFromChip,
+      readChipAddress,
     },
   };
 }

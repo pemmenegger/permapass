@@ -1,11 +1,13 @@
 import React, { useMemo } from "react";
-import { useAccount, useBalance } from "wagmi";
+import { sepolia, useAccount, useBalance, useWalletClient } from "wagmi";
 import { useWeb3Modal, useWeb3ModalState } from "@web3modal/wagmi-react-native";
 import { Pressable, View, StyleSheet, Text } from "react-native";
-import { commonColors, commonStyles } from "../styles";
+import { commonColors } from "../styles";
 import { WalletIcon } from "./icons/WalletIcon";
 import { formatAddress, formatBalance, formatNetworkName } from "../lib/utils";
 import { chains } from "../lib/wagmi";
+import config from "../lib/config";
+import { useAsyncEffect } from "../hooks/useAsyncEffect";
 
 const ConnectedView = ({
   address,
@@ -45,11 +47,20 @@ export default function WalletConnector() {
   const { open } = useWeb3Modal();
   const { selectedNetworkId } = useWeb3ModalState();
   const { isConnected, address } = useAccount();
+  const { data: walletClient, isLoading, isError } = useWalletClient();
   const { data, error } = useBalance({ address });
 
   const formattedAddress = useMemo(() => formatAddress(address), [address]);
   const formattedBalance = useMemo(() => formatBalance(data?.formatted), [data?.formatted]);
   const formattedNetworkName = useMemo(() => formatNetworkName(chains, selectedNetworkId), [selectedNetworkId]);
+
+  useAsyncEffect(async () => {
+    // Only switch to sepolia chain in production
+    if (config.ENVIRONMENT != "prod") return;
+    if (!walletClient || isLoading || isError) return;
+    if (walletClient.chain.id === sepolia.id) return;
+    await walletClient.switchChain(sepolia);
+  }, [walletClient, isLoading, isError]);
 
   if (error) {
     console.error("Error fetching wallet balance: ", error);

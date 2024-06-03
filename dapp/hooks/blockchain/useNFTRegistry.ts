@@ -35,7 +35,7 @@ export function useNFTRegistry() {
         const txHash = await walletClient.writeContract({
           address: contractAddress,
           abi: PermaPassNFTRegistry.abi,
-          functionName: "safeMint",
+          functionName: "mintNFT",
           args: [to, tokenURI],
         });
         await publicClient.waitForTransactionReceipt({ hash: txHash });
