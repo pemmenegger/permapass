@@ -4,24 +4,21 @@ import { PermaPassPBTRegistry } from "../../contracts/PermaPassPBTRegistry";
 import { readContract } from "@wagmi/core";
 import { ArweaveURI, PBTPassportMetadata, PassportVersion } from "../../types";
 import { getPublicClient } from "../../lib/wagmi";
+import { HaLoNFCChipSignatureOutput } from "../useHaloNFCChip";
 
 export function usePBTRegistry() {
   const { data: walletClient, isError, isLoading } = useWalletClient();
   const [createPBT, setCreatePBT] = useState<
-    | ((
-        chipAddress: Address,
-        signatureFromChip: Address,
-        blockNumberUsedInSig: bigint,
-        tokenURI: ArweaveURI
-      ) => Promise<PBTPassportMetadata>)
-    | undefined
+    ((chipSignature: HaLoNFCChipSignatureOutput, tokenURI: ArweaveURI) => Promise<PBTPassportMetadata>) | undefined
   >(undefined);
   const [updateTokenURI, setUpdateTokenURI] = useState<
     ((tokenId: bigint, tokenURI: ArweaveURI) => Promise<void>) | undefined
   >(undefined);
   const [initMetadataURI, setInitMetadataURI] = useState<
-    ((signatureFromChip: Address, blockNumberUsedInSig: bigint, metadataURI: ArweaveURI) => Promise<void>) | undefined
+    ((chipSignature: HaLoNFCChipSignatureOutput, metadataURI: ArweaveURI) => Promise<void>) | undefined
   >(undefined);
+  const [deletePBT, setDeletePBT] = useState<((tokenId: bigint) => Promise<void>) | undefined>(undefined);
+  const [isOwner, setIsOwner] = useState<((metadata: PBTPassportMetadata) => Promise<boolean>) | undefined>(undefined);
 
   useEffect(() => {
     if (!walletClient) {
@@ -35,13 +32,10 @@ export function usePBTRegistry() {
 
     const publicClient = getPublicClient(chainId);
 
-    const handleCreatePBT = async (
-      chipAddress: Address,
-      signatureFromChip: Address,
-      blockNumberUsedInSig: bigint,
-      tokenURI: ArweaveURI
-    ) => {
+    const handleCreatePBT = async (chipSignature: HaLoNFCChipSignatureOutput, tokenURI: ArweaveURI) => {
       try {
+        const { chipAddress, signatureFromChip, blockNumberUsedInSig } = chipSignature;
+
         const txHash = await walletClient.writeContract({
           address: contractAddress,
           abi: PermaPassPBTRegistry.abi,
@@ -91,12 +85,9 @@ export function usePBTRegistry() {
       }
     };
 
-    const handleInitMetadataURI = async (
-      signatureFromChip: Address,
-      blockNumberUsedInSig: bigint,
-      metadataURI: ArweaveURI
-    ) => {
+    const handleInitMetadataURI = async (chipSignature: HaLoNFCChipSignatureOutput, metadataURI: ArweaveURI) => {
       try {
+        const { signatureFromChip, blockNumberUsedInSig } = chipSignature;
         const txHash = await walletClient.writeContract({
           address: contractAddress,
           abi: PermaPassPBTRegistry.abi,
@@ -109,9 +100,59 @@ export function usePBTRegistry() {
       }
     };
 
+    const handleDeletePBT = async (tokenId: bigint) => {
+      try {
+        const txHash = await walletClient.writeContract({
+          address: contractAddress,
+          abi: PermaPassPBTRegistry.abi,
+          functionName: "burn",
+          args: [tokenId],
+        });
+        await publicClient.waitForTransactionReceipt({ hash: txHash });
+      } catch (error) {
+        console.error(`usePBTRegistry - Failed to delete PBT:`, error);
+        throw error;
+      }
+    };
+
+    const handleIsOwner = async (metadata: PBTPassportMetadata) => {
+      const { tokenId, chainId, address } = metadata;
+
+      try {
+        const exists = await readContract({
+          chainId,
+          address: address as Address,
+          abi: PermaPassPBTRegistry.abi,
+          functionName: "exists",
+          args: [tokenId],
+        });
+
+        if (!exists) {
+          return false;
+        }
+
+        const owner = await readContract({
+          chainId,
+          address: address as Address,
+          abi: PermaPassPBTRegistry.abi,
+          functionName: "ownerOf",
+          args: [tokenId],
+        });
+
+        const walletAddress = walletClient.account.address;
+        return owner === walletAddress;
+      } catch (error) {
+        console.error(`usePBTRegistry - Failed to read PBT owner:`, error);
+        throw error;
+      }
+    };
+
     setCreatePBT(() => handleCreatePBT);
     setUpdateTokenURI(() => handleUpdateTokenURI);
     setInitMetadataURI(() => handleInitMetadataURI);
+    setDeletePBT(() => handleDeletePBT);
+
+    setIsOwner(() => handleIsOwner);
   }, [walletClient, isError, isLoading]);
 
   const readPBTPassportHistory = useCallback(async (metadata: PBTPassportMetadata): Promise<PassportVersion[]> => {
@@ -185,6 +226,25 @@ export function usePBTRegistry() {
     }
   }, []);
 
+  const isDeleted = useCallback(async (metadata: PBTPassportMetadata): Promise<boolean> => {
+    const { tokenId, chainId, address } = metadata;
+
+    try {
+      const exists = await readContract({
+        chainId,
+        address: address as Address,
+        abi: PermaPassPBTRegistry.abi,
+        functionName: "exists",
+        args: [tokenId],
+      });
+
+      return !exists;
+    } catch (error) {
+      console.error(`usePBTRegistry - Failed to read PBT owner:`, error);
+      throw error;
+    }
+  }, []);
+
   return {
     pbtRegistry: {
       createPBT,
@@ -192,6 +252,9 @@ export function usePBTRegistry() {
       updateTokenURI,
       readPBTPassportHistory,
       readMetadataURI,
+      deletePBT,
+      isDeleted,
+      isOwner,
     },
   };
 }

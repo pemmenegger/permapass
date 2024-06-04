@@ -18,14 +18,14 @@ export default function Page() {
       console.log(`Chip address: ${chipAddress}`);
       const metadataURI = await pbtRegistry.readMetadataURI(chipAddress);
       console.log(`Metadata URI: ${metadataURI}`);
-
-      // router.push({
-      //   pathname: "read",
-      //   params: {
-      //     metadataURI,
-      //   },
-      // });
+      router.push({
+        pathname: "read",
+        params: {
+          metadataURI,
+        },
+      });
     } catch (error) {
+      console.error(error);
       Alert.alert("Failed to read metadata URI");
     }
   };

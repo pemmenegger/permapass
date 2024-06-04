@@ -16,7 +16,7 @@ const initialState: CreationState = {
   },
   results: {
     passportDataURI: undefined,
-    dataCarrierURL: undefined,
+    passportMetadataURI: undefined,
   },
 };
 

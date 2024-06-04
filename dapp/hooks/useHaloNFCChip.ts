@@ -85,6 +85,7 @@ export function useHaLoNFCChip() {
       let dummySignatureToReadChipAddress = await execHaloCmdRN(NfcManager, {
         name: "sign",
         message: "Dummy Message",
+        format: "text",
         keyNo: KEY_NO,
       });
 

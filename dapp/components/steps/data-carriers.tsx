@@ -1,56 +1,118 @@
 import { useCreation } from "../../context/CreationContext";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useAsyncEffect } from "../../hooks/useAsyncEffect";
+import { useModal } from "../../context/InfoModalContext";
+import { usePBTRegistry } from "../../hooks/blockchain/usePBTRegistry";
+import { HaLoNFCChipSignatureOutput } from "../../hooks/useHaloNFCChip";
+import { ArweaveURI } from "../../types";
 
-export const GenerateQRCodeStep = () => {
+interface DataCarrierStepProps {
+  initFn: () => Promise<void>;
+  description: {
+    title: string;
+    content: string;
+    identifier: string;
+  };
+}
+
+const DataCarrierStep = ({ initFn, description }: DataCarrierStepProps) => {
   const [isCompleted, setIsCompleted] = useState(false);
   const { state, dispatch } = useCreation();
 
-  const generateQRCode = () => {
-    dispatch({ type: "CREATION_STATUS_CHANGED", status: "CREATION_DONE" });
+  const initDataCarrier = async () => {
+    try {
+      await initFn();
+      dispatch({ type: "DATA_CARRIER_INITIALIZED" });
+    } catch (error) {
+      dispatch({ type: "CREATION_ERROR_OCCURRED", errorMessage: "Failed to initialize data carrier" });
+    }
   };
 
-  useEffect(() => {
+  useAsyncEffect(async () => {
     if (state.status === "DIGITAL_IDENTIFIER_CREATED") {
-      generateQRCode();
+      await initDataCarrier();
     }
-    if (state.status === "CREATION_DONE") {
+    if (state.status === "DATA_CARRIER_INITIALIZED") {
       setIsCompleted(true);
     }
-  }, [state.status, state.userInput.dataCarrier]);
+  }, [state.status]);
 
   return {
-    title: "Generating QR Code as data carrier",
-    description: <>A QR Code linking to the digital identifier and passport data will be generated.</>,
+    title: description.title,
+    description: <>{description.content}</>,
     isLoading: state.status === "DIGITAL_IDENTIFIER_CREATED",
     isCompleted,
   };
 };
 
+export const GenerateQRCodeStep = () => {
+  const initQRCode = async () => {
+    // qr code will be generated on the success page
+  };
+
+  return DataCarrierStep({
+    initFn: initQRCode,
+    description: {
+      title: "Generating QR Code as data carrier",
+      content: "A QR Code linking to the digital identifier and passport data will be generated.",
+      identifier: "QR Code",
+    },
+  });
+};
+
 export const WriteHaLoChipStep = () => {
-  const [isCompleted, setIsCompleted] = useState(false);
+  const { openGasFeesModal, openChipSignatureModal } = useModal();
   const { state, dispatch } = useCreation();
+  const { pbtRegistry } = usePBTRegistry();
 
-  const writeHaLoNFCChip = () => {
-    const urlToEncode = state.results.dataCarrierURL!;
-
-    // TODO write to HaLo NFC chip
-
-    dispatch({ type: "CREATION_STATUS_CHANGED", status: "CREATION_DONE" });
+  const computeSignatureFromChip = () => {
+    return openChipSignatureModal({
+      content: "Before linking this HaLo NFC Chip to passport metadata, you need to sign a message.",
+      onReject: async () => {
+        dispatch({ type: "CREATION_ERROR_OCCURRED", errorMessage: "User rejected signature from chip" });
+      },
+    });
   };
 
-  useEffect(() => {
-    if (state.status === "DIGITAL_IDENTIFIER_CREATED") {
-      writeHaLoNFCChip();
-    }
-    if (state.status === "CREATION_DONE") {
-      setIsCompleted(true);
-    }
-  }, [state.status, state.userInput.dataCarrier]);
-
-  return {
-    title: "Writing to HaLo NFC Chip",
-    description: <>The passport data will be written to the HaLo NFC chip.</>,
-    isLoading: state.status === "DIGITAL_IDENTIFIER_CREATED",
-    isCompleted,
+  const writeMetadataURIToBlockchain = (chipSignature: HaLoNFCChipSignatureOutput, metadataURI: ArweaveURI) => {
+    return openGasFeesModal({
+      content: "Linking passport metadata to a Halo NFC Chip based passport costs gas fees.",
+      onConfirm: async () => {
+        try {
+          if (!pbtRegistry.initMetadataURI) {
+            return undefined;
+          }
+          return await pbtRegistry.initMetadataURI(chipSignature, metadataURI);
+        } catch (error) {
+          return undefined;
+        }
+      },
+      onReject: async () => {
+        dispatch({ type: "CREATION_ERROR_OCCURRED", errorMessage: "User rejected gas fees" });
+      },
+    });
   };
+
+  const initHaloNFCChip = async () => {
+    const { passportMetadataURI } = state.results;
+    if (!passportMetadataURI) {
+      throw new Error("Passport metadata URI not available");
+    }
+
+    const chipSignature = await computeSignatureFromChip();
+    if (!chipSignature) {
+      throw new Error("Failed to compute signature from chip");
+    }
+
+    await writeMetadataURIToBlockchain(chipSignature, passportMetadataURI);
+  };
+
+  return DataCarrierStep({
+    initFn: initHaloNFCChip,
+    description: {
+      title: "Writing to HaLo NFC Chip",
+      content: "The passport data will be written to the HaLo NFC chip.",
+      identifier: "HaLo NFC Chip",
+    },
+  });
 };

@@ -4,14 +4,13 @@ import { useDIDRegistry } from "../../hooks/blockchain/useDIDRegistry";
 import { useNFTRegistry } from "../../hooks/blockchain/useNFTRegistry";
 import { usePBTRegistry } from "../../hooks/blockchain/usePBTRegistry";
 import { useAsyncEffect } from "../../hooks/useAsyncEffect";
-import { HaLoNFCChipSignatureOutput, useHaLoNFCChip } from "../../hooks/useHaloNFCChip";
-import { encodeDataCarrierURL } from "../../lib/utils";
+import { HaLoNFCChipSignatureOutput } from "../../hooks/useHaloNFCChip";
 import { api } from "../../lib/web-api";
 import { ArweaveURI, DIDPassportMetadata, PassportMetadata } from "../../types";
 import { useState } from "react";
 import { useModal } from "../../context/InfoModalContext";
 
-interface CreateDigitalIdentifierStepProps {
+interface DigitalIdentifierStepProps {
   createFn: (passportDataURI: ArweaveURI) => Promise<PassportMetadata | undefined>;
   description: {
     title: string;
@@ -20,34 +19,30 @@ interface CreateDigitalIdentifierStepProps {
   };
 }
 
-const CreateDigitalIdentifierStep = ({ createFn, description }: CreateDigitalIdentifierStepProps) => {
+const DigitalIdentifierStep = ({ createFn, description }: DigitalIdentifierStepProps) => {
   const [isCompleted, setIsCompleted] = useState(false);
   const { state, dispatch } = useCreation();
   const { chain } = useNetwork();
 
   const createDigitalIdentifier = async () => {
-    const passportDataURI = state.results.passportDataURI;
-    if (!passportDataURI) {
-      dispatch({ type: "CREATION_ERROR_OCCURRED", errorMessage: "Passport URI not available" });
-      return;
+    try {
+      const passportDataURI = state.results.passportDataURI;
+      if (!passportDataURI) throw new Error("Passport data URI not available");
+
+      const passportMetadata = await createFn(passportDataURI);
+      if (!passportMetadata) throw new Error("Passport metadata not available");
+
+      const passportMetadataURI = await api.arweave.uploadPassportMetadata(passportMetadata);
+      if (!passportMetadataURI) throw new Error("Passport metadata URI not available");
+
+      dispatch({ type: "DIGITAL_IDENTIFIER_CREATED", passportMetadataURI });
+    } catch (error: unknown) {
+      let errorMessage = "An error occurred while creating digital identifier";
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      dispatch({ type: "CREATION_ERROR_OCCURRED", errorMessage });
     }
-
-    const passportMetadata = await createFn(passportDataURI);
-    if (!passportMetadata) {
-      dispatch({ type: "CREATION_ERROR_OCCURRED", errorMessage: "Passport metadata not available" });
-      return;
-    }
-
-    const passportMetadataURI = await api.arweave.uploadPassportMetadata(passportMetadata);
-    if (!passportMetadataURI) {
-      dispatch({ type: "CREATION_ERROR_OCCURRED", errorMessage: "Passport metadata URI not available" });
-      return;
-    }
-
-    const dataCarrierURL = encodeDataCarrierURL(passportMetadataURI);
-
-    dispatch({ type: "RESULTS_CHANGED", dataCarrierURL });
-    dispatch({ type: "CREATION_STATUS_CHANGED", status: "DIGITAL_IDENTIFIER_CREATED" });
   };
 
   useAsyncEffect(async () => {
@@ -95,7 +90,7 @@ export const CreateNFTStep = () => {
     });
   };
 
-  return CreateDigitalIdentifierStep({
+  return DigitalIdentifierStep({
     createFn: createNFT,
     description: {
       title: "Creating NFT as digital identifier",
@@ -106,26 +101,13 @@ export const CreateNFTStep = () => {
 };
 
 export const CreatePBTStep = () => {
-  const { openConfirmModal, openGasFeesModal } = useModal();
+  const { openChipSignatureModal, openGasFeesModal } = useModal();
   const { pbtRegistry } = usePBTRegistry();
-  const { haloNFCChip } = useHaLoNFCChip();
   const { dispatch } = useCreation();
 
   const computeSignatureFromChip = () => {
-    return openConfirmModal({
-      title: "Sign with HaLo NFC Chip",
-      content:
-        "Before creating a PBT, you need to sign a message with your HaLo NFC Chip. Click continue and hold your chip near your device to sign the message.",
-      onConfirm: async () => {
-        try {
-          if (!haloNFCChip.computeSignatureFromChip) {
-            return undefined;
-          }
-          return await haloNFCChip.computeSignatureFromChip();
-        } catch (error) {
-          return undefined;
-        }
-      },
+    return openChipSignatureModal({
+      content: "Before creating a PBT, you need to sign a message with your HaLo NFC Chip.",
       onReject: async () => {
         dispatch({ type: "CREATION_ERROR_OCCURRED", errorMessage: "User rejected signature from chip" });
       },
@@ -140,12 +122,7 @@ export const CreatePBTStep = () => {
           if (!pbtRegistry.createPBT) {
             return undefined;
           }
-          return await pbtRegistry.createPBT(
-            chipSignature.chipAddress,
-            chipSignature.signatureFromChip,
-            chipSignature.blockNumberUsedInSig,
-            passportDataURI
-          );
+          return await pbtRegistry.createPBT(chipSignature, passportDataURI);
         } catch (error) {
           return undefined;
         }
@@ -170,7 +147,7 @@ export const CreatePBTStep = () => {
     return passportMetadata;
   };
 
-  return CreateDigitalIdentifierStep({
+  return DigitalIdentifierStep({
     createFn: handlePBTCreation,
     description: {
       title: "Creating PBT as digital identifier",
@@ -232,7 +209,7 @@ export const CreateDIDStep = () => {
     return passportMetadata;
   };
 
-  return CreateDigitalIdentifierStep({
+  return DigitalIdentifierStep({
     createFn: handleDIDCreation,
     description: {
       title: "Creating DID as digital identifier",

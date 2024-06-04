@@ -11,12 +11,9 @@ export const UploadPassportDataStep = () => {
   const uploadPassportData = async () => {
     try {
       const passportDataURI = await api.arweave.uploadPassport(state.userInput.passportData!);
-      dispatch({ type: "RESULTS_CHANGED", passportDataURI });
-      dispatch({ type: "CREATION_STATUS_CHANGED", status: "PASSPORT_DATA_UPLOADED" });
+      dispatch({ type: "PASSPORT_DATA_UPLOADED", passportDataURI });
     } catch (error) {
-      console.error("Error while uploading passport data", error);
-      const errorMessage = "An error occurred while uploading passport data";
-      dispatch({ type: "CREATION_ERROR_OCCURRED", errorMessage });
+      dispatch({ type: "CREATION_ERROR_OCCURRED", errorMessage: "An error occurred while uploading passport data" });
     }
   };
 

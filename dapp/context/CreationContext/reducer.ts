@@ -9,7 +9,7 @@ export type CreationState = {
   requirementNotMetMessage?: string;
   results: {
     passportDataURI?: ArweaveURI;
-    dataCarrierURL?: string;
+    passportMetadataURI?: ArweaveURI;
   };
   status?:
     | "CREATION_STARTED"
@@ -17,7 +17,7 @@ export type CreationState = {
     | "DID_OWNER_CHANGED"
     | "DID_SERVICE_ADDED"
     | "DIGITAL_IDENTIFIER_CREATED"
-    | "CREATION_DONE"
+    | "DATA_CARRIER_INITIALIZED"
     | "CREATION_ERROR";
   errorMessage?: string;
 };
@@ -34,20 +34,31 @@ export type CreationAction =
       requirementNotMetMessage?: string;
     }
   | {
-      type: "RESULTS_CHANGED";
-      passportDataURI?: ArweaveURI;
-      dataCarrierURL?: string;
+      type: "CREATION_STARTED";
     }
   | {
-      type: "CREATION_STATUS_CHANGED";
-      status: CreationState["status"];
+      type: "PASSPORT_DATA_UPLOADED";
+      passportDataURI: ArweaveURI;
+    }
+  | {
+      type: "DID_OWNER_CHANGED";
+    }
+  | {
+      type: "DID_SERVICE_ADDED";
+    }
+  | {
+      type: "DIGITAL_IDENTIFIER_CREATED";
+      passportMetadataURI: ArweaveURI;
+    }
+  | {
+      type: "DATA_CARRIER_INITIALIZED";
     }
   | {
       type: "CREATION_ERROR_OCCURRED";
       errorMessage: string;
     }
   | {
-      type: "RESET";
+      type: "RESET_CREATION_STATE";
     };
 
 export function creationReducer(state: CreationState, action: CreationAction): CreationState {
@@ -67,30 +78,55 @@ export function creationReducer(state: CreationState, action: CreationAction): C
         ...state,
         requirementNotMetMessage: action.requirementNotMetMessage,
       };
-    case "RESULTS_CHANGED":
+    case "CREATION_STARTED":
       return {
         ...state,
+        status: "CREATION_STARTED",
+      };
+    case "PASSPORT_DATA_UPLOADED":
+      return {
+        ...state,
+        status: "PASSPORT_DATA_UPLOADED",
         results: {
           ...state.results,
-          passportDataURI: action.passportDataURI ? action.passportDataURI : state.results.passportDataURI,
-          dataCarrierURL: action.dataCarrierURL ? action.dataCarrierURL : state.results.dataCarrierURL,
+          passportDataURI: action.passportDataURI,
         },
       };
-    case "CREATION_STATUS_CHANGED":
+    case "DID_OWNER_CHANGED":
       return {
         ...state,
-        status: action.status,
+        status: "DID_OWNER_CHANGED",
       };
+    case "DID_SERVICE_ADDED":
+      return {
+        ...state,
+        status: "DID_SERVICE_ADDED",
+      };
+    case "DIGITAL_IDENTIFIER_CREATED":
+      return {
+        ...state,
+        status: "DIGITAL_IDENTIFIER_CREATED",
+        results: {
+          ...state.results,
+          passportMetadataURI: action.passportMetadataURI,
+        },
+      };
+    case "DATA_CARRIER_INITIALIZED":
+      return {
+        ...state,
+        status: "DATA_CARRIER_INITIALIZED",
+      };
+
     case "CREATION_ERROR_OCCURRED":
       return {
         ...state,
         status: "CREATION_ERROR",
         errorMessage: action.errorMessage,
       };
-    case "RESET":
+    case "RESET_CREATION_STATE":
       return {
         userInput: state.userInput,
-        results: {},
+        results: state.results,
       };
   }
 }

@@ -16,8 +16,6 @@ export type ConfirmModalProps<T> = ModalProps & {
   onReject?: () => Promise<void>;
 };
 
-export type GasFeesModalProps<T> = Omit<ConfirmModalProps<T>, "title">;
-
 const ModalHeader = ({ title, onClose }: { title: string; onClose: () => void }) => (
   <View style={styles.titleContainer}>
     <Text style={styles.title}>{title}</Text>
@@ -28,6 +26,15 @@ const ModalHeader = ({ title, onClose }: { title: string; onClose: () => void })
 );
 
 const ModalContent = ({ content }: { content: string }) => <Text style={styles.description}>{content}</Text>;
+
+const InfoModal = ({ title, content, closeModal }: InfoModalProps) => {
+  return (
+    <View style={styles.modalContent}>
+      <ModalHeader title={title} onClose={closeModal} />
+      <ModalContent content={content} />
+    </View>
+  );
+};
 
 const ConfirmModal = <T,>({ title, content, closeModal, onConfirm, onReject }: ConfirmModalProps<T>) => {
   const handleReject = async () => {
@@ -52,27 +59,6 @@ const ConfirmModal = <T,>({ title, content, closeModal, onConfirm, onReject }: C
         <SecondaryButton title="Continue" onPress={handleConfirm} />
       </SafeAreaView>
     </View>
-  );
-};
-
-const InfoModal = ({ title, content, closeModal }: InfoModalProps) => {
-  return (
-    <View style={styles.modalContent}>
-      <ModalHeader title={title} onClose={closeModal} />
-      <ModalContent content={content} />
-    </View>
-  );
-};
-
-const GasFeesModal = <T,>({ content, closeModal, onConfirm, onReject }: GasFeesModalProps<T>) => {
-  return (
-    <ConfirmModal
-      title="Gas Fees"
-      content={`${content} Click continue to be redirected to your wallet app to confirm and pay gas fees for this blockchain transaction.`}
-      closeModal={closeModal}
-      onConfirm={onConfirm}
-      onReject={onReject}
-    />
   );
 };
 
@@ -105,4 +91,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export { InfoModal, ConfirmModal, GasFeesModal };
+export { InfoModal, ConfirmModal };

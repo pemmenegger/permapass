@@ -17,7 +17,7 @@ export default function Page() {
   const { state, dispatch } = useCreation();
 
   useEffect(() => {
-    dispatch({ type: "RESET" });
+    dispatch({ type: "RESET_CREATION_STATE" });
   }, []);
 
   useEffect(() => {
@@ -43,7 +43,7 @@ export default function Page() {
       case "did":
         return CreateDIDStep();
       default:
-        throw new Error("Invalid data carrier type");
+        throw new Error(`Invalid digital identifier type: ${type}`);
     }
   };
 
@@ -75,23 +75,12 @@ export default function Page() {
         <Text style={{ textAlign: "center" }}>{state.requirementNotMetMessage}</Text>
       ) : (
         <>
-          {!state.status && (
-            <PrimaryButton
-              title="Create"
-              onPress={() => dispatch({ type: "CREATION_STATUS_CHANGED", status: "CREATION_STARTED" })}
-            />
-          )}
-          {state.status === "CREATION_DONE" && (
+          {!state.status && <PrimaryButton title="Create" onPress={() => dispatch({ type: "CREATION_STARTED" })} />}
+          {state.status === "DATA_CARRIER_INITIALIZED" && (
             <PrimaryButton
               title="Finish"
               onPress={() => {
-                dispatch({ type: "RESET" });
-                router.push({
-                  pathname: "/create/05-success",
-                  params: {
-                    qrCodeURL: state.userInput.dataCarrier === "qr" ? state.results.dataCarrierURL! : undefined,
-                  },
-                });
+                router.push("/create/05-success");
               }}
             />
           )}

@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { PassportMetadata, PassportRead } from "../types";
-import { useNFTRegistry } from "./blockchain/useNFTRegistry";
 import { api } from "../lib/web-api";
-import { useDIDRegistry } from "./blockchain/useDIDRegistry";
+import { useContracts } from "./blockchain/useContracts";
 
 interface UsePassportHistoryProps {
   passportMetadata: PassportMetadata | undefined;
@@ -13,8 +12,7 @@ export function usePassportHistory({ passportMetadata, version }: UsePassportHis
   const [passportHistory, setPassportHistory] = useState<PassportRead[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | undefined>(undefined);
-  const { nftRegistry } = useNFTRegistry();
-  const { didRegistry } = useDIDRegistry();
+  const { nftRegistry, pbtRegistry, didRegistry } = useContracts();
 
   useEffect(() => {
     setPassportHistory([]);
@@ -30,11 +28,14 @@ export function usePassportHistory({ passportMetadata, version }: UsePassportHis
           case "nft":
             passportVersions = await nftRegistry.readNFTPassportHistory(passportMetadata);
             break;
+          case "pbt":
+            passportVersions = await pbtRegistry.readPBTPassportHistory(passportMetadata);
+            break;
           case "did":
             passportVersions = await didRegistry.readDIDPassportHistory(passportMetadata);
             break;
           default:
-            throw new Error(`Unknown passport type: ${passportMetadata}`);
+            throw new Error(`Unknown passport type: ${JSON.stringify(passportMetadata)}`);
         }
 
         if (!passportVersions || passportVersions.length === 0) {

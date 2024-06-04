@@ -1,10 +1,10 @@
-import { useLocalSearchParams } from "expo-router";
 import React, { useRef, useState } from "react";
 import { Text, StyleSheet, View, Alert, Share } from "react-native";
 import QRCode from "react-native-qrcode-svg";
 import StepTitle from "../../components/stepper/StepTitle";
 import { PrimaryButton, SecondaryButton } from "../../components/ui/buttons";
-import { goToHome } from "../../lib/utils";
+import { encodeDataCarrierURL, goToHome } from "../../lib/utils";
+import { useCreation } from "../../context/CreationContext";
 
 interface QRCodeViewProps {
   url: string;
@@ -58,12 +58,21 @@ export const QRCodeView = ({ url }: QRCodeViewProps) => {
 };
 
 export default function Page() {
-  const { qrCodeURL } = useLocalSearchParams();
+  const { state, dispatch } = useCreation();
+
+  const isQRCode = state.userInput.dataCarrier === "qr";
+
+  const passportMetadataURI = state.results.passportMetadataURI;
+  if (!passportMetadataURI) {
+    Alert.alert("Passport metadata URI not available");
+    return null;
+  }
+
   return (
     <View style={styles.container}>
       <View>
         <StepTitle text="Successfully created a passport." highlight="passport" />
-        {qrCodeURL ? (
+        {isQRCode ? (
           <Text style={styles.qrCodeText}>
             Attach the following QR Code to your construction product to make the passport accessible:
           </Text>
@@ -71,8 +80,14 @@ export default function Page() {
           <Text>Attach the HaLo NFC chip to your construction product to make the passport accessible.</Text>
         )}
       </View>
-      {qrCodeURL && <QRCodeView url={qrCodeURL as string} />}
-      <PrimaryButton title="Home" onPress={goToHome} />
+      {isQRCode && <QRCodeView url={encodeDataCarrierURL(passportMetadataURI)} />}
+      <PrimaryButton
+        title="Home"
+        onPress={() => {
+          dispatch({ type: "RESET_CREATION_STATE" });
+          goToHome();
+        }}
+      />
     </View>
   );
 }

@@ -1,5 +1,5 @@
 export const PermaPassPBTRegistry = {
-  "31337": "0xa754bcda5abc5786ecfcb97caee997c881056062",
+  "31337": "0xa304d89fec68fc2fa8c3325b96f53dbd2b5a1bfa",
   abi: [
     {
       inputs: [],
@@ -44,6 +44,11 @@ export const PermaPassPBTRegistry = {
     {
       inputs: [],
       name: "NoMintedTokenForChip",
+      type: "error",
+    },
+    {
+      inputs: [],
+      name: "NotTokenOwner",
       type: "error",
     },
     {
@@ -242,6 +247,19 @@ export const PermaPassPBTRegistry = {
       inputs: [
         {
           internalType: "uint256",
+          name: "tokenId",
+          type: "uint256",
+        },
+      ],
+      name: "burn",
+      outputs: [],
+      stateMutability: "nonpayable",
+      type: "function",
+    },
+    {
+      inputs: [
+        {
+          internalType: "uint256",
           name: "",
           type: "uint256",
         },
@@ -252,6 +270,25 @@ export const PermaPassPBTRegistry = {
           internalType: "uint256",
           name: "",
           type: "uint256",
+        },
+      ],
+      stateMutability: "view",
+      type: "function",
+    },
+    {
+      inputs: [
+        {
+          internalType: "uint256",
+          name: "tokenId",
+          type: "uint256",
+        },
+      ],
+      name: "exists",
+      outputs: [
+        {
+          internalType: "bool",
+          name: "",
+          type: "bool",
         },
       ],
       stateMutability: "view",

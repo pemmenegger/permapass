@@ -1,7 +1,8 @@
 import React, { createContext, useState, useContext } from "react";
 import type { PropsWithChildren, ReactNode } from "react";
 import { Modal, View, StyleSheet } from "react-native";
-import { ConfirmModal, ConfirmModalProps, GasFeesModal, GasFeesModalProps, InfoModal, InfoModalProps } from "./modals";
+import { ConfirmModal, ConfirmModalProps, InfoModal, InfoModalProps } from "./modals";
+import { HaLoNFCChipSignatureOutput, useHaLoNFCChip } from "../../hooks/useHaloNFCChip";
 
 interface ModalState {
   isOpen: boolean;
@@ -10,16 +11,14 @@ interface ModalState {
 
 interface InfoModalExternalProps extends Omit<InfoModalProps, "closeModal"> {}
 
-interface GasFeesModalExternalProps<T> extends Omit<GasFeesModalProps<T>, "closeModal"> {}
+interface ConfirmModalExternalProps<T> extends Omit<ConfirmModalProps<T>, "title" | "closeModal"> {}
 
-interface ConfirmModalExternalProps<T> extends Omit<ConfirmModalProps<T>, "closeModal"> {}
+interface ChipSignatureModalProps<T> extends Omit<ConfirmModalExternalProps<T>, "onConfirm"> {}
 
 interface ModalContextType {
-  modal: ModalState;
   openInfoModal: (props: InfoModalExternalProps) => void;
-  openConfirmModal: <T>(props: ConfirmModalExternalProps<T>) => Promise<T>;
-  openGasFeesModal: <T>(props: GasFeesModalExternalProps<T>) => Promise<T>;
-  closeModal: () => void;
+  openGasFeesModal: <T>(props: ConfirmModalExternalProps<T>) => Promise<T>;
+  openChipSignatureModal: <T>(props: ChipSignatureModalProps<T>) => Promise<HaLoNFCChipSignatureOutput | undefined>;
 }
 
 const ModalContext = createContext<ModalContextType | undefined>(undefined);
@@ -28,6 +27,7 @@ function ModalProvider({ children }: PropsWithChildren) {
   const [modal, setModal] = useState<ModalState>({
     isOpen: false,
   });
+  const { haloNFCChip } = useHaLoNFCChip();
 
   const openModal = (content: ReactNode) => {
     setModal({ isOpen: true, content });
@@ -37,19 +37,20 @@ function ModalProvider({ children }: PropsWithChildren) {
     openModal(<InfoModal {...props} closeModal={closeModal} />);
   };
 
-  const openConfirmModal = <T,>(props: ConfirmModalExternalProps<T>) => {
+  const openGasFeesModal = <T,>({ content, onConfirm, onReject }: ConfirmModalExternalProps<T>) => {
     return new Promise<T>((resolve, reject) => {
       openModal(
         <ConfirmModal
-          {...props}
+          title="Gas Fees"
+          content={`${content} Click continue to be redirected to your wallet app to confirm and pay gas fees for this blockchain transaction.`}
           closeModal={closeModal}
           onConfirm={async () => {
-            const result = await props.onConfirm();
+            const result = await onConfirm();
             resolve(result);
           }}
           onReject={async () => {
-            if (props.onReject) {
-              await props.onReject();
+            if (onReject) {
+              await onReject();
             }
             reject();
           }}
@@ -58,19 +59,28 @@ function ModalProvider({ children }: PropsWithChildren) {
     });
   };
 
-  const openGasFeesModal = <T,>(props: GasFeesModalExternalProps<T>) => {
-    return new Promise<T>((resolve, reject) => {
+  const openChipSignatureModal = <T,>({ content, onReject }: ChipSignatureModalProps<T>) => {
+    return new Promise<HaLoNFCChipSignatureOutput | undefined>((resolve, reject) => {
       openModal(
-        <GasFeesModal
-          {...props}
+        <ConfirmModal
+          title="HaLo NFC Chip Signature"
+          content={`${content} Click continue and hold your chip near your device to sign with the chip.`}
           closeModal={closeModal}
           onConfirm={async () => {
-            const result = await props.onConfirm();
-            resolve(result);
+            try {
+              if (!haloNFCChip.computeSignatureFromChip) {
+                throw new Error("HaLo NFC Chip not available");
+              }
+              const signature = await haloNFCChip.computeSignatureFromChip();
+              resolve(signature);
+              return signature;
+            } catch (error) {
+              reject();
+            }
           }}
           onReject={async () => {
-            if (props.onReject) {
-              await props.onReject();
+            if (onReject) {
+              await onReject();
             }
             reject();
           }}
@@ -84,7 +94,7 @@ function ModalProvider({ children }: PropsWithChildren) {
   };
 
   return (
-    <ModalContext.Provider value={{ modal, openInfoModal, openConfirmModal, openGasFeesModal, closeModal }}>
+    <ModalContext.Provider value={{ openInfoModal, openGasFeesModal, openChipSignatureModal }}>
       <View style={styles.container}>
         {modal.isOpen && <View style={styles.overlay} />}
         {children}

@@ -18,7 +18,7 @@ export default function PassportCard({ passport, passportMetadata, setVersion }:
   const { openGasFeesModal } = useModal();
   const [isOwner, setIsOwner] = useState(false);
   const [isDeleted, setIsDeleted] = useState(false);
-  const { nftRegistry, didRegistry } = useContracts();
+  const { nftRegistry, pbtRegistry, didRegistry } = useContracts();
 
   const handleUpdate = async () => {
     const passportDataURI = await api.arweave.uploadPassport({
@@ -26,7 +26,8 @@ export default function PassportCard({ passport, passportMetadata, setVersion }:
       condition: `${passport.condition} UPDATED`,
     });
 
-    switch (passportMetadata.type) {
+    const { type } = passportMetadata;
+    switch (type) {
       case "nft":
         await openGasFeesModal({
           content: "Updating an NFT-based passport costs gas fees.",
@@ -35,6 +36,17 @@ export default function PassportCard({ passport, passportMetadata, setVersion }:
               throw new Error("nftRegistry updateTokenURI not available");
             }
             await nftRegistry.updateTokenURI(passportMetadata.tokenId, passportDataURI);
+          },
+        });
+        break;
+      case "pbt":
+        await openGasFeesModal({
+          content: "Updating a PBT-based passport costs gas fees.",
+          onConfirm: async () => {
+            if (!pbtRegistry.updateTokenURI) {
+              throw new Error("pbtRegistry updatePBT not available");
+            }
+            await pbtRegistry.updateTokenURI(passportMetadata.tokenId, passportDataURI);
           },
         });
         break;
@@ -50,7 +62,7 @@ export default function PassportCard({ passport, passportMetadata, setVersion }:
         });
         break;
       default:
-        throw new Error(`Unknown passport type`);
+        throw new Error(`Invalid passport metadata type: ${type}`);
     }
 
     // Reload history
@@ -58,7 +70,8 @@ export default function PassportCard({ passport, passportMetadata, setVersion }:
   };
 
   const handleDelete = async () => {
-    switch (passportMetadata.type) {
+    const { type } = passportMetadata;
+    switch (type) {
       case "nft":
         await openGasFeesModal({
           content: "Deleting an NFT-based passport costs gas fees.",
@@ -67,6 +80,17 @@ export default function PassportCard({ passport, passportMetadata, setVersion }:
               throw new Error("nftRegistry deleteNFT not available");
             }
             await nftRegistry.deleteNFT(passportMetadata.tokenId);
+          },
+        });
+        break;
+      case "pbt":
+        await openGasFeesModal({
+          content: "Deleting a PBT-based passport costs gas fees.",
+          onConfirm: async () => {
+            if (!pbtRegistry.deletePBT) {
+              throw new Error("pbtRegistry deletePBT not available");
+            }
+            await pbtRegistry.deletePBT(passportMetadata.tokenId);
           },
         });
         break;
@@ -82,7 +106,7 @@ export default function PassportCard({ passport, passportMetadata, setVersion }:
         });
         break;
       default:
-        throw new Error(`Unknown passport type`);
+        throw new Error(`Invalid passport metadata type: ${type}`);
     }
 
     // Reload history
@@ -90,20 +114,29 @@ export default function PassportCard({ passport, passportMetadata, setVersion }:
   };
 
   useAsyncEffect(async () => {
-    if (!passportMetadata || !passport || !nftRegistry?.isOwner || !didRegistry?.isOwner) {
+    if (!passportMetadata || !passport) {
       return;
     }
-    switch (passportMetadata.type) {
+    if (!nftRegistry?.isOwner || !pbtRegistry?.isOwner || !didRegistry?.isOwner) {
+      return;
+    }
+
+    const { type } = passportMetadata;
+    switch (type) {
       case "nft":
         setIsOwner(await nftRegistry.isOwner(passportMetadata));
         setIsDeleted(await nftRegistry.isDeleted(passportMetadata));
+        break;
+      case "pbt":
+        setIsOwner(await pbtRegistry.isOwner(passportMetadata));
+        setIsDeleted(await pbtRegistry.isDeleted(passportMetadata));
         break;
       case "did":
         setIsOwner(await didRegistry.isOwner(passportMetadata));
         setIsDeleted(await didRegistry.isDeleted(passportMetadata));
         break;
       default:
-        throw new Error(`Unknown passport type`);
+        throw new Error(`Invalid passport metadata type: ${type}`);
     }
   }, [passport, passportMetadata, didRegistry, nftRegistry]);
 

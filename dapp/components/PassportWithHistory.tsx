@@ -17,7 +17,9 @@ export default function PassportWithHistory({ passportMetadata }: { passportMeta
   }
 
   if (error) {
-    return <Text>Error: {error}</Text>;
+    console.log("passportMetadata", passportMetadata);
+    console.error("Error loading passport history:", error);
+    return <Text>An error occurred while loading the passport history.</Text>;
   }
 
   if (!currentPassport) {
