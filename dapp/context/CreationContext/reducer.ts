@@ -1,3 +1,4 @@
+import { HaLoNFCChipSignatureOutput } from "../../hooks/useHaloNFCChip";
 import { PassportCreate, DataCarrier, DigitalIdentifier, ArweaveURI } from "../../types";
 
 export type CreationState = {
@@ -10,12 +11,14 @@ export type CreationState = {
   results: {
     passportDataURI?: ArweaveURI;
     passportMetadataURI?: ArweaveURI;
+    haloNFCChipSignatureOutput?: HaLoNFCChipSignatureOutput;
   };
   status?:
     | "CREATION_STARTED"
     | "PASSPORT_DATA_UPLOADED"
     | "DID_OWNER_CHANGED"
     | "DID_SERVICE_ADDED"
+    | "HALO_NFC_CHIP_SIGNATURE_CHANGED"
     | "DIGITAL_IDENTIFIER_CREATED"
     | "DATA_CARRIER_INITIALIZED"
     | "CREATION_ERROR";
@@ -45,6 +48,10 @@ export type CreationAction =
     }
   | {
       type: "DID_SERVICE_ADDED";
+    }
+  | {
+      type: "HALO_NFC_CHIP_SIGNATURE_CHANGED";
+      haloNFCChipSignatureOutput: HaLoNFCChipSignatureOutput;
     }
   | {
       type: "DIGITAL_IDENTIFIER_CREATED";
@@ -102,6 +109,15 @@ export function creationReducer(state: CreationState, action: CreationAction): C
         ...state,
         status: "DID_SERVICE_ADDED",
       };
+    case "HALO_NFC_CHIP_SIGNATURE_CHANGED":
+      return {
+        ...state,
+        status: "HALO_NFC_CHIP_SIGNATURE_CHANGED",
+        results: {
+          ...state.results,
+          haloNFCChipSignatureOutput: action.haloNFCChipSignatureOutput,
+        },
+      };
     case "DIGITAL_IDENTIFIER_CREATED":
       return {
         ...state,
@@ -126,7 +142,7 @@ export function creationReducer(state: CreationState, action: CreationAction): C
     case "RESET_CREATION_STATE":
       return {
         userInput: state.userInput,
-        results: state.results,
+        results: {},
       };
   }
 }

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Address, useWalletClient } from "wagmi";
-import { PermaPassDIDRegistry } from "../../contracts/PermaPassDIDRegistry";
+import { DIDRegistry } from "../../contracts/DIDRegistry";
 import { readContract } from "@wagmi/core";
 import { generatePrivateKey, privateKeyToAccount, sign } from "viem/accounts";
 import { encodePacked, fromHex, keccak256, pad, stringToBytes, toHex, zeroAddress } from "viem";
@@ -25,7 +25,7 @@ export function useDIDRegistry() {
     const chainId = walletClient.chain.id;
     const chainName = walletClient.chain.name;
 
-    const contractAddress = PermaPassDIDRegistry[chainId.toString() as keyof typeof PermaPassDIDRegistry] as Address;
+    const contractAddress = DIDRegistry[chainId.toString() as keyof typeof DIDRegistry] as Address;
     if (!contractAddress) throw new Error(`useDIDRegistry - No contract address found for chainId: ${chainId}`);
 
     const publicClient = getPublicClient(chainId);
@@ -43,7 +43,7 @@ export function useDIDRegistry() {
         const nonce = await readContract({
           chainId: chainId,
           address: contractAddress,
-          abi: PermaPassDIDRegistry.abi,
+          abi: DIDRegistry.abi,
           functionName: "nonce",
           args: [identityOwner],
         });
@@ -59,7 +59,7 @@ export function useDIDRegistry() {
 
         const txHash = await walletClient.writeContract({
           address: contractAddress,
-          abi: PermaPassDIDRegistry.abi,
+          abi: DIDRegistry.abi,
           functionName: "changeOwnerSigned",
           args: [identity, Number(signature.v), signature.r, signature.s, newOwner],
         });
@@ -75,73 +75,87 @@ export function useDIDRegistry() {
 
         return metadata;
       } catch (error) {
-        console.error("Failed to create DID:", error);
+        console.error(error);
         throw error;
       }
     };
 
     const handleAddDIDService = async (did: string, passportDataURI: ArweaveURI) => {
-      const identity = fromDIDToIdentity(did);
+      try {
+        const identity = fromDIDToIdentity(did);
 
-      const key = "did/svc/ProductPassport";
-      const value = passportDataURI;
+        const key = "did/svc/ProductPassport";
+        const value = passportDataURI;
 
-      const attrNameBytes = stringToBytes(key);
-      const attrNameBytesPadded = pad(attrNameBytes, { size: 32, dir: "right" });
-      const attrName = toHex(attrNameBytesPadded);
+        const attrNameBytes = stringToBytes(key);
+        const attrNameBytesPadded = pad(attrNameBytes, { size: 32, dir: "right" });
+        const attrName = toHex(attrNameBytesPadded);
 
-      const attrValueBytes = stringToBytes(value);
-      const attrValue = toHex(attrValueBytes);
+        const attrValueBytes = stringToBytes(value);
+        const attrValue = toHex(attrValueBytes);
 
-      const txHash = await walletClient.writeContract({
-        address: contractAddress,
-        abi: PermaPassDIDRegistry.abi,
-        functionName: "setAttribute",
-        args: [identity as Address, attrName as Address, attrValue as Address, BigInt(86400)],
-      });
-      await publicClient.waitForTransactionReceipt({ hash: txHash });
+        const txHash = await walletClient.writeContract({
+          address: contractAddress,
+          abi: DIDRegistry.abi,
+          functionName: "setAttribute",
+          args: [identity as Address, attrName as Address, attrValue as Address, BigInt(86400)],
+        });
+        await publicClient.waitForTransactionReceipt({ hash: txHash });
+      } catch (error) {
+        console.error(error);
+        throw error;
+      }
     };
 
     const handleDeleteDIDService = async (did: string) => {
-      // change the ownership, i.e. controller to the zero address
-      const identity = fromDIDToIdentity(did);
+      try {
+        // change the ownership, i.e. controller to the zero address
+        const identity = fromDIDToIdentity(did);
 
-      const identityOwner = await readContract({
-        chainId: chainId,
-        address: contractAddress,
-        abi: PermaPassDIDRegistry.abi,
-        functionName: "owners",
-        args: [identity],
-      });
+        const identityOwner = await readContract({
+          chainId: chainId,
+          address: contractAddress,
+          abi: DIDRegistry.abi,
+          functionName: "owners",
+          args: [identity],
+        });
 
-      if (identityOwner !== walletClient.account.address) {
-        throw new Error(`useDIDRegistry - Identity owner does not match wallet address: ${identityOwner}`);
+        if (identityOwner !== walletClient.account.address) {
+          throw new Error(`useDIDRegistry - Identity owner does not match wallet address: ${identityOwner}`);
+        }
+
+        const txHash = await walletClient.writeContract({
+          address: contractAddress,
+          abi: DIDRegistry.abi,
+          functionName: "changeOwner",
+          args: [identity, zeroAddress],
+        });
+        await publicClient.waitForTransactionReceipt({ hash: txHash });
+      } catch (error) {
+        console.error(error);
+        throw error;
       }
-
-      const txHash = await walletClient.writeContract({
-        address: contractAddress,
-        abi: PermaPassDIDRegistry.abi,
-        functionName: "changeOwner",
-        args: [identity, zeroAddress],
-      });
-      await publicClient.waitForTransactionReceipt({ hash: txHash });
     };
 
     const handleIsOwner = async (metadata: DIDPassportMetadata) => {
-      const { did, chainId, address } = metadata;
+      try {
+        const { did, chainId, address } = metadata;
 
-      const identity = fromDIDToIdentity(did);
+        const identity = fromDIDToIdentity(did);
 
-      const owner = await readContract({
-        chainId,
-        address: address as Address,
-        // TODO from metadata?
-        abi: PermaPassDIDRegistry.abi,
-        functionName: "owners",
-        args: [identity],
-      });
+        const owner = await readContract({
+          chainId,
+          address: address as Address,
+          abi: DIDRegistry.abi,
+          functionName: "owners",
+          args: [identity],
+        });
 
-      return owner === walletClient.account.address;
+        return owner === walletClient.account.address;
+      } catch (error) {
+        console.error(error);
+        throw error;
+      }
     };
 
     setCreateDID(() => handleCreateDID);
@@ -158,26 +172,22 @@ export function useDIDRegistry() {
     const identity = fromDIDToIdentity(did);
 
     try {
+      const passportVersions: PassportVersion[] = [];
+
       let previousChange: bigint = await readContract({
         chainId,
         address: address as Address,
-        // TODO from metadata?
-        abi: PermaPassDIDRegistry.abi,
+        abi: DIDRegistry.abi,
         functionName: "changed",
         args: [identity],
       });
-
-      console.log("DIDAttributeChanged events", previousChange);
-
-      const passportVersions: PassportVersion[] = [];
 
       while (previousChange) {
         const block = await publicClient.getBlock({ blockNumber: previousChange });
 
         const attributeChangedEvents = await publicClient.getContractEvents({
           address: address as Address,
-          // TODO from metadata?
-          abi: PermaPassDIDRegistry.abi,
+          abi: DIDRegistry.abi,
           eventName: "DIDAttributeChanged",
           args: { identity },
           fromBlock: previousChange,
@@ -203,8 +213,7 @@ export function useDIDRegistry() {
 
         const ownerChangedEvents = await publicClient.getContractEvents({
           address: address as Address,
-          // TODO from metadata?
-          abi: PermaPassDIDRegistry.abi,
+          abi: DIDRegistry.abi,
           eventName: "DIDOwnerChanged",
           args: { identity },
           fromBlock: previousChange,
@@ -219,7 +228,7 @@ export function useDIDRegistry() {
 
       return passportVersions;
     } catch (error) {
-      console.error("Failed to read DID passport URI history:", error);
+      console.error(error);
       throw error;
     }
   };
@@ -233,15 +242,14 @@ export function useDIDRegistry() {
       const owner = await readContract({
         chainId,
         address: address as Address,
-        // TODO from metadata?
-        abi: PermaPassDIDRegistry.abi,
+        abi: DIDRegistry.abi,
         functionName: "owners",
         args: [identity],
       });
 
       return owner === zeroAddress;
     } catch (error) {
-      console.error("Failed to read DID owner:", error);
+      console.error(error);
       throw error;
     }
   };

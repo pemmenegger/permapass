@@ -4,6 +4,7 @@ import { getPublicClient } from "../lib/wagmi";
 import NfcManager, { NfcTech } from "react-native-nfc-manager";
 import { execHaloCmdRN } from "@arx-research/libhalo/api/react-native.js";
 import { Address, encodePacked, keccak256 } from "viem";
+import { err } from "react-native-svg/lib/typescript/xml";
 
 NfcManager.start();
 
@@ -90,8 +91,9 @@ export function useHaLoNFCChip() {
       });
 
       return dummySignatureToReadChipAddress.etherAddress as Address;
-    } catch (ex) {
-      throw new Error(`Failed to compute signature from chip: ${ex}`);
+    } catch (error) {
+      console.error(error);
+      throw error;
     } finally {
       NfcManager.cancelTechnologyRequest();
     }

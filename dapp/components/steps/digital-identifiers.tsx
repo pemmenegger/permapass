@@ -8,7 +8,7 @@ import { HaLoNFCChipSignatureOutput } from "../../hooks/useHaloNFCChip";
 import { api } from "../../lib/web-api";
 import { ArweaveURI, DIDPassportMetadata, PassportMetadata } from "../../types";
 import { useState } from "react";
-import { useModal } from "../../context/InfoModalContext";
+import { useModal } from "../../context/ModalContext";
 
 interface DigitalIdentifierStepProps {
   createFn: (passportDataURI: ArweaveURI) => Promise<PassportMetadata | undefined>;
@@ -138,12 +138,9 @@ export const CreatePBTStep = () => {
     if (!signature) {
       return;
     }
-    const { chipAddress, signatureFromChip, blockNumberUsedInSig } = signature;
-    const passportMetadata = await createPBT(passportDataURI, {
-      chipAddress,
-      signatureFromChip,
-      blockNumberUsedInSig,
-    });
+    dispatch({ type: "HALO_NFC_CHIP_SIGNATURE_CHANGED", haloNFCChipSignatureOutput: signature });
+
+    const passportMetadata = await createPBT(passportDataURI, signature);
     return passportMetadata;
   };
 

@@ -27,3 +27,8 @@ global.process.version = "v9.40";
 global.location = {
   protocol: "https",
 };
+
+// BigInt polyfill
+BigInt.prototype.toJSON = function () {
+  return this.toString();
+};

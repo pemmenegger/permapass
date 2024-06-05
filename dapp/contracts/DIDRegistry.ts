@@ -1,4 +1,4 @@
-export const PermaPassDIDRegistry = {
+export const DIDRegistry = {
   "31337": "0xeb0c10adbb2982a99bcf90f1f787732db1e2c174",
   abi: [
     {

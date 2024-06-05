@@ -6,7 +6,7 @@ import { SecondaryButton } from "./ui/buttons";
 import { commonColors } from "../styles";
 import { useContracts } from "../hooks/blockchain/useContracts";
 import { useAsyncEffect } from "../hooks/useAsyncEffect";
-import { useModal } from "../context/InfoModalContext";
+import { useModal } from "../context/ModalContext";
 
 interface PassportCardProps {
   passport: PassportCreate;

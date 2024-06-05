@@ -8,9 +8,9 @@ error NotTokenOwner();
 
 /**
  * @dev This contract manages NFTs for PermaPass. It additionally maintains a change history mapping to
- * track modifications, similar to the PermaPassDIDRegistry contract.
+ * track modifications, similar to the DIDRegistry contract.
  */
-contract PermaPassNFTRegistry is ERC721URIStorage {
+contract NFTRegistry is ERC721URIStorage {
     uint256 private _nextTokenId;
     mapping(uint256 => uint256) public changed;
 
@@ -36,7 +36,7 @@ contract PermaPassNFTRegistry is ERC721URIStorage {
         _;
     }
 
-    constructor() ERC721("PermaPassNFTRegistry", "PPNFT") {}
+    constructor() ERC721("NFTRegistry", "PPNFT") {}
 
     /**
      * @dev This function mints an NFT with the given first owner and token URI.

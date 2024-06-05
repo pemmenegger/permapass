@@ -17,10 +17,6 @@ export default function Page() {
   const { state, dispatch } = useCreation();
 
   useEffect(() => {
-    dispatch({ type: "RESET_CREATION_STATE" });
-  }, []);
-
-  useEffect(() => {
     if (!walletClient) {
       dispatch({ type: "REQUIREMENT_NOT_MET", requirementNotMetMessage: "You must first connect to your wallet" });
       return;

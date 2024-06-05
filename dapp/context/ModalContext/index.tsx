@@ -1,7 +1,7 @@
 import React, { createContext, useState, useContext } from "react";
 import type { PropsWithChildren, ReactNode } from "react";
 import { Modal, View, StyleSheet } from "react-native";
-import { ConfirmModal, ConfirmModalProps, InfoModal, InfoModalProps } from "./modals";
+import { ConfirmModal, ConfirmModalProps, InfoModal, ModalProps } from "./modals";
 import { HaLoNFCChipSignatureOutput, useHaLoNFCChip } from "../../hooks/useHaloNFCChip";
 
 interface ModalState {
@@ -9,15 +9,13 @@ interface ModalState {
   content?: ReactNode;
 }
 
-interface InfoModalExternalProps extends Omit<InfoModalProps, "closeModal"> {}
-
-interface ConfirmModalExternalProps<T> extends Omit<ConfirmModalProps<T>, "title" | "closeModal"> {}
-
-interface ChipSignatureModalProps<T> extends Omit<ConfirmModalExternalProps<T>, "onConfirm"> {}
+interface InfoModalProps extends Omit<ModalProps, "closeModal"> {}
+interface GasFeesModalProps<T> extends Omit<ConfirmModalProps<T>, "title" | "closeModal"> {}
+interface ChipSignatureModalProps<T> extends Omit<ConfirmModalProps<T>, "title" | "closeModal" | "onConfirm"> {}
 
 interface ModalContextType {
-  openInfoModal: (props: InfoModalExternalProps) => void;
-  openGasFeesModal: <T>(props: ConfirmModalExternalProps<T>) => Promise<T>;
+  openInfoModal: (props: InfoModalProps) => void;
+  openGasFeesModal: <T>(props: GasFeesModalProps<T>) => Promise<T>;
   openChipSignatureModal: <T>(props: ChipSignatureModalProps<T>) => Promise<HaLoNFCChipSignatureOutput | undefined>;
 }
 
@@ -33,11 +31,11 @@ function ModalProvider({ children }: PropsWithChildren) {
     setModal({ isOpen: true, content });
   };
 
-  const openInfoModal = (props: InfoModalExternalProps) => {
+  const openInfoModal = (props: InfoModalProps) => {
     openModal(<InfoModal {...props} closeModal={closeModal} />);
   };
 
-  const openGasFeesModal = <T,>({ content, onConfirm, onReject }: ConfirmModalExternalProps<T>) => {
+  const openGasFeesModal = <T,>({ content, onConfirm, onReject }: GasFeesModalProps<T>) => {
     return new Promise<T>((resolve, reject) => {
       openModal(
         <ConfirmModal

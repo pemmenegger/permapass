@@ -81,13 +81,7 @@ export default function Page() {
         )}
       </View>
       {isQRCode && <QRCodeView url={encodeDataCarrierURL(passportMetadataURI)} />}
-      <PrimaryButton
-        title="Home"
-        onPress={() => {
-          dispatch({ type: "RESET_CREATION_STATE" });
-          goToHome();
-        }}
-      />
+      <PrimaryButton title="Home" onPress={goToHome} />
     </View>
   );
 }

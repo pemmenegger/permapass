@@ -18,6 +18,7 @@ export default function Page() {
 
   const handleNext = async () => {
     dispatch({ type: "USER_INPUT_CHANGED", digitalIdentifier: digitalIdentifier! });
+    dispatch({ type: "RESET_CREATION_STATE" });
     router.push("/create/04-summary-and-creation");
   };
 

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { Address, useWalletClient } from "wagmi";
-import { PermaPassNFTRegistry } from "../../contracts/PermaPassNFTRegistry";
+import { NFTRegistry } from "../../contracts/NFTRegistry";
 import { readContract } from "@wagmi/core";
 import { ArweaveURI, NFTPassportMetadata, PassportVersion } from "../../types";
 import { getPublicClient } from "../../lib/wagmi";
@@ -23,7 +23,7 @@ export function useNFTRegistry() {
 
     const chainId = walletClient.chain.id;
 
-    const contractAddress = PermaPassNFTRegistry[chainId.toString() as keyof typeof PermaPassNFTRegistry] as Address;
+    const contractAddress = NFTRegistry[chainId.toString() as keyof typeof NFTRegistry] as Address;
     if (!contractAddress) throw new Error(`useNFTRegistry - No contract address found for chainId: ${chainId}`);
 
     const publicClient = getPublicClient(chainId);
@@ -34,7 +34,7 @@ export function useNFTRegistry() {
 
         const txHash = await walletClient.writeContract({
           address: contractAddress,
-          abi: PermaPassNFTRegistry.abi,
+          abi: NFTRegistry.abi,
           functionName: "mintNFT",
           args: [to, tokenURI],
         });
@@ -42,7 +42,7 @@ export function useNFTRegistry() {
 
         const events = await publicClient.getContractEvents({
           address: contractAddress,
-          abi: PermaPassNFTRegistry.abi,
+          abi: NFTRegistry.abi,
           eventName: "Minted",
           args: { to, uri: tokenURI },
         });
@@ -60,7 +60,7 @@ export function useNFTRegistry() {
 
         return metadata;
       } catch (error) {
-        console.error(`useNFTRegistry - Failed to create NFT:`, error);
+        console.error(error);
         throw error;
       }
     };
@@ -69,13 +69,13 @@ export function useNFTRegistry() {
       try {
         const txHash = await walletClient.writeContract({
           address: contractAddress,
-          abi: PermaPassNFTRegistry.abi,
+          abi: NFTRegistry.abi,
           functionName: "setTokenURI",
           args: [tokenId, tokenURI],
         });
         await publicClient.waitForTransactionReceipt({ hash: txHash });
       } catch (error) {
-        console.error(`useNFTRegistry - Failed to update NFT token URI:`, error);
+        console.error(error);
         throw error;
       }
     };
@@ -84,13 +84,13 @@ export function useNFTRegistry() {
       try {
         const txHash = await walletClient.writeContract({
           address: contractAddress,
-          abi: PermaPassNFTRegistry.abi,
+          abi: NFTRegistry.abi,
           functionName: "burn",
           args: [tokenId],
         });
         await publicClient.waitForTransactionReceipt({ hash: txHash });
       } catch (error) {
-        console.error(`useNFTRegistry - Failed to delete NFT:`, error);
+        console.error(error);
         throw error;
       }
     };
@@ -102,7 +102,7 @@ export function useNFTRegistry() {
         const exists = await readContract({
           chainId,
           address: address as Address,
-          abi: PermaPassNFTRegistry.abi,
+          abi: NFTRegistry.abi,
           functionName: "exists",
           args: [tokenId],
         });
@@ -114,7 +114,7 @@ export function useNFTRegistry() {
         const owner = await readContract({
           chainId,
           address: address as Address,
-          abi: PermaPassNFTRegistry.abi,
+          abi: NFTRegistry.abi,
           functionName: "ownerOf",
           args: [tokenId],
         });
@@ -122,7 +122,7 @@ export function useNFTRegistry() {
         const walletAddress = walletClient.account.address;
         return owner === walletAddress;
       } catch (error) {
-        console.error(`useNFTRegistry - Failed to read NFT owner:`, error);
+        console.error(error);
         throw error;
       }
     };
@@ -133,7 +133,7 @@ export function useNFTRegistry() {
     setIsOwner(() => handleIsOwner);
   }, [walletClient, isError, isLoading]);
 
-  const readNFTPassportHistory = useCallback(async (metadata: NFTPassportMetadata): Promise<PassportVersion[]> => {
+  const readNFTPassportHistory = async (metadata: NFTPassportMetadata): Promise<PassportVersion[]> => {
     const { tokenId, chainId, address } = metadata;
 
     const publicClient = getPublicClient(chainId);
@@ -142,7 +142,7 @@ export function useNFTRegistry() {
       let previousChange: bigint = await readContract({
         chainId,
         address: address as Address,
-        abi: PermaPassNFTRegistry.abi,
+        abi: NFTRegistry.abi,
         functionName: "changed",
         args: [tokenId],
       });
@@ -151,7 +151,7 @@ export function useNFTRegistry() {
       while (previousChange) {
         const events = await publicClient.getContractEvents({
           address: address as Address,
-          abi: PermaPassNFTRegistry.abi,
+          abi: NFTRegistry.abi,
           eventName: "TokenURIChanged",
           args: { tokenId },
           fromBlock: previousChange,
@@ -173,29 +173,29 @@ export function useNFTRegistry() {
 
       return passportVersions;
     } catch (error) {
-      console.error(`useNFTRegistry - Failed to read NFT passport history:`, error);
+      console.error(error);
       throw error;
     }
-  }, []);
+  };
 
-  const isDeleted = useCallback(async (metadata: NFTPassportMetadata): Promise<boolean> => {
+  const isDeleted = async (metadata: NFTPassportMetadata): Promise<boolean> => {
     const { tokenId, chainId, address } = metadata;
 
     try {
       const exists = await readContract({
         chainId,
         address: address as Address,
-        abi: PermaPassNFTRegistry.abi,
+        abi: NFTRegistry.abi,
         functionName: "exists",
         args: [tokenId],
       });
 
       return !exists;
     } catch (error) {
-      console.error(`useNFTRegistry - Failed to read NFT owner:`, error);
+      console.error(error);
       throw error;
     }
-  }, []);
+  };
 
   return {
     nftRegistry: {

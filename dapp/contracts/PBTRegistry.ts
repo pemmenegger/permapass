@@ -1,4 +1,4 @@
-export const PermaPassPBTRegistry = {
+export const PBTRegistry = {
   "31337": "0xa304d89fec68fc2fa8c3325b96f53dbd2b5a1bfa",
   abi: [
     {
@@ -9,11 +9,6 @@ export const PermaPassPBTRegistry = {
     {
       inputs: [],
       name: "AlreadyMinted",
-      type: "error",
-    },
-    {
-      inputs: [],
-      name: "AlreadySet",
       type: "error",
     },
     {
@@ -329,29 +324,6 @@ export const PermaPassPBTRegistry = {
     {
       inputs: [
         {
-          internalType: "bytes",
-          name: "signatureFromChip",
-          type: "bytes",
-        },
-        {
-          internalType: "uint256",
-          name: "blockNumberUsedInSig",
-          type: "uint256",
-        },
-        {
-          internalType: "string",
-          name: "metadataURI",
-          type: "string",
-        },
-      ],
-      name: "initMetadataURI",
-      outputs: [],
-      stateMutability: "nonpayable",
-      type: "function",
-    },
-    {
-      inputs: [
-        {
           internalType: "address",
           name: "owner",
           type: "address",
@@ -397,25 +369,6 @@ export const PermaPassPBTRegistry = {
           internalType: "bool",
           name: "",
           type: "bool",
-        },
-      ],
-      stateMutability: "view",
-      type: "function",
-    },
-    {
-      inputs: [
-        {
-          internalType: "address",
-          name: "",
-          type: "address",
-        },
-      ],
-      name: "metadataURIs",
-      outputs: [
-        {
-          internalType: "string",
-          name: "",
-          type: "string",
         },
       ],
       stateMutability: "view",

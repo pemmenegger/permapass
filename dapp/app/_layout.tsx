@@ -1,8 +1,5 @@
 import "../global";
 import "@walletconnect/react-native-compat";
-(BigInt.prototype as any).toJSON = function () {
-  return this.toString();
-};
 
 import { StatusBar } from "expo-status-bar";
 import { Stack } from "expo-router";
@@ -12,7 +9,7 @@ import { createWeb3Modal, defaultWagmiConfig, Web3Modal } from "@web3modal/wagmi
 import { CreationProvider } from "../context/CreationContext";
 import config from "../lib/config";
 import { useFonts } from "expo-font";
-import { ModalProvider } from "../context/InfoModalContext";
+import { ModalProvider } from "../context/ModalContext";
 import { PropsWithChildren } from "react";
 
 const projectId = config.WALLETCONNECT_CLOUD_PROJECT_ID;

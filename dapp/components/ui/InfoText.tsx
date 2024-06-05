@@ -1,7 +1,7 @@
 import React from "react";
 import { StyleSheet, Text } from "react-native";
 import { commonColors } from "../../styles";
-import { useModal } from "../../context/InfoModalContext";
+import { useModal } from "../../context/ModalContext";
 
 interface InfoTextProps {
   title: string;

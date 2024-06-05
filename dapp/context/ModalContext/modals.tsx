@@ -3,13 +3,11 @@ import { CrossIcon } from "../../components/icons/CrossIcon";
 import { commonColors, commonStyles } from "../../styles";
 import { SecondaryButton } from "../../components/ui/buttons";
 
-interface ModalProps {
+export interface ModalProps {
   title: string;
   content: string;
   closeModal: () => void;
 }
-
-export interface InfoModalProps extends ModalProps {}
 
 export type ConfirmModalProps<T> = ModalProps & {
   onConfirm: () => Promise<T>;
@@ -27,7 +25,7 @@ const ModalHeader = ({ title, onClose }: { title: string; onClose: () => void })
 
 const ModalContent = ({ content }: { content: string }) => <Text style={styles.description}>{content}</Text>;
 
-const InfoModal = ({ title, content, closeModal }: InfoModalProps) => {
+const InfoModal = ({ title, content, closeModal }: ModalProps) => {
   return (
     <View style={styles.modalContent}>
       <ModalHeader title={title} onClose={closeModal} />

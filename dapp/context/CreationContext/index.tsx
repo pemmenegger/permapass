@@ -9,15 +9,8 @@ interface CreationContentType {
 const CreationContext = createContext<CreationContentType | undefined>(undefined);
 
 const initialState: CreationState = {
-  userInput: {
-    passportData: undefined,
-    dataCarrier: undefined,
-    digitalIdentifier: undefined,
-  },
-  results: {
-    passportDataURI: undefined,
-    passportMetadataURI: undefined,
-  },
+  userInput: {},
+  results: {},
 };
 
 function CreationProvider({ children }: PropsWithChildren) {

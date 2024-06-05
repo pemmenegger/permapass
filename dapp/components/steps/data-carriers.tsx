@@ -1,10 +1,10 @@
 import { useCreation } from "../../context/CreationContext";
 import { useState } from "react";
 import { useAsyncEffect } from "../../hooks/useAsyncEffect";
-import { useModal } from "../../context/InfoModalContext";
-import { usePBTRegistry } from "../../hooks/blockchain/usePBTRegistry";
+import { useModal } from "../../context/ModalContext";
 import { HaLoNFCChipSignatureOutput } from "../../hooks/useHaloNFCChip";
 import { ArweaveURI } from "../../types";
+import { useContracts } from "../../hooks/blockchain/useContracts";
 
 interface DataCarrierStepProps {
   initFn: () => Promise<void>;
@@ -63,7 +63,7 @@ export const GenerateQRCodeStep = () => {
 export const WriteHaLoChipStep = () => {
   const { openGasFeesModal, openChipSignatureModal } = useModal();
   const { state, dispatch } = useCreation();
-  const { pbtRegistry } = usePBTRegistry();
+  const { haLoNFCMetadataRegistry } = useContracts();
 
   const computeSignatureFromChip = () => {
     return openChipSignatureModal({
@@ -76,13 +76,13 @@ export const WriteHaLoChipStep = () => {
 
   const writeMetadataURIToBlockchain = (chipSignature: HaLoNFCChipSignatureOutput, metadataURI: ArweaveURI) => {
     return openGasFeesModal({
-      content: "Linking passport metadata to a Halo NFC Chip based passport costs gas fees.",
+      content: "Linking passport metadata to the HaLo NFC Chip costs gas fees.",
       onConfirm: async () => {
         try {
-          if (!pbtRegistry.initMetadataURI) {
+          if (!haLoNFCMetadataRegistry.initMetadataURI) {
             return undefined;
           }
-          return await pbtRegistry.initMetadataURI(chipSignature, metadataURI);
+          return await haLoNFCMetadataRegistry.initMetadataURI(chipSignature, metadataURI);
         } catch (error) {
           return undefined;
         }
@@ -94,14 +94,18 @@ export const WriteHaLoChipStep = () => {
   };
 
   const initHaloNFCChip = async () => {
-    const { passportMetadataURI } = state.results;
+    const { passportMetadataURI, haloNFCChipSignatureOutput } = state.results;
     if (!passportMetadataURI) {
       throw new Error("Passport metadata URI not available");
     }
 
-    const chipSignature = await computeSignatureFromChip();
+    let chipSignature = haloNFCChipSignatureOutput;
     if (!chipSignature) {
-      throw new Error("Failed to compute signature from chip");
+      chipSignature = await computeSignatureFromChip();
+      if (!chipSignature) {
+        throw new Error("Failed to compute signature from chip");
+      }
+      dispatch({ type: "HALO_NFC_CHIP_SIGNATURE_CHANGED", haloNFCChipSignatureOutput: chipSignature });
     }
 
     await writeMetadataURIToBlockchain(chipSignature, passportMetadataURI);

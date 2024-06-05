@@ -6,17 +6,17 @@ import StepSubtitle from "../components/stepper/StepSubtitle";
 import ViewWithHeader from "../components/ViewWithHeader";
 import { Alert, View } from "react-native";
 import { useHaLoNFCChip } from "../hooks/useHaloNFCChip";
-import { usePBTRegistry } from "../hooks/blockchain/usePBTRegistry";
+import { useHaLoNFCMetadataRegistry } from "../hooks/blockchain/useHaLoNFCMetadataRegistry";
 
 export default function Page() {
   const { haloNFCChip } = useHaLoNFCChip();
-  const { pbtRegistry } = usePBTRegistry();
+  const { haLoNFCMetadataRegistry } = useHaLoNFCMetadataRegistry();
 
   const readMetadataURI = async () => {
     try {
       const chipAddress = await haloNFCChip.readChipAddress();
       console.log(`Chip address: ${chipAddress}`);
-      const metadataURI = await pbtRegistry.readMetadataURI(chipAddress);
+      const metadataURI = await haLoNFCMetadataRegistry.readMetadataURI(chipAddress);
       console.log(`Metadata URI: ${metadataURI}`);
       router.push({
         pathname: "read",

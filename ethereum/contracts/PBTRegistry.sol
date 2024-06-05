@@ -4,21 +4,16 @@ pragma solidity ^0.8.20;
 import {PBTSimple} from "@chiru-labs/pbt/src/PBTSimple.sol";
 
 error AlreadyMinted();
-error AlreadySet();
 error NotTokenOwner();
 
 /**
  * @dev This contract manages PBTs for PermaPass. It additionally maintains a change history mapping to
- * track modifications, similar to the PermaPassDIDRegistry contract.
- *
- * Since the Halo chip NDEF is not writable due to security reasons,
- * the metadataURI will be stored on chain.
+ * track modifications, similar to the DIDRegistry contract.
  */
-contract PermaPassPBTRegistry is PBTSimple {
+contract PBTRegistry is PBTSimple {
     mapping(uint256 => string) private _tokenURIs;
     uint256 private _nextTokenId;
     mapping(uint256 => uint256) public changed;
-    mapping(address => string) public metadataURIs;
 
     event TokenURIChanged(
         uint256 indexed tokenId,
@@ -34,7 +29,7 @@ contract PermaPassPBTRegistry is PBTSimple {
         _;
     }
 
-    constructor() PBTSimple("PermaPassPBTRegistry", "PPPBT") {}
+    constructor() PBTSimple("PBTRegistry", "PPPBT") {}
 
     /**
      * @dev This function is used to mint a PBT with a chip.
@@ -48,7 +43,7 @@ contract PermaPassPBTRegistry is PBTSimple {
         uint256 blockNumberUsedInSig,
         string memory _tokenURI
     ) external {
-        // Revert if the chip has already been minted
+        // Revert if the chip has already been seeded and minted
         if (_tokenDatas[chipAddress].set) {
             revert AlreadyMinted();
         }
@@ -71,7 +66,7 @@ contract PermaPassPBTRegistry is PBTSimple {
     }
 
     /**
-     * @dev Similar to the PermaPassNFTRegistry contract,
+     * @dev Similar to the NFTRegistry contract,
      * this function is used to set the metadata URI for a chip.
      */
     function tokenURI(
@@ -79,13 +74,13 @@ contract PermaPassPBTRegistry is PBTSimple {
     ) public view override returns (string memory) {
         require(
             _exists(tokenId),
-            "PermaPassPBTRegistry: URI query for nonexistent token"
+            "PBTRegistry: URI query for nonexistent token"
         );
         return _tokenURIs[tokenId];
     }
 
     /**
-     * @dev Similar to the PermaPassNFTRegistry contract,
+     * @dev Similar to the NFTRegistry contract,
      * this function is used to set the token URI for a chip
      * and track the change history.
      */
@@ -93,10 +88,7 @@ contract PermaPassPBTRegistry is PBTSimple {
         uint256 tokenId,
         string memory _tokenURI
     ) public onlyTokenOwner(tokenId) {
-        require(
-            _exists(tokenId),
-            "PermaPassPBTRegistry: URI set of nonexistent token"
-        );
+        require(_exists(tokenId), "PBTRegistry: URI set of nonexistent token");
         _tokenURIs[tokenId] = _tokenURI;
         emit TokenURIChanged(tokenId, msg.sender, _tokenURI, changed[tokenId]);
         changed[tokenId] = block.number;
@@ -114,28 +106,5 @@ contract PermaPassPBTRegistry is PBTSimple {
      */
     function burn(uint256 tokenId) external onlyTokenOwner(tokenId) {
         _burn(tokenId);
-    }
-
-    /**
-     * @dev This function initializes the metadata URI for a HaLo NFC chip.
-     *
-     * It can be PBT or DID passport metadata, but the metadata URIs
-     * will be stored on this contract due to the HaLo chip
-     * signature verifications.
-     */
-    function initMetadataURI(
-        bytes calldata signatureFromChip,
-        uint256 blockNumberUsedInSig,
-        string memory metadataURI
-    ) external {
-        TokenData memory tokenData = _getTokenDataForChipSignature(
-            signatureFromChip,
-            blockNumberUsedInSig
-        );
-        // Revert if the metadataURI has already been set
-        if (bytes(metadataURIs[tokenData.chipAddress]).length > 0) {
-            revert AlreadySet();
-        }
-        metadataURIs[tokenData.chipAddress] = metadataURI;
     }
 }
