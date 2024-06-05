@@ -22,7 +22,7 @@ export const exportContractDetails = async ({
     throw new Error("Chain ID not found in network config");
   }
 
-  const outputDir = path.resolve(__dirname, "../../app/contracts/");
+  const outputDir = path.resolve(__dirname, "../../dapp/contracts/");
   const outputFilePath = path.join(outputDir, `${contractName}.ts`);
 
   let existingContent = {};

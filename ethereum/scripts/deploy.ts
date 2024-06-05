@@ -29,17 +29,22 @@ async function main() {
   await hre.run("compile");
 
   await deployContract({
-    contractName: "PermaPassDIDRegistry",
+    contractName: "DIDRegistry",
     shouldExport: true,
   });
 
   await deployContract({
-    contractName: "PermaPassNFTRegistry",
+    contractName: "NFTRegistry",
     shouldExport: true,
   });
 
   await deployContract({
-    contractName: "PermaPassPBTRegistry",
+    contractName: "PBTRegistry",
+    shouldExport: true,
+  });
+
+  await deployContract({
+    contractName: "HaLoNFCMetadataRegistry",
     shouldExport: true,
   });
 }
