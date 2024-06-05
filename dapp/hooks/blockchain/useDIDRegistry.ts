@@ -166,9 +166,7 @@ export function useDIDRegistry() {
 
   const readDIDPassportHistory = async (metadata: DIDPassportMetadata) => {
     const { did, chainId, address } = metadata;
-
     const publicClient = getPublicClient(chainId);
-
     const identity = fromDIDToIdentity(did);
 
     try {
@@ -185,44 +183,46 @@ export function useDIDRegistry() {
       while (previousChange) {
         const block = await publicClient.getBlock({ blockNumber: previousChange });
 
-        const attributeChangedEvents = await publicClient.getContractEvents({
-          address: address as Address,
-          abi: DIDRegistry.abi,
-          eventName: "DIDAttributeChanged",
-          args: { identity },
-          fromBlock: previousChange,
-          toBlock: previousChange,
-        });
+        const [attributeChangedEvents, ownerChangedEvents] = await Promise.all([
+          publicClient.getContractEvents({
+            address: address as Address,
+            abi: DIDRegistry.abi,
+            eventName: "DIDAttributeChanged",
+            args: { identity },
+            fromBlock: previousChange,
+            toBlock: previousChange,
+          }),
+          publicClient.getContractEvents({
+            address: address as Address,
+            abi: DIDRegistry.abi,
+            eventName: "DIDOwnerChanged",
+            args: { identity },
+            fromBlock: previousChange,
+            toBlock: previousChange,
+          }),
+        ]);
 
         if (attributeChangedEvents.length > 0) {
           for (const event of attributeChangedEvents) {
-            const name = fromHex(event.args.name!, "string").replace(/\0/g, "");
-            if (name !== "did/svc/ProductPassport") {
-              continue;
+            const { name, value } = event.args;
+            if (!name || !value) {
+              throw new Error(`Missing name or value in attributeChanged event: ${event.args}`);
             }
-            passportVersions.push({
-              uri: fromHex(event.args.value!, "string") as ArweaveURI,
-              blockTimestamp: block.timestamp,
-            });
+            const attributeName = fromHex(name, "string").replace(/\0/g, "");
+            if (attributeName === "did/svc/ProductPassport") {
+              passportVersions.push({
+                uri: fromHex(value, "string") as ArweaveURI,
+                blockTimestamp: block.timestamp,
+              });
+            }
           }
-
           const lastEvent = attributeChangedEvents[attributeChangedEvents.length - 1];
           previousChange = lastEvent ? BigInt(lastEvent.args.previousChange!) : 0n;
-          break;
-        }
-
-        const ownerChangedEvents = await publicClient.getContractEvents({
-          address: address as Address,
-          abi: DIDRegistry.abi,
-          eventName: "DIDOwnerChanged",
-          args: { identity },
-          fromBlock: previousChange,
-          toBlock: previousChange,
-        });
-
-        if (ownerChangedEvents.length > 0) {
+        } else if (ownerChangedEvents.length > 0) {
           const lastEvent = ownerChangedEvents[ownerChangedEvents.length - 1];
           previousChange = lastEvent ? BigInt(lastEvent.args.previousChange!) : 0n;
+        } else {
+          previousChange = 0n;
         }
       }
 

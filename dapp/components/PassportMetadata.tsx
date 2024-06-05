@@ -48,6 +48,7 @@ export default function PassportMetadata({ metadata, isLoading, error }: Passpor
       case "pbt":
         return (
           <>
+            <InfoBlock label="Token Id" value={metadata.tokenId.toString()} />
             <InfoBlock label="PBT Registry Address" value={address} />
             <InfoBlock label="Network" value={networkName} />
           </>

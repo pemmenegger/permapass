@@ -12,12 +12,10 @@ export default function Page() {
   const { haloNFCChip } = useHaLoNFCChip();
   const { haLoNFCMetadataRegistry } = useHaLoNFCMetadataRegistry();
 
-  const readMetadataURI = async () => {
+  const readNFCMetadataURI = async () => {
     try {
       const chipAddress = await haloNFCChip.readChipAddress();
-      console.log(`Chip address: ${chipAddress}`);
       const metadataURI = await haLoNFCMetadataRegistry.readMetadataURI(chipAddress);
-      console.log(`Metadata URI: ${metadataURI}`);
       router.push({
         pathname: "read",
         params: {
@@ -49,7 +47,7 @@ export default function Page() {
       <StepOption
         title="Read HaLo NFC Passport"
         subtitle="Open the NFC reader to scan a HaLo NFC-based passport."
-        onPress={readMetadataURI}
+        onPress={readNFCMetadataURI}
       />
     </ViewWithHeader>
   );
