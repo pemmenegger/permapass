@@ -1,0 +1,128 @@
+{
+  "31337": [
+    {
+      "deployment": {
+        "gasUsed": 1591804,
+        "performance": {
+          "durationInMs": 8,
+          "startTimestamp": 1717758294370,
+          "endTimestamp": 1717758294378
+        }
+      },
+      "create": {
+        "gasUsed": 187760,
+        "performance": {
+          "durationInMs": 6,
+          "startTimestamp": 1717758294378,
+          "endTimestamp": 1717758294384
+        }
+      },
+      "read": {
+        "performance": {
+          "durationInMs": 2,
+          "startTimestamp": 1717758294384,
+          "endTimestamp": 1717758294386
+        }
+      },
+      "update": {
+        "gasUsed": 44049,
+        "performance": {
+          "durationInMs": 5,
+          "startTimestamp": 1717758294386,
+          "endTimestamp": 1717758294391
+        }
+      },
+      "delete": {
+        "gasUsed": 43689,
+        "performance": {
+          "durationInMs": 4,
+          "startTimestamp": 1717758294391,
+          "endTimestamp": 1717758294395
+        }
+      }
+    },
+    {
+      "deployment": {
+        "gasUsed": 1591804,
+        "performance": {
+          "durationInMs": 9,
+          "startTimestamp": 1717758482896,
+          "endTimestamp": 1717758482905
+        }
+      },
+      "create": {
+        "gasUsed": 187760,
+        "performance": {
+          "durationInMs": 6,
+          "startTimestamp": 1717758482905,
+          "endTimestamp": 1717758482911
+        }
+      },
+      "read": {
+        "performance": {
+          "durationInMs": 3,
+          "startTimestamp": 1717758482911,
+          "endTimestamp": 1717758482914
+        }
+      },
+      "update": {
+        "gasUsed": 44049,
+        "performance": {
+          "durationInMs": 4,
+          "startTimestamp": 1717758482914,
+          "endTimestamp": 1717758482918
+        }
+      },
+      "delete": {
+        "gasUsed": 43689,
+        "performance": {
+          "durationInMs": 4,
+          "startTimestamp": 1717758482918,
+          "endTimestamp": 1717758482922
+        }
+      }
+    },
+    {
+      "deployment": {
+        "gasUsed": 1591804,
+        "performance": {
+          "durationInMs": 20,
+          "startTimestamp": 1717758696567,
+          "endTimestamp": 1717758696587
+        }
+      },
+      "create": {
+        "gasUsed": 187760,
+        "performance": {
+          "durationInMs": 6,
+          "startTimestamp": 1717758696587,
+          "endTimestamp": 1717758696593
+        }
+      },
+      "read": {
+        "performance": {
+          "durationInMs": 2,
+          "startTimestamp": 1717758696593,
+          "endTimestamp": 1717758696595
+        }
+      },
+      "update": {
+        "gasUsed": 44049,
+        "performance": {
+          "durationInMs": 3,
+          "startTimestamp": 1717758696596,
+          "endTimestamp": 1717758696599
+        }
+      },
+      "delete": {
+        "gasUsed": 43689,
+        "performance": {
+          "durationInMs": 4,
+          "startTimestamp": 1717758696599,
+          "endTimestamp": 1717758696603
+        }
+      }
+    }
+  ],
+  "contractName": "NFTRegistry"
+}

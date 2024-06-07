@@ -1,7 +1,7 @@
 export interface EvaluationPerformance {
   durationInMs: number;
-  startDateTime: string;
-  endDateTime: string;
+  startTimestamp: number;
+  endTimestamp: number;
 }
 
 export interface Evaluation {
