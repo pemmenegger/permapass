@@ -1,0 +1,294 @@
+{
+  "31337": [
+    {
+      "deployment": {
+        "gasUsedInWei": 1591804,
+        "performance": {
+          "durationInMs": 8,
+          "startTimestamp": 1717758294370,
+          "endTimestamp": 1717758294378
+        }
+      },
+      "create": {
+        "gasUsedInWei": 187760,
+        "performance": {
+          "durationInMs": 6,
+          "startTimestamp": 1717758294378,
+          "endTimestamp": 1717758294384
+        }
+      },
+      "read": {
+        "performance": {
+          "durationInMs": 2,
+          "startTimestamp": 1717758294384,
+          "endTimestamp": 1717758294386
+        }
+      },
+      "update": {
+        "gasUsedInWei": 44049,
+        "performance": {
+          "durationInMs": 5,
+          "startTimestamp": 1717758294386,
+          "endTimestamp": 1717758294391
+        }
+      },
+      "delete": {
+        "gasUsedInWei": 43689,
+        "performance": {
+          "durationInMs": 4,
+          "startTimestamp": 1717758294391,
+          "endTimestamp": 1717758294395
+        }
+      }
+    },
+    {
+      "deployment": {
+        "gasUsedInWei": 1591804,
+        "performance": {
+          "durationInMs": 9,
+          "startTimestamp": 1717758482896,
+          "endTimestamp": 1717758482905
+        }
+      },
+      "create": {
+        "gasUsedInWei": 187760,
+        "performance": {
+          "durationInMs": 6,
+          "startTimestamp": 1717758482905,
+          "endTimestamp": 1717758482911
+        }
+      },
+      "read": {
+        "performance": {
+          "durationInMs": 3,
+          "startTimestamp": 1717758482911,
+          "endTimestamp": 1717758482914
+        }
+      },
+      "update": {
+        "gasUsedInWei": 44049,
+        "performance": {
+          "durationInMs": 4,
+          "startTimestamp": 1717758482914,
+          "endTimestamp": 1717758482918
+        }
+      },
+      "delete": {
+        "gasUsedInWei": 43689,
+        "performance": {
+          "durationInMs": 4,
+          "startTimestamp": 1717758482918,
+          "endTimestamp": 1717758482922
+        }
+      }
+    },
+    {
+      "deployment": {
+        "gasUsedInWei": 1591804,
+        "performance": {
+          "durationInMs": 20,
+          "startTimestamp": 1717758696567,
+          "endTimestamp": 1717758696587
+        }
+      },
+      "create": {
+        "gasUsedInWei": 187760,
+        "performance": {
+          "durationInMs": 6,
+          "startTimestamp": 1717758696587,
+          "endTimestamp": 1717758696593
+        }
+      },
+      "read": {
+        "performance": {
+          "durationInMs": 2,
+          "startTimestamp": 1717758696593,
+          "endTimestamp": 1717758696595
+        }
+      },
+      "update": {
+        "gasUsedInWei": 44049,
+        "performance": {
+          "durationInMs": 3,
+          "startTimestamp": 1717758696596,
+          "endTimestamp": 1717758696599
+        }
+      },
+      "delete": {
+        "gasUsedInWei": 43689,
+        "performance": {
+          "durationInMs": 4,
+          "startTimestamp": 1717758696599,
+          "endTimestamp": 1717758696603
+        }
+      }
+    }
+  ],
+  "11155111": [
+    {
+      "deployment": {
+        "gasUsedInWei": 1591804,
+        "performance": {
+          "durationInMs": 28061,
+          "startTimestamp": 1717766245829,
+          "endTimestamp": 1717766273890
+        }
+      },
+      "create": {
+        "gasUsedInWei": 187760,
+        "performance": {
+          "durationInMs": 44180,
+          "startTimestamp": 1717766273892,
+          "endTimestamp": 1717766318072
+        }
+      },
+      "read": {
+        "performance": {
+          "durationInMs": 150,
+          "startTimestamp": 1717766318072,
+          "endTimestamp": 1717766318222
+        }
+      },
+      "update": {
+        "gasUsedInWei": 44049,
+        "performance": {
+          "durationInMs": 13700,
+          "startTimestamp": 1717766318222,
+          "endTimestamp": 1717766331922
+        }
+      },
+      "delete": {
+        "gasUsedInWei": 43689,
+        "performance": {
+          "durationInMs": 9480,
+          "startTimestamp": 1717766331922,
+          "endTimestamp": 1717766341402
+        }
+      }
+    },
+    {
+      "deployment": {
+        "gasUsedInWei": 1591804,
+        "performance": {
+          "durationInMs": 9707,
+          "startTimestamp": 1717766643988,
+          "endTimestamp": 1717766653695
+        }
+      },
+      "create": {
+        "gasUsedInWei": 187760,
+        "performance": {
+          "durationInMs": 13720,
+          "startTimestamp": 1717766653696,
+          "endTimestamp": 1717766667416
+        }
+      },
+      "read": {
+        "performance": {
+          "durationInMs": 129,
+          "startTimestamp": 1717766667417,
+          "endTimestamp": 1717766667546
+        }
+      },
+      "update": {
+        "gasUsedInWei": 43492,
+        "performance": {
+          "durationInMs": 13612,
+          "startTimestamp": 1717766667547,
+          "endTimestamp": 1717766681159
+        }
+      },
+      "delete": {
+        "gasUsedInWei": 43689,
+        "performance": {
+          "durationInMs": 9498,
+          "startTimestamp": 1717766681159,
+          "endTimestamp": 1717766690657
+        }
+      }
+    },
+    {
+      "deployment": {
+        "gasUsedInWei": 1591804,
+        "performance": {
+          "durationInMs": 5307,
+          "startTimestamp": 1717767056315,
+          "endTimestamp": 1717767061622
+        }
+      },
+      "create": {
+        "gasUsedInWei": 187760,
+        "performance": {
+          "durationInMs": 13525,
+          "startTimestamp": 1717767061623,
+          "endTimestamp": 1717767075148
+        }
+      },
+      "read": {
+        "performance": {
+          "durationInMs": 129,
+          "startTimestamp": 1717767075149,
+          "endTimestamp": 1717767075278
+        }
+      },
+      "update": {
+        "gasUsedInWei": 43492,
+        "performance": {
+          "durationInMs": 13602,
+          "startTimestamp": 1717767075278,
+          "endTimestamp": 1717767088880
+        }
+      },
+      "delete": {
+        "gasUsedInWei": 43689,
+        "performance": {
+          "durationInMs": 9553,
+          "startTimestamp": 1717767088881,
+          "endTimestamp": 1717767098434
+        }
+      }
+    },
+    {
+      "deployment": {
+        "gasUsedInWei": 1591804,
+        "performance": {
+          "durationInMs": 18027,
+          "startTimestamp": 1717767643265,
+          "endTimestamp": 1717767661292
+        }
+      },
+      "create": {
+        "gasUsedInWei": 187760,
+        "performance": {
+          "durationInMs": 13576,
+          "startTimestamp": 1717767661292,
+          "endTimestamp": 1717767674868
+        }
+      },
+      "read": {
+        "performance": {
+          "durationInMs": 133,
+          "startTimestamp": 1717767674868,
+          "endTimestamp": 1717767675001
+        }
+      },
+      "update": {
+        "gasUsedInWei": 43492,
+        "performance": {
+          "durationInMs": 13669,
+          "startTimestamp": 1717767675002,
+          "endTimestamp": 1717767688671
+        }
+      },
+      "delete": {
+        "gasUsedInWei": 43689,
+        "performance": {
+          "durationInMs": 9551,
+          "startTimestamp": 1717767688671,
+          "endTimestamp": 1717767698222
+        }
+      }
+    }
+  ],
+  "contractName": "NFTRegistry"
+}

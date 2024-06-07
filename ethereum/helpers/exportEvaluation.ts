@@ -18,7 +18,7 @@ export const exportEvaluation = async ({
   contractName: string;
   evaluation: Evaluation;
 }) => {
-  const outputDir = path.resolve(__dirname, "../results/");
+  const outputDir = path.resolve(__dirname, "../../evaluation/data/");
   const outputFilePath = path.join(outputDir, `${contractName}.json`);
 
   let existingContent: ExistingContent = { contractName };

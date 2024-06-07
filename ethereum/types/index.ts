@@ -1,27 +1,27 @@
 export interface EvaluationPerformance {
   durationInMs: number;
-  startDateTime: string;
-  endDateTime: string;
+  startTimestamp: number;
+  endTimestamp: number;
 }
 
 export interface Evaluation {
   deployment?: {
-    gasUsed: number;
+    gasUsedInWei: number;
     performance: EvaluationPerformance;
   };
   create?: {
-    gasUsed: number;
+    gasUsedInWei: number;
     performance: EvaluationPerformance;
   };
   read?: {
     performance: EvaluationPerformance;
   };
   update?: {
-    gasUsed: number;
+    gasUsedInWei: number;
     performance: EvaluationPerformance;
   };
   delete?: {
-    gasUsed: number;
+    gasUsedInWei: number;
     performance: EvaluationPerformance;
   };
 }
