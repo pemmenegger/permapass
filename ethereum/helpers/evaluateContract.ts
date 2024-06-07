@@ -25,7 +25,7 @@ export const evaluateContract = async (contractConfig: ContractConfig) => {
     console.log(`${logPrefix} - ${message}`);
   };
   const logError = (message: string) => {
-    console.error(`${message}`);
+    console.error(`${logPrefix} - ${message}`);
   };
 
   const evaluation: Evaluation = {};
