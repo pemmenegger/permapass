@@ -53,7 +53,7 @@ export const evaluateContract = async (contractConfig: ContractConfig) => {
 
     contractAddress = txReceipt.contractAddress;
     evaluation.deployment = {
-      gasUsed: Number(txReceipt.gasUsed),
+      gasUsedInWei: Number(txReceipt.gasUsed),
       performance,
     };
     logInfo(`Successful`);
@@ -79,7 +79,7 @@ export const evaluateContract = async (contractConfig: ContractConfig) => {
     }
 
     evaluation.create = {
-      gasUsed: Number(txReceipt.gasUsed),
+      gasUsedInWei: Number(txReceipt.gasUsed),
       performance,
     };
     logInfo(`Successful`);
@@ -116,7 +116,7 @@ export const evaluateContract = async (contractConfig: ContractConfig) => {
     }
 
     evaluation.update = {
-      gasUsed: Number(txReceipt.gasUsed),
+      gasUsedInWei: Number(txReceipt.gasUsed),
       performance,
     };
     logInfo(`Successful`);
@@ -138,7 +138,7 @@ export const evaluateContract = async (contractConfig: ContractConfig) => {
     }
 
     evaluation.delete = {
-      gasUsed: Number(txReceipt.gasUsed),
+      gasUsedInWei: Number(txReceipt.gasUsed),
       performance,
     };
     logInfo(`Successful`);

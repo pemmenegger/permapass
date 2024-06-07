@@ -26,7 +26,8 @@ async function main() {
       },
       read: async (contractAddress: Address) => {
         const contract = await hre.viem.getContractAt("NFTRegistry", contractAddress);
-        await contract.read.tokenURI([BigInt(1)]);
+        const tokenURI = await contract.read.tokenURI([BigInt(1)]);
+        console.log(`NFTRegistry read ${tokenURI}`);
       },
       update: async (contractAddress: Address) => {
         const contract = await hre.viem.getContractAt("NFTRegistry", contractAddress);
