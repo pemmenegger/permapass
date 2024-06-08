@@ -7,25 +7,37 @@ import { WalletIcon } from "./icons/WalletIcon";
 import { formatAddress, formatBalance, formatNetworkName } from "../lib/utils";
 import { chains } from "../lib/wagmi";
 import config from "../lib/config";
-import { useAsyncEffect } from "../hooks/useAsyncEffect";
 
-const ConnectedView = ({
-  address,
-  balanceSymbol,
-  balanceValue,
-  networkName,
-}: {
-  address: string;
-  balanceSymbol: string;
-  balanceValue: string;
-  networkName: string;
-}) => (
-  <View style={styles.isConnectedContainer}>
-    <InfoBlock label="Address" value={address} />
-    <InfoBlock label={balanceSymbol} value={balanceValue} />
-    <InfoBlock label="Network" value={networkName} />
-  </View>
-);
+const ConnectedView = () => {
+  const { selectedNetworkId } = useWeb3ModalState();
+  const { address } = useAccount();
+  const { data, error } = useBalance({ address });
+  const { data: walletClient } = useWalletClient();
+
+  const formattedAddress = useMemo(() => formatAddress(address), [address]);
+  const formattedBalance = useMemo(() => formatBalance(data?.formatted), [data?.formatted]);
+  const formattedNetworkName = useMemo(() => formatNetworkName(chains, selectedNetworkId), [selectedNetworkId]);
+
+  if (error) {
+    console.error("Error fetching wallet balance: ", error);
+  }
+
+  if (config.ENVIRONMENT != "prod" && walletClient && walletClient.chain.id != sepolia.id) {
+    return (
+      <View style={styles.isDisconnectedContainer}>
+        <Text style={styles.text}>Connect to the Sepolia network in your wallet app</Text>
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.isConnectedContainer}>
+      <InfoBlock label="Address" value={formattedAddress} />
+      <InfoBlock label={data?.symbol || ""} value={formattedBalance} />
+      <InfoBlock label="Network" value={formattedNetworkName} />
+    </View>
+  );
+};
 
 const DisconnectedView = () => (
   <View style={styles.isDisconnectedContainer}>
@@ -45,39 +57,11 @@ const InfoBlock = ({ label, value }: { label: string; value: string }) => (
 
 export default function WalletConnector() {
   const { open } = useWeb3Modal();
-  const { selectedNetworkId } = useWeb3ModalState();
-  const { isConnected, address } = useAccount();
-  const { data: walletClient, isLoading, isError } = useWalletClient();
-  const { data, error } = useBalance({ address });
-
-  const formattedAddress = useMemo(() => formatAddress(address), [address]);
-  const formattedBalance = useMemo(() => formatBalance(data?.formatted), [data?.formatted]);
-  const formattedNetworkName = useMemo(() => formatNetworkName(chains, selectedNetworkId), [selectedNetworkId]);
-
-  useAsyncEffect(async () => {
-    // Only switch to sepolia chain in production
-    if (config.ENVIRONMENT != "prod") return;
-    if (!walletClient || isLoading || isError) return;
-    if (walletClient.chain.id === sepolia.id) return;
-    await walletClient.switchChain(sepolia);
-  }, [walletClient, isLoading, isError]);
-
-  if (error) {
-    console.error("Error fetching wallet balance: ", error);
-  }
+  const { isConnected } = useAccount();
 
   return (
     <Pressable style={styles.button} onPress={async () => await open()}>
-      {isConnected ? (
-        <ConnectedView
-          address={formattedAddress}
-          balanceSymbol={data?.symbol || ""}
-          balanceValue={formattedBalance}
-          networkName={formattedNetworkName}
-        />
-      ) : (
-        <DisconnectedView />
-      )}
+      {isConnected ? <ConnectedView /> : <DisconnectedView />}
     </Pressable>
   );
 }

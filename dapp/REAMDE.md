@@ -12,6 +12,7 @@
 3. Download or update the PermaPass App through TestFlight.
 4. Download a wallet app, such as [MetaMask](https://apps.apple.com/us/app/metamask-blockchain-wallet/id1438144202).
 5. Open the wallet app and create your wallet.
+6. Connect to the Sepolia Test Network
 
 ### Receiving Sepolia Tokens
 
