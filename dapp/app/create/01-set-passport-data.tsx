@@ -1,47 +1,51 @@
-import { TextInput, View, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { useState } from "react";
 import { useCreation } from "../../context/CreationContext";
 import { router } from "expo-router";
 import StepTitle from "../../components/stepper/StepTitle";
 import StepSubtitle from "../../components/stepper/StepSubtitle";
-import { PrimaryButton } from "../../components/ui/buttons";
+import { PrimaryButton, SecondaryButton } from "../../components/ui/buttons";
+import { PassportCreate } from "../../types";
+import PassportCard from "../../components/PassportCard";
+import { pickPassportJSON } from "../../lib/utils";
 
 export default function Page() {
   const { state, dispatch } = useCreation();
-  const [name, setName] = useState<string>(state.userInput.passportData?.name || "");
-  const [condition, setCondition] = useState<string>(state.userInput.passportData?.condition || "");
+  const [passportData, setPassportData] = useState<PassportCreate | undefined>(
+    state.userInput.passportData || undefined
+  );
 
-  const isInvalid = !name || !condition;
+  const isInvalid = !passportData;
 
   const handleNext = async () => {
     dispatch({
       type: "USER_INPUT_CHANGED",
-      passportData: { name, condition },
+      passportData,
     });
     router.push("/create/02-select-data-carrier");
   };
+
+  const handlePassportDataChange = async () => {
+    const passportData = await pickPassportJSON();
+    if (!passportData) {
+      return;
+    }
+    setPassportData(passportData);
+  };
+
   return (
     <View style={styles.container}>
       <View>
         <StepTitle text="First, set your passport data." highlight="passport data" />
         <StepSubtitle text="Passports contain information that supports the adoption of circular economy practices." />
-        <TextInput
-          placeholder="Product Name"
-          value={name}
-          onChangeText={setName}
-          maxLength={16}
-          autoCapitalize="none"
-          // autoFocus={true}
-          style={styles.input}
-        />
-        <TextInput
-          placeholder="Product Condition"
-          value={condition}
-          onChangeText={setCondition}
-          maxLength={16}
-          autoCapitalize="none"
-          style={styles.input}
-        />
+        {passportData && (
+          <View style={{ marginBottom: 16 }}>
+            <PassportCard passportData={passportData} />
+          </View>
+        )}
+        <View style={{ marginBottom: 16 }}>
+          <SecondaryButton title="Upload JSON" onPress={handlePassportDataChange} />
+        </View>
       </View>
       <PrimaryButton title="Continue" onPress={handleNext} disabled={isInvalid} />
     </View>
@@ -52,13 +56,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "space-between",
-  },
-  input: {
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 4,
-    paddingHorizontal: 8,
     paddingVertical: 16,
   },
 });

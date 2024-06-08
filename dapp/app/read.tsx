@@ -3,7 +3,7 @@ import { usePassportMetadata } from "../hooks/usePassportMetadata";
 import { useMetadataURIFromParams } from "../hooks/useMetadataURIFromParams";
 import ViewWithHeader from "../components/ViewWithHeader";
 import StepTitle from "../components/stepper/StepTitle";
-import PassportWithHistory from "../components/PassportWithHistory";
+import PassportRead from "../components/PassportRead";
 import PassportMetadata from "../components/PassportMetadata";
 import { goToHome } from "../lib/utils";
 import { Text } from "react-native";
@@ -38,7 +38,7 @@ export default function Page() {
         />
       )}
       {metadataURI && <PassportMetadata isLoading={isLoading} error={metadataError} metadata={passportMetadata} />}
-      {passportMetadata && <PassportWithHistory passportMetadata={passportMetadata} />}
+      {passportMetadata && <PassportRead passportMetadata={passportMetadata} />}
     </ViewWithHeader>
   );
 }

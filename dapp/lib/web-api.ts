@@ -39,8 +39,8 @@ const resolveDID = async (didUrl: string, registryAddress?: string) => {
 
 export const api = {
   arweave: {
-    uploadPassport: async (passport: PassportCreate) => {
-      const txid = await uploadToArweave(passport);
+    uploadPassport: async (passportData: PassportCreate) => {
+      const txid = await uploadToArweave(passportData);
       const passportDataURI = fromTxidToURI(txid);
       return passportDataURI;
     },

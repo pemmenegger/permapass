@@ -43,10 +43,6 @@ const styles = StyleSheet.create({
     width: "100%",
     paddingHorizontal: commonStyles.outerMarginHorizontal,
     backgroundColor: commonColors.bg,
-    // shadowColor: commonColors.black,
-    // shadowOffset: { width: 0, height: 2 },
-    // shadowOpacity: 0.1,
-    // shadowRadius: 4,
   },
   childrenContainer: {
     flex: 1,
@@ -54,12 +50,12 @@ const styles = StyleSheet.create({
   },
   scrollViewContentContainer: {
     flexGrow: 1,
-    paddingHorizontal: commonStyles.outerMarginHorizontal,
+    // paddingHorizontal: commonStyles.outerMarginHorizontal,
     paddingTop: 90,
   },
   contentContainer: {
     flex: 1,
-    paddingHorizontal: commonStyles.outerMarginHorizontal,
+    // paddingHorizontal: commonStyles.outerMarginHorizontal,
     paddingTop: 90,
   },
 });

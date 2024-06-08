@@ -1,7 +1,9 @@
 import config from "./config";
 import { Address, Chain } from "viem";
-import { ArweaveURI, ArweaveURL } from "../types";
+import { ArweaveURI, ArweaveURL, PassportCreate } from "../types";
 import { router } from "expo-router";
+import { Alert } from "react-native";
+import * as DocumentPicker from "expo-document-picker";
 
 export const encodeDataCarrierURL = (metadataURI: ArweaveURI) => {
   return config.BASE_URI_SCHEME + `read?metadataURI=${metadataURI}`;
@@ -68,4 +70,19 @@ export const fromBlockTimestampToDateTime = (blockTimestamp: bigint) => {
 export const fromCamelCaseToTitleCase = (camelCase: string) => {
   const result = camelCase.replace(/([A-Z])/g, " $1");
   return result.charAt(0).toUpperCase() + result.slice(1);
+};
+
+export const pickPassportJSON = async () => {
+  try {
+    const result = await DocumentPicker.getDocumentAsync({ type: "application/json" });
+    if (result.canceled) return;
+    if (!result.assets) return;
+    const file = result.assets[0];
+    const response = await fetch(file.uri);
+    const fileContent = await response.json();
+    console.log("fileContent", fileContent);
+    return fileContent as PassportCreate;
+  } catch (error) {
+    Alert.alert("Error", "Failed to read the file. Please try again.");
+  }
 };

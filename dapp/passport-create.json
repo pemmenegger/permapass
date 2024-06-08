@@ -1,0 +1,14 @@
+{
+  "name": "EcoView 5000",
+  "condition": "Good",
+  "manufacturer": "GreenWindows Inc.",
+  "manufacturingDate": "2018-04-12",
+  "serialNumber": "GW-5000-20240515-001",
+  "width": "1200mm",
+  "height": "1500mm",
+  "thickness": "50mm",
+  "frameMaterial": "PVC",
+  "glassType": "double glazing",
+  "safetyGlassCertification": "EN 12150",
+  "securityFeatures": "multi-point locking system"
+}
