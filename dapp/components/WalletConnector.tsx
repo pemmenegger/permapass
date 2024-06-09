@@ -1,9 +1,10 @@
 import React from "react";
 import { useWeb3Modal } from "@web3modal/wagmi-react-native";
 import { Pressable, View, StyleSheet, Text } from "react-native";
-import { useWalletClient } from "wagmi";
+import { useBalance, useWalletClient } from "wagmi";
 import { commonColors } from "../styles";
-// import { WalletIcon } from "./icons/WalletIcon";
+import { formatAddress } from "../lib/utils";
+import { WalletIcon } from "./icons/WalletIcon";
 
 const InfoBlock = ({ label, value }: { label: string; value: string }) => (
   <View>
@@ -15,20 +16,21 @@ const InfoBlock = ({ label, value }: { label: string; value: string }) => (
 export default function WalletConnector() {
   const { open } = useWeb3Modal();
   const { data: walletClient } = useWalletClient();
+  const { data: balance } = useBalance({ address: walletClient?.account.address, chainId: walletClient?.chain.id });
 
   return (
     <Pressable style={styles.button} onPress={async () => await open()}>
       {walletClient ? (
         <View style={styles.isConnectedContainer}>
-          <InfoBlock label="Address" value={walletClient.account.address} />
-          {/* <InfoBlock label={data?.symbol || ""} value={formattedBalance} /> */}
+          <InfoBlock label="Address" value={formatAddress(walletClient.account.address)} />
+          {balance && <InfoBlock label={balance.symbol} value={balance.formatted} />}
           <InfoBlock label="Network" value={walletClient.chain.name} />
         </View>
       ) : (
         <View style={styles.isDisconnectedContainer}>
-          {/* <View style={styles.icon}>
+          <View style={styles.icon}>
             <WalletIcon height={15} strokeWidth={1.2} color={commonColors.black} />
-          </View> */}
+          </View>
           <Text style={styles.text}>Connect Wallet</Text>
         </View>
       )}

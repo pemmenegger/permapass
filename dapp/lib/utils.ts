@@ -34,10 +34,7 @@ export const formatBalance = (formatted?: string) => {
   return num.toFixed(Math.min(4, (num.toString().split(".")[1] || "").length));
 };
 
-export const formatAddress = (address?: string) => {
-  if (!address) {
-    return "";
-  }
+export const formatAddress = (address: string) => {
   return `${address.slice(0, 6)}...${address.slice(-4)}`;
 };
 
