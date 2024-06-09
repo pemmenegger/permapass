@@ -1,4 +1,5 @@
 declare module "@env" {
+  export const EXPO_PUBLIC_ENVIRONMENT: string;
   export const EXPO_PUBLIC_HOST: string;
   export const EXPO_PUBLIC_WEB_API_URL: string;
   export const EXPO_PUBLIC_WALLETCONNECT_CLOUD_PROJECT_ID: string;
