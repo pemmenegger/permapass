@@ -1,12 +1,11 @@
 import React, { useMemo } from "react";
-import { sepolia, useAccount, useBalance, useWalletClient } from "wagmi";
+import { useAccount, useBalance, useWalletClient } from "wagmi";
 import { useWeb3Modal, useWeb3ModalState } from "@web3modal/wagmi-react-native";
 import { Pressable, View, StyleSheet, Text } from "react-native";
 import { commonColors } from "../styles";
 import { WalletIcon } from "./icons/WalletIcon";
-import { formatAddress, formatBalance, formatNetworkName } from "../lib/utils";
+import { formatAddress, formatBalance, formatNetworkName, isSepoliaSwitchRequired } from "../lib/utils";
 import { chains } from "../lib/wagmi";
-import config from "../lib/config";
 
 const ConnectedView = () => {
   const { selectedNetworkId } = useWeb3ModalState();
@@ -22,7 +21,7 @@ const ConnectedView = () => {
     console.error("Error fetching wallet balance: ", error);
   }
 
-  if (config.ENVIRONMENT != "prod" && walletClient && walletClient.chain.id != sepolia.id) {
+  if (isSepoliaSwitchRequired(walletClient)) {
     return (
       <View style={styles.isDisconnectedContainer}>
         <Text style={styles.text}>Connect to the Sepolia network in your wallet app</Text>

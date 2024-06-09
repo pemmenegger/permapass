@@ -1,10 +1,10 @@
 import React from "react";
 import { Text, View, StyleSheet } from "react-native";
-import { PassportMetadata as Metadata } from "../types";
-import { commonColors } from "../styles";
-import LoadingText from "./LoadingText";
-import { formatAddress, formatDID, formatNetworkName } from "../lib/utils";
-import { chains } from "../lib/wagmi";
+import { PassportMetadata as Metadata } from "../../types";
+import { commonColors } from "../../styles";
+import LoadingText from "../ui/LoadingText";
+import { formatAddress, formatDID, formatNetworkName } from "../../lib/utils";
+import { chains } from "../../lib/wagmi";
 
 interface PassportMetadataProps {
   metadata?: Metadata;

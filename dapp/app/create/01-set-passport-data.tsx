@@ -2,11 +2,11 @@ import { View, StyleSheet } from "react-native";
 import { useState } from "react";
 import { useCreation } from "../../context/CreationContext";
 import { router } from "expo-router";
-import StepTitle from "../../components/stepper/StepTitle";
-import StepSubtitle from "../../components/stepper/StepSubtitle";
+import Title from "../../components/ui/Title";
+import Subtitle from "../../components/ui/Subtitle";
 import { PrimaryButton, SecondaryButton } from "../../components/ui/buttons";
 import { PassportCreate } from "../../types";
-import PassportCard from "../../components/PassportCard";
+import PassportCard from "../../components/read/PassportCard";
 import { pickPassportJSON } from "../../lib/utils";
 
 export default function Page() {
@@ -36,8 +36,8 @@ export default function Page() {
   return (
     <View style={styles.container}>
       <View>
-        <StepTitle text="First, set your passport data." highlight="passport data" />
-        <StepSubtitle text="Passports contain information that supports the adoption of circular economy practices." />
+        <Title text="First, set your passport data." highlight="passport data" />
+        <Subtitle text="Passports contain information that supports the adoption of circular economy practices." />
         {passportData && (
           <View style={{ marginBottom: 16 }}>
             <PassportCard passportData={passportData} />

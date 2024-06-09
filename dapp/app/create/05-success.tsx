@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import { Text, StyleSheet, View, Alert, Share } from "react-native";
 import QRCode from "react-native-qrcode-svg";
-import StepTitle from "../../components/stepper/StepTitle";
+import Title from "../../components/ui/Title";
 import { PrimaryButton, SecondaryButton } from "../../components/ui/buttons";
 import { encodeDataCarrierURL, goToHome } from "../../lib/utils";
 import { useCreation } from "../../context/CreationContext";
@@ -58,7 +58,7 @@ export const QRCodeView = ({ url }: QRCodeViewProps) => {
 };
 
 export default function Page() {
-  const { state, dispatch } = useCreation();
+  const { state } = useCreation();
 
   const isQRCode = state.userInput.dataCarrier === "qr";
 
@@ -71,7 +71,7 @@ export default function Page() {
   return (
     <View style={styles.container}>
       <View>
-        <StepTitle text="Successfully created a passport." highlight="passport" />
+        <Title text="Successfully created a passport." highlight="passport" />
         {isQRCode ? (
           <Text style={styles.qrCodeText}>
             Attach the following QR Code to your construction product to make the passport accessible:

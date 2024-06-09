@@ -4,6 +4,7 @@ import { ArweaveURI, ArweaveURL, PassportCreate } from "../types";
 import { router } from "expo-router";
 import { Alert } from "react-native";
 import * as DocumentPicker from "expo-document-picker";
+import { WalletClient, sepolia, useWalletClient } from "wagmi";
 
 export const encodeDataCarrierURL = (metadataURI: ArweaveURI) => {
   return config.BASE_URI_SCHEME + `read?metadataURI=${metadataURI}`;
@@ -85,4 +86,11 @@ export const pickPassportJSON = async () => {
   } catch (error) {
     Alert.alert("Error", "Failed to read the file. Please try again.");
   }
+};
+
+export const isSepoliaSwitchRequired = (walletClient: WalletClient | null | undefined) => {
+  if (config.ENVIRONMENT == "prod" && walletClient?.chain.id != sepolia.id) {
+    return true;
+  }
+  return false;
 };

@@ -2,12 +2,12 @@ import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { commonColors, commonStyles } from "../../styles";
 
-interface StepTitleProps {
+interface TitleProps {
   text: string;
   highlight: string;
 }
 
-export default function StepTitle({ text, highlight }: StepTitleProps) {
+export default function Title({ text, highlight }: TitleProps) {
   const parts = text.split(highlight);
 
   return (

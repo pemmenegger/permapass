@@ -3,9 +3,9 @@ import { useState } from "react";
 import { useCreation } from "../../context/CreationContext";
 import { DataCarrier } from "../../types";
 import { router } from "expo-router";
-import StepOption from "../../components/stepper/StepOption";
-import StepTitle from "../../components/stepper/StepTitle";
-import StepSubtitle from "../../components/stepper/StepSubtitle";
+import StepOption from "../../components/creation/StepOption";
+import Title from "../../components/ui/Title";
+import Subtitle from "../../components/ui/Subtitle";
 import { PrimaryButton } from "../../components/ui/buttons";
 
 export default function Page() {
@@ -22,8 +22,8 @@ export default function Page() {
   return (
     <View style={styles.container}>
       <View>
-        <StepTitle text="Next, select your data carrier." highlight="data carrier" />
-        <StepSubtitle text="Attaching a data carrier to the construction product allows passports to be easily read via smartphones." />
+        <Title text="Next, select your data carrier." highlight="data carrier" />
+        <Subtitle text="Attaching a data carrier to the construction product allows passports to be easily read via smartphones." />
         <StepOption
           title="QR Code"
           subtitle="A QR Code will be created that links to the digital identifier where the passport data can be retrieved."

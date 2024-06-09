@@ -1,9 +1,9 @@
 import React from "react";
 import { Text, View, StyleSheet } from "react-native";
-import { PassportCreate } from "../types";
-import { SecondaryButton } from "./ui/buttons";
-import { commonColors } from "../styles";
-import { fromCamelCaseToTitleCase } from "../lib/utils";
+import { PassportCreate } from "../../types";
+import { SecondaryButton } from "../ui/buttons";
+import { commonColors } from "../../styles";
+import { fromCamelCaseToTitleCase } from "../../lib/utils";
 
 interface PassportCardProps {
   passportData: PassportCreate;

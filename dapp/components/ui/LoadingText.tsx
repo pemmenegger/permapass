@@ -1,8 +1,8 @@
 import { View, Text, StyleSheet } from "react-native";
 import React from "react";
-import { LoadingSpinnerIcon } from "./icons/LoadingSpinnerIcon";
-import { CheckCircleIcon } from "./icons/CheckCircleIcon";
-import { commonColors, commonStyles } from "../styles";
+import { LoadingSpinnerIcon } from "../icons/LoadingSpinnerIcon";
+import { CheckCircleIcon } from "../icons/CheckCircleIcon";
+import { commonColors, commonStyles } from "../../styles";
 
 interface LoadingTextProps {
   isLoading: boolean;

@@ -1,9 +1,9 @@
 import React from "react";
 import { Text, View, StyleSheet } from "react-native";
-import { PassportCreate, PassportRead } from "../types";
-import { commonColors } from "../styles";
-import { ArrowRightIcon } from "./icons/ArrowRightIcon";
-import { fromCamelCaseToTitleCase, fromBlockTimestampToDateTime } from "../lib/utils";
+import { PassportCreate, PassportRead } from "../../types";
+import { commonColors } from "../../styles";
+import { ArrowRightIcon } from "../icons/ArrowRightIcon";
+import { fromCamelCaseToTitleCase, fromBlockTimestampToDateTime } from "../../lib/utils";
 
 interface PassportHistoryProps {
   passportHistory: PassportRead[];

@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet } from "react-native";
 import { commonColors, commonStyles } from "../../styles";
 import React from "react";
-import LoadingText from "../LoadingText";
+import LoadingText from "../ui/LoadingText";
 
 interface StepProps {
   title: string;
@@ -23,7 +23,7 @@ export default function StepOverview({ steps }: StepOverviewProps) {
             <Text style={styles.stepNumberText}>{index + 1}</Text>
           </View>
           <View style={styles.stepText}>
-            <Text style={styles.stepTitle}>{step.title}</Text>
+            <Text style={styles.Title}>{step.title}</Text>
             <View style={{ marginTop: 4 }}>
               <LoadingText isLoading={step.isLoading} isCompleted={step.isCompleted} text={step.description} />
             </View>
@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
     marginLeft: 16,
     flex: 1,
   },
-  stepTitle: {
+  Title: {
     ...commonStyles.p,
     fontFamily: "Inter-SemiBold",
   },

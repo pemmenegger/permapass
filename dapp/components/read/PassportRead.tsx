@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 import { Text } from "react-native";
-import { usePassportHistory } from "../hooks/usePassportHistory";
-import { PassportMetadata } from "../types";
-import LoadingText from "./LoadingText";
+import { usePassportHistory } from "../../hooks/usePassportHistory";
+import { PassportMetadata } from "../../types";
+import LoadingText from "../ui/LoadingText";
 import PassportCard from "./PassportCard";
 import PassportHistory from "./PassportHistory";
-import { useModal } from "../context/ModalContext";
-import { useContracts } from "../hooks/blockchain/useContracts";
-import { api } from "../lib/web-api";
-import { pickPassportJSON } from "../lib/utils";
-import { useAsyncEffect } from "../hooks/useAsyncEffect";
+import { useModal } from "../../context/ModalContext";
+import { useContracts } from "../../hooks/blockchain/useContracts";
+import { api } from "../../lib/web-api";
+import { pickPassportJSON } from "../../lib/utils";
+import { useAsyncEffect } from "../../hooks/useAsyncEffect";
 
 export default function PassportRead({ passportMetadata }: { passportMetadata: PassportMetadata }) {
   const [version, setVersion] = useState(0);
