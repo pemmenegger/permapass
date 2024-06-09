@@ -2,7 +2,7 @@
   "expo": {
     "name": "PermaPass",
     "slug": "permapass",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "scheme": "com.permapass.app",
     "owner": "pemmenegger",
     "orientation": "portrait",
@@ -13,7 +13,9 @@
       "resizeMode": "contain",
       "backgroundColor": "#2FD0A0"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.permapass.app",
@@ -21,10 +23,16 @@
         "usesNonExemptEncryption": false
       },
       "infoPlist": {
-        "LSApplicationQueriesSchemes": ["metamask", "trust", "safe", "rainbow", "uniswap"]
+        "LSApplicationQueriesSchemes": [
+          "metamask",
+          "trust",
+          "safe",
+          "rainbow",
+          "uniswap"
+        ]
       },
       "usesIcloudStorage": true,
-      "buildNumber": "13"
+      "buildNumber": "2"
     },
     "android": {
       "versionCode": 1,
@@ -53,7 +61,11 @@
         "react-native-nfc-manager",
         {
           "nfcPermission": "Interact with HaLo tags",
-          "selectIdentifiers": ["481199130E9F01", "D2760000850100", "D2760000850101"],
+          "selectIdentifiers": [
+            "481199130E9F01",
+            "D2760000850100",
+            "D2760000850101"
+          ],
           "systemCodes": [],
           "includeNdefEntitlement": false
         }

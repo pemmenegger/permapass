@@ -1,25 +1,20 @@
-import React, { useMemo } from "react";
-import { useAccount, useBalance, useWalletClient } from "wagmi";
-import { useWeb3Modal, useWeb3ModalState } from "@web3modal/wagmi-react-native";
+import React from "react";
+import { useWeb3Modal } from "@web3modal/wagmi-react-native";
 import { Pressable, View, StyleSheet, Text } from "react-native";
+import { WalletClient, useBalance, useWalletClient } from "wagmi";
 import { commonColors } from "../styles";
+import { formatAddress, formatBalance, isSepoliaSwitchRequired } from "../lib/utils";
 import { WalletIcon } from "./icons/WalletIcon";
-import { formatAddress, formatBalance, formatNetworkName, isSepoliaSwitchRequired } from "../lib/utils";
-import { chains } from "../lib/wagmi";
 
-const ConnectedView = () => {
-  const { selectedNetworkId } = useWeb3ModalState();
-  const { address } = useAccount();
-  const { data, error } = useBalance({ address });
-  const { data: walletClient } = useWalletClient();
+const InfoBlock = ({ label, value }: { label: string; value: string }) => (
+  <View>
+    <Text style={styles.subtext}>{label}</Text>
+    <Text style={styles.text}>{value}</Text>
+  </View>
+);
 
-  const formattedAddress = useMemo(() => formatAddress(address), [address]);
-  const formattedBalance = useMemo(() => formatBalance(data?.formatted), [data?.formatted]);
-  const formattedNetworkName = useMemo(() => formatNetworkName(chains, selectedNetworkId), [selectedNetworkId]);
-
-  if (error) {
-    console.error("Error fetching wallet balance: ", error);
-  }
+const ConnectedView = ({ walletClient }: { walletClient: WalletClient }) => {
+  const { data: balance } = useBalance({ address: walletClient.account.address, chainId: walletClient.chain.id });
 
   if (isSepoliaSwitchRequired(walletClient)) {
     return (
@@ -31,36 +26,31 @@ const ConnectedView = () => {
 
   return (
     <View style={styles.isConnectedContainer}>
-      <InfoBlock label="Address" value={formattedAddress} />
-      <InfoBlock label={data?.symbol || ""} value={formattedBalance} />
-      <InfoBlock label="Network" value={formattedNetworkName} />
+      <InfoBlock label="Address" value={formatAddress(walletClient.account.address)} />
+      {balance && <InfoBlock label={balance.symbol} value={formatBalance(balance.formatted)} />}
+      <InfoBlock label="Network" value={walletClient.chain.name} />
     </View>
   );
 };
 
-const DisconnectedView = () => (
-  <View style={styles.isDisconnectedContainer}>
-    <View style={styles.icon}>
-      <WalletIcon height={15} strokeWidth={1.2} color={commonColors.black} />
+const DisconnectedView = () => {
+  return (
+    <View style={styles.isDisconnectedContainer}>
+      <View style={styles.icon}>
+        <WalletIcon height={15} strokeWidth={1.2} color={commonColors.black} />
+      </View>
+      <Text style={styles.text}>Connect Wallet</Text>
     </View>
-    <Text style={styles.text}>Connect Wallet</Text>
-  </View>
-);
-
-const InfoBlock = ({ label, value }: { label: string; value: string }) => (
-  <View>
-    <Text style={styles.subtext}>{label}</Text>
-    <Text style={styles.text}>{value}</Text>
-  </View>
-);
+  );
+};
 
 export default function WalletConnector() {
   const { open } = useWeb3Modal();
-  const { isConnected } = useAccount();
+  const { data: walletClient } = useWalletClient();
 
   return (
     <Pressable style={styles.button} onPress={async () => await open()}>
-      {isConnected ? <ConnectedView /> : <DisconnectedView />}
+      {walletClient ? <ConnectedView walletClient={walletClient} /> : <DisconnectedView />}
     </Pressable>
   );
 }

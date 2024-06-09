@@ -11,7 +11,7 @@ const hardhat = defineChain({
   },
 });
 
-const chains = config.ENVIRONMENT === "dev" ? [hardhat, sepolia] : [sepolia];
+const chains = config.ENVIRONMENT == "dev" ? [hardhat, sepolia] : [sepolia];
 
 const getPublicClient = (chainId?: number) => {
   switch (chainId) {

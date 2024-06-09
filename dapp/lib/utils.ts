@@ -23,10 +23,7 @@ export const formatNetworkName = (chains: Chain[], networkId?: number) => {
   return chain ? chain.name : "Unknown";
 };
 
-export const formatBalance = (formatted?: string) => {
-  if (!formatted) {
-    return "0";
-  }
+export const formatBalance = (formatted: string) => {
   const num = parseFloat(formatted);
   if (isNaN(num)) {
     throw new Error("Invalid number format");
@@ -34,10 +31,7 @@ export const formatBalance = (formatted?: string) => {
   return num.toFixed(Math.min(4, (num.toString().split(".")[1] || "").length));
 };
 
-export const formatAddress = (address?: string) => {
-  if (!address) {
-    return "";
-  }
+export const formatAddress = (address: string) => {
   return `${address.slice(0, 6)}...${address.slice(-4)}`;
 };
 
