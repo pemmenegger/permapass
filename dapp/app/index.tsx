@@ -8,7 +8,6 @@ import { Alert, View } from "react-native";
 import { useHaLoNFCChip } from "../hooks/useHaloNFCChip";
 import { useHaLoNFCMetadataRegistry } from "../hooks/blockchain/useHaLoNFCMetadataRegistry";
 import { useCreation } from "../context/CreationContext";
-import config from "../lib/config";
 
 export default function Page() {
   const { dispatch } = useCreation();
@@ -35,7 +34,6 @@ export default function Page() {
     <ViewWithHeader withScrollView>
       <Title text="Welcome to PermaPass" highlight="PermaPass" />
       <Subtitle text="A permanent passport system for construction products using decentralized technologies." />
-      <Subtitle text={`${config.ENVIRONMENT} environment`} />
       <StepOption
         title="Create Passport"
         subtitle="Use QR Codes or HaLo NFC chips as data carriers, and NFTs, PBTs, or DIDs for digital product identity."

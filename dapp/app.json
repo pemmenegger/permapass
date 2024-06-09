@@ -2,7 +2,7 @@
   "expo": {
     "name": "PermaPass",
     "slug": "permapass",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "scheme": "com.permapass.app",
     "owner": "pemmenegger",
     "orientation": "portrait",
@@ -31,7 +31,8 @@
           "uniswap"
         ]
       },
-      "buildNumber": "33"
+      "usesIcloudStorage": true,
+      "buildNumber": "2"
     },
     "android": {
       "versionCode": 1,
@@ -73,6 +74,12 @@
         "expo-barcode-scanner",
         {
           "cameraPermission": "Allow $(PRODUCT_NAME) to access camera."
+        }
+      ],
+      [
+        "expo-document-picker",
+        {
+          "iCloudContainerEnvironment": "Production"
         }
       ]
     ],
