@@ -81,7 +81,6 @@ export const pickPassportJSON = async () => {
     const file = result.assets[0];
     const response = await fetch(file.uri);
     const fileContent = await response.json();
-    console.log("fileContent", fileContent);
     return fileContent as PassportCreate;
   } catch (error) {
     Alert.alert("Error", "Failed to read the file. Please try again.");

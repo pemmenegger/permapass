@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { Address, sepolia, useWalletClient } from "wagmi";
 import { readContract } from "@wagmi/core";
 import { ArweaveURI } from "../../types";

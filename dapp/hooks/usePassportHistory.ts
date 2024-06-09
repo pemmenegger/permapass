@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { PassportMetadata, PassportRead } from "../types";
+import { PassportHistory, PassportMetadata } from "../types";
 import { api } from "../lib/web-api";
 import { useContracts } from "./blockchain/useContracts";
 
@@ -9,13 +9,13 @@ interface UsePassportHistoryProps {
 }
 
 export function usePassportHistory({ passportMetadata, version }: UsePassportHistoryProps) {
-  const [passportHistory, setPassportHistory] = useState<PassportRead[]>([]);
+  const [passportHistory, setPassportHistory] = useState<PassportHistory | undefined>(undefined);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | undefined>(undefined);
   const { nftRegistry, pbtRegistry, didRegistry } = useContracts();
 
   useEffect(() => {
-    setPassportHistory([]);
+    setPassportHistory(undefined);
     if (!passportMetadata) return;
 
     const runAsync = async () => {
@@ -23,35 +23,42 @@ export function usePassportHistory({ passportMetadata, version }: UsePassportHis
       setError(undefined);
 
       try {
-        let passportVersions;
+        let passportDetails;
+        let ownerAddress;
         switch (passportMetadata.type) {
           case "nft":
-            passportVersions = await nftRegistry.readNFTPassportHistory(passportMetadata);
+            passportDetails = await nftRegistry.readNFTPassportHistory(passportMetadata);
+            ownerAddress = await nftRegistry.ownerOf(passportMetadata);
             break;
           case "pbt":
-            passportVersions = await pbtRegistry.readPBTPassportHistory(passportMetadata);
+            passportDetails = await pbtRegistry.readPBTPassportHistory(passportMetadata);
+            ownerAddress = await pbtRegistry.ownerOf(passportMetadata);
             break;
           case "did":
-            passportVersions = await didRegistry.readDIDPassportHistory(passportMetadata);
+            passportDetails = await didRegistry.readDIDPassportHistory(passportMetadata);
+            ownerAddress = await didRegistry.ownerOf(passportMetadata);
             break;
           default:
             throw new Error(`Unknown passport type: ${JSON.stringify(passportMetadata)}`);
         }
 
-        if (!passportVersions || passportVersions.length === 0) {
+        if (passportDetails.length === 0) {
           console.log("No passport version found");
-          return [];
+          return;
         }
 
-        const passportHistory: PassportRead[] = await Promise.all(
-          passportVersions.map(async (passportVersion) => {
-            const passport = await api.arweave.fetchPassport(passportVersion.uri);
-            return {
-              data: passport,
-              version: passportVersion,
-            };
-          })
-        );
+        const passportHistory: PassportHistory = {
+          entries: await Promise.all(
+            passportDetails.map(async (details) => {
+              const passport = await api.arweave.fetchPassport(details.uri);
+              return {
+                data: passport,
+                details,
+              };
+            })
+          ),
+          ownerAddress,
+        };
 
         setPassportHistory(passportHistory);
       } catch (error: unknown) {

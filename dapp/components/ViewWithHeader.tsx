@@ -1,5 +1,5 @@
 import React from "react";
-import { SafeAreaView, View, StyleSheet, ScrollView, Platform } from "react-native";
+import { SafeAreaView, View, StyleSheet, ScrollView } from "react-native";
 import { commonColors, commonStyles } from "../styles";
 import Header from "./Header";
 

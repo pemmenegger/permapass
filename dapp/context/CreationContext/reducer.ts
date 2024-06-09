@@ -66,6 +66,9 @@ export type CreationAction =
     }
   | {
       type: "RESET_CREATION_STATE";
+    }
+  | {
+      type: "RESET";
     };
 
 export function creationReducer(state: CreationState, action: CreationAction): CreationState {
@@ -142,6 +145,11 @@ export function creationReducer(state: CreationState, action: CreationAction): C
     case "RESET_CREATION_STATE":
       return {
         userInput: state.userInput,
+        results: {},
+      };
+    case "RESET":
+      return {
+        userInput: {},
         results: {},
       };
   }

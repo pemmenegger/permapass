@@ -5,11 +5,11 @@ import { commonColors } from "../../styles";
 import { ArrowRightIcon } from "../icons/ArrowRightIcon";
 import { fromCamelCaseToTitleCase, fromBlockTimestampToDateTime } from "../../lib/utils";
 
-interface PassportHistoryProps {
-  passportHistory: PassportRead[];
+interface PassportTimelineProps {
+  historyEntries: PassportRead[];
 }
 
-export default function PassportHistory({ passportHistory }: PassportHistoryProps) {
+export default function PassportTimeline({ historyEntries }: PassportTimelineProps) {
   const renderPassportChange = ({
     prevPassport,
     currPassport,
@@ -34,7 +34,7 @@ export default function PassportHistory({ passportHistory }: PassportHistoryProp
           );
         })}
         <Text style={styles.timelineDate}>
-          Update | {fromBlockTimestampToDateTime(currPassport.version.blockTimestamp)}
+          Update | {fromBlockTimestampToDateTime(currPassport.details.blockTimestamp)}
         </Text>
       </>
     );
@@ -48,27 +48,29 @@ export default function PassportHistory({ passportHistory }: PassportHistoryProp
         </Text>
       ))}
       <Text style={styles.timelineDate}>
-        Creation | {fromBlockTimestampToDateTime(passport.version.blockTimestamp)}
+        Creation | {fromBlockTimestampToDateTime(passport.details.blockTimestamp)}
       </Text>
     </>
   );
 
+  if (historyEntries.length === 1) {
+    return <Text style={styles.onlyCreationVersion}>This passport has only one version</Text>;
+  }
+
   return (
     <View style={styles.timelineContainer}>
-      {passportHistory.map((passportVersion, index) => {
-        const isCreationVersion = index === passportHistory.length - 1;
-        const hasOnlyOneVersion = passportHistory.length === 1;
+      {historyEntries.map((details, index) => {
+        const isCreationVersion = index === historyEntries.length - 1;
         return (
           <View key={index} style={styles.timelineEntry}>
             {!isCreationVersion && <View style={styles.timelineLine} />}
-            {hasOnlyOneVersion && <View style={[styles.timelineLine, styles.timelineLineOnlyOne]} />}
             <View style={styles.timelineDot} />
             <View style={styles.timelineContent}>
               {isCreationVersion
-                ? renderPassportCreation(passportVersion)
+                ? renderPassportCreation(details)
                 : renderPassportChange({
-                    prevPassport: passportHistory[index + 1],
-                    currPassport: passportVersion,
+                    prevPassport: historyEntries[index + 1],
+                    currPassport: details,
                   })}
             </View>
           </View>
@@ -108,9 +110,6 @@ const styles = StyleSheet.create({
     top: 0,
     bottom: -24,
   },
-  timelineLineOnlyOne: {
-    bottom: 36,
-  },
   timelineContent: {
     marginTop: 20,
     marginLeft: 20,
@@ -126,5 +125,11 @@ const styles = StyleSheet.create({
   strikeThrough: {
     textDecorationLine: "line-through",
     color: commonColors.vercelBlack,
+  },
+  onlyCreationVersion: {
+    fontSize: 14,
+    color: commonColors.gray,
+    marginVertical: 20,
+    textAlign: "center",
   },
 });

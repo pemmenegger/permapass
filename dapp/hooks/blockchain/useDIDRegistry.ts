@@ -4,7 +4,7 @@ import { DIDRegistry } from "../../contracts/DIDRegistry";
 import { readContract } from "@wagmi/core";
 import { generatePrivateKey, privateKeyToAccount, sign } from "viem/accounts";
 import { encodePacked, fromHex, keccak256, pad, stringToBytes, toHex, zeroAddress } from "viem";
-import { ArweaveURI, DIDPassportMetadata, PassportVersion } from "../../types";
+import { ArweaveURI, DIDPassportMetadata, PassportReadDetails } from "../../types";
 import { getPublicClient } from "../../lib/wagmi";
 import { fromDIDToIdentity } from "../../lib/utils";
 
@@ -15,7 +15,6 @@ export function useDIDRegistry() {
     ((didUrl: string, passportDataURI: ArweaveURI) => Promise<void>) | undefined
   >(undefined);
   const [deleteDID, setDeleteDID] = useState<((didUrl: string) => Promise<void>) | undefined>(undefined);
-  const [isOwner, setIsOwner] = useState<((metadata: DIDPassportMetadata) => Promise<boolean>) | undefined>(undefined);
 
   useEffect(() => {
     if (!walletClient) {
@@ -137,31 +136,9 @@ export function useDIDRegistry() {
       }
     };
 
-    const handleIsOwner = async (metadata: DIDPassportMetadata) => {
-      try {
-        const { did, chainId, address } = metadata;
-
-        const identity = fromDIDToIdentity(did);
-
-        const owner = await readContract({
-          chainId,
-          address: address as Address,
-          abi: DIDRegistry.abi,
-          functionName: "owners",
-          args: [identity],
-        });
-
-        return owner === walletClient.account.address;
-      } catch (error) {
-        console.error(error);
-        throw error;
-      }
-    };
-
     setCreateDID(() => handleCreateDID);
     setAddDIDService(() => handleAddDIDService);
     setDeleteDID(() => handleDeleteDIDService);
-    setIsOwner(() => handleIsOwner);
   }, [walletClient, isError, isLoading]);
 
   const readDIDPassportHistory = async (metadata: DIDPassportMetadata) => {
@@ -170,7 +147,7 @@ export function useDIDRegistry() {
     const identity = fromDIDToIdentity(did);
 
     try {
-      const passportVersions: PassportVersion[] = [];
+      const passportVersions: PassportReadDetails[] = [];
 
       let previousChange: bigint = await readContract({
         chainId,
@@ -233,21 +210,18 @@ export function useDIDRegistry() {
     }
   };
 
-  const isDeleted = async (metadata: DIDPassportMetadata) => {
-    const { chainId, address } = metadata;
-
-    const identity = fromDIDToIdentity(metadata.did);
+  const ownerOf = async (metadata: DIDPassportMetadata): Promise<Address> => {
+    const { did, chainId, address } = metadata;
+    const identity = fromDIDToIdentity(did);
 
     try {
-      const owner = await readContract({
+      return await readContract({
         chainId,
         address: address as Address,
         abi: DIDRegistry.abi,
         functionName: "owners",
         args: [identity],
       });
-
-      return owner === zeroAddress;
     } catch (error) {
       console.error(error);
       throw error;
@@ -260,8 +234,7 @@ export function useDIDRegistry() {
       addDIDService,
       deleteDID,
       readDIDPassportHistory,
-      isOwner,
-      isDeleted,
+      ownerOf,
     },
   };
 }

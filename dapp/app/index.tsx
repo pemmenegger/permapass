@@ -7,8 +7,10 @@ import ViewWithHeader from "../components/ViewWithHeader";
 import { Alert, View } from "react-native";
 import { useHaLoNFCChip } from "../hooks/useHaloNFCChip";
 import { useHaLoNFCMetadataRegistry } from "../hooks/blockchain/useHaLoNFCMetadataRegistry";
+import { useCreation } from "../context/CreationContext";
 
 export default function Page() {
+  const { dispatch } = useCreation();
   const { haloNFCChip } = useHaLoNFCChip();
   const { haLoNFCMetadataRegistry } = useHaLoNFCMetadataRegistry();
 
@@ -35,7 +37,10 @@ export default function Page() {
       <StepOption
         title="Create Passport"
         subtitle="Use QR Codes or HaLo NFC chips as data carriers, and NFTs, PBTs, or DIDs for digital product identity."
-        onPress={() => router.push("/create/01-set-passport-data")}
+        onPress={() => {
+          dispatch({ type: "RESET" });
+          router.push("/create/01-set-passport-data");
+        }}
       />
       <View style={{ height: 20 }} />
       <Subtitle text="To read a passport, scan QR codes with your device or use the buttons below. If you own the passport, you can update or delete it." />

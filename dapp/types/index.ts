@@ -39,16 +39,20 @@ export interface PassportCreate {
   securityFeatures: string;
 }
 
-export type PassportVersion = {
+export interface PassportReadDetails {
   uri: ArweaveURI;
   blockTimestamp: bigint;
-  sender?: Address;
-};
+}
 
 export interface PassportRead {
   data: PassportCreate;
-  version: PassportVersion;
+  details: PassportReadDetails;
 }
+
+export type PassportHistory = {
+  entries: PassportRead[];
+  ownerAddress: Address;
+};
 
 export type DataCarrier = "qr" | "nfc";
 

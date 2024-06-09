@@ -4,17 +4,22 @@ import { PassportCreate } from "../../types";
 import { SecondaryButton } from "../ui/buttons";
 import { commonColors } from "../../styles";
 import { fromCamelCaseToTitleCase } from "../../lib/utils";
+import { Address, zeroAddress } from "viem";
 
 interface PassportCardProps {
   passportData: PassportCreate;
+  ownerAddress?: Address;
   handleUpdate?: () => void;
   handleDelete?: () => void;
-  isDeleted?: boolean;
 }
 
-export default function PassportCard({ passportData, handleUpdate, handleDelete, isDeleted }: PassportCardProps) {
+export default function PassportCard({ passportData, ownerAddress, handleUpdate, handleDelete }: PassportCardProps) {
+  const exists = ownerAddress != zeroAddress;
+  const showButtons = exists && handleUpdate && handleDelete;
+
   return (
     <View style={styles.container}>
+      {!exists && <Text style={styles.deleted}>This passport has been deleted</Text>}
       <View style={styles.attributesContainer}>
         {Object.entries(passportData).map(([key, value]) => (
           <View key={key}>
@@ -23,13 +28,13 @@ export default function PassportCard({ passportData, handleUpdate, handleDelete,
           </View>
         ))}
       </View>
-      {handleUpdate && handleDelete && (
+      {showButtons && (
         <View style={styles.buttonContainer}>
           <SecondaryButton title="Update" onPress={handleUpdate} />
           <SecondaryButton title="Delete" onPress={handleDelete} />
         </View>
       )}
-      {isDeleted && <Text style={styles.deleted}>This passport has been deleted</Text>}
+      {!exists && <Text style={styles.deleted}>This passport has been deleted</Text>}
     </View>
   );
 }
@@ -42,6 +47,8 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     paddingHorizontal: 12,
     borderRadius: 10,
+    flexDirection: "column",
+    gap: 20,
   },
   attributesContainer: {
     flexDirection: "column",
@@ -50,7 +57,6 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: "column",
     gap: 10,
-    marginTop: 20,
   },
   attributeKey: {
     fontSize: 12,
