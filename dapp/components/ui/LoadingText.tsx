@@ -11,26 +11,41 @@ interface LoadingTextProps {
 }
 
 export default function LoadingText({ isLoading, isCompleted, text }: LoadingTextProps) {
+  const hasIcon = isLoading || isCompleted;
+
   return (
-    <View style={{ flexDirection: "row", alignItems: "center" }}>
+    <View style={styles.container}>
       {isLoading && (
-        <View style={{ marginRight: 8 }}>
+        <View style={styles.iconWrapper}>
           <LoadingSpinnerIcon height={16} color={commonColors.gray} strokeWidth={2.3} />
         </View>
       )}
       {isCompleted && (
-        <View style={{ marginRight: 8 }}>
+        <View style={styles.iconWrapper}>
           <CheckCircleIcon height={16} color={commonColors.primary} strokeWidth={2} />
         </View>
       )}
-      <Text style={styles.text}>{text}</Text>
+      <View style={[styles.textWrapper, hasIcon && styles.textWrapperWithIcon]}>
+        <Text style={styles.text}>{text}</Text>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
   iconWrapper: {
     marginRight: 8,
+  },
+  textWrapper: {
+    flex: 1,
+  },
+  textWrapperWithIcon: {
+    flex: 1,
+    marginRight: 10,
   },
   text: {
     ...commonStyles.h4,
