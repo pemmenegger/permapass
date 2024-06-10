@@ -18,7 +18,6 @@ export type CreationState = {
     | "PASSPORT_DATA_UPLOADED"
     | "DID_OWNER_CHANGED"
     | "DID_SERVICE_ADDED"
-    | "HALO_NFC_CHIP_SIGNATURE_CHANGED"
     | "DIGITAL_IDENTIFIER_CREATED"
     | "DATA_CARRIER_INITIALIZED"
     | "CREATION_ERROR";
@@ -115,7 +114,6 @@ export function creationReducer(state: CreationState, action: CreationAction): C
     case "HALO_NFC_CHIP_SIGNATURE_CHANGED":
       return {
         ...state,
-        status: "HALO_NFC_CHIP_SIGNATURE_CHANGED",
         results: {
           ...state.results,
           haloNFCChipSignatureOutput: action.haloNFCChipSignatureOutput,

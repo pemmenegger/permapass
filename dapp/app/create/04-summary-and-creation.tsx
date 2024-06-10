@@ -8,7 +8,7 @@ import StepOverview from "../../components/creation/StepOverview";
 import { useWalletClient } from "wagmi";
 import { DataCarrier, DigitalIdentifier } from "../../types";
 import { CreateDIDStep, CreateNFTStep, CreatePBTStep } from "../../components/creation/digital-identifiers";
-import { GenerateQRCodeStep, WriteHaLoChipStep } from "../../components/creation/data-carriers";
+import { InitQRCodeStep, InitHaLoNFCChipStep } from "../../components/creation/data-carriers";
 import { UploadPassportDataStep } from "../../components/creation/UploadPassportDataStep";
 import { router } from "expo-router";
 import { isSepoliaSwitchRequired } from "../../lib/utils";
@@ -54,9 +54,9 @@ export default function Page() {
   const getDataCarrierStep = (type: DataCarrier) => {
     switch (type) {
       case "nfc":
-        return WriteHaLoChipStep();
+        return InitHaLoNFCChipStep();
       case "qr":
-        return GenerateQRCodeStep();
+        return InitQRCodeStep();
       default:
         throw new Error("Invalid data carrier type");
     }

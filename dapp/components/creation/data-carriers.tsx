@@ -11,7 +11,6 @@ interface DataCarrierStepProps {
   description: {
     title: string;
     content: string;
-    identifier: string;
   };
 }
 
@@ -45,7 +44,7 @@ const DataCarrierStep = ({ initFn, description }: DataCarrierStepProps) => {
   };
 };
 
-export const GenerateQRCodeStep = () => {
+export const InitQRCodeStep = () => {
   const initQRCode = async () => {
     // qr code will be generated on the success page
   };
@@ -55,12 +54,11 @@ export const GenerateQRCodeStep = () => {
     description: {
       title: "Generating QR Code as data carrier",
       content: "A QR Code linking to the digital identifier and passport data will be generated.",
-      identifier: "QR Code",
     },
   });
 };
 
-export const WriteHaLoChipStep = () => {
+export const InitHaLoNFCChipStep = () => {
   const { openGasFeesModal, openChipSignatureModal } = useModal();
   const { state, dispatch } = useCreation();
   const { haLoNFCMetadataRegistry } = useContracts();
@@ -114,9 +112,8 @@ export const WriteHaLoChipStep = () => {
   return DataCarrierStep({
     initFn: initHaloNFCChip,
     description: {
-      title: "Writing to HaLo NFC Chip",
-      content: "The passport data will be written to the HaLo NFC chip.",
-      identifier: "HaLo NFC Chip",
+      title: "Registering HaLo NFC Chip as data carrier",
+      content: "The passport metadata will be linked to the HaLo NFC Chip.",
     },
   });
 };
