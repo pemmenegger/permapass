@@ -4,7 +4,7 @@ import { ArweaveURI, ArweaveURL, PassportCreate } from "../types";
 import { router } from "expo-router";
 import { Alert } from "react-native";
 import * as DocumentPicker from "expo-document-picker";
-import { WalletClient, sepolia } from "wagmi";
+import { PublicClient, WalletClient, sepolia } from "wagmi";
 
 export const encodeDataCarrierURL = (metadataURI: ArweaveURI) => {
   return config.BASE_URI_SCHEME + `read?metadataURI=${metadataURI}`;
@@ -87,4 +87,56 @@ export const isSepoliaSwitchRequired = (walletClient: WalletClient | null | unde
     return true;
   }
   return false;
+};
+
+export const writeContractAndAwaitEvent = async <T>(
+  publicClient: PublicClient,
+  writeContractFn: () => Promise<`0x${string}`>,
+  eventWatcher: () => { unwatch: () => void; promise: Promise<T> },
+  eventName: string,
+  contractName: string
+): Promise<T> => {
+  let timeout: NodeJS.Timeout | undefined;
+  let unwatch: (() => void) | undefined;
+
+  const { unwatch: stopWatching, promise: eventPromise } = eventWatcher();
+  unwatch = stopWatching;
+
+  const wrappedEventPromise = new Promise<T>(async (resolve, reject) => {
+    try {
+      console.log(`${contractName} - Watching ${eventName} event...`);
+
+      console.log(`${contractName} - Starting timer for ${eventName} event`);
+      timeout = setTimeout(() => {
+        reject(
+          new Error(
+            `${contractName} - Event ${eventName} not received within ${config.EVENT_WAITING_TIMEOUT_MIN} minutes`
+          )
+        );
+      }, config.EVENT_WAITING_TIMEOUT_MS);
+
+      const result = await eventPromise;
+      resolve(result);
+    } catch (error) {
+      console.log(`${contractName} - Error watching ${eventName} event`, error);
+      reject(error);
+    }
+  });
+
+  try {
+    const txHash = await writeContractFn();
+    await publicClient.waitForTransactionReceipt({ hash: txHash });
+    console.log(`${contractName} - Transaction receipt received`);
+
+    console.log(`${contractName} - Clearing timer and unwatching ${eventName} event...`);
+    if (timeout) clearTimeout(timeout);
+    if (unwatch) unwatch();
+
+    return wrappedEventPromise;
+  } catch (error) {
+    console.error(`${contractName} - Error during transaction or waiting for receipt: ${error}`);
+    if (timeout) clearTimeout(timeout);
+    if (unwatch) unwatch();
+    throw error;
+  }
 };
