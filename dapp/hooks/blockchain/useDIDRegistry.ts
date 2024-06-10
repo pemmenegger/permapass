@@ -56,6 +56,30 @@ export function useDIDRegistry() {
 
         const signature = await sign({ hash: msgHash, privateKey });
 
+        const ownerChangedEvent = new Promise<void>((resolve, reject) => {
+          const timeout = setTimeout(() => {
+            reject(new Error("Event DIDOwnerChanged not received within 60 seconds"));
+            unwatch?.();
+          }, 60000); // 60 seconds
+
+          const unwatch = publicClient.watchContractEvent({
+            address: contractAddress,
+            abi: DIDRegistry.abi,
+            eventName: "DIDOwnerChanged",
+            args: { identity },
+            onLogs: (logs) => {
+              for (const log of logs) {
+                if (log.args.owner === newOwner) {
+                  clearTimeout(timeout);
+                  resolve();
+                  unwatch?.();
+                  break;
+                }
+              }
+            },
+          });
+        });
+
         const txHash = await walletClient.writeContract({
           address: contractAddress,
           abi: DIDRegistry.abi,
@@ -63,6 +87,8 @@ export function useDIDRegistry() {
           args: [identity, Number(signature.v), signature.r, signature.s, newOwner],
         });
         await publicClient.waitForTransactionReceipt({ hash: txHash });
+
+        await ownerChangedEvent;
 
         const metadata: DIDPassportMetadata = {
           type: "did",
@@ -93,6 +119,30 @@ export function useDIDRegistry() {
         const attrValueBytes = stringToBytes(value);
         const attrValue = toHex(attrValueBytes);
 
+        const attributeChangedEvent = new Promise<void>((resolve, reject) => {
+          const timeout = setTimeout(() => {
+            reject(new Error("Event DIDAttributeChanged not received within 60 seconds"));
+            unwatch?.();
+          }, 60000); // 60 seconds
+
+          const unwatch = publicClient.watchContractEvent({
+            address: contractAddress,
+            abi: DIDRegistry.abi,
+            eventName: "DIDAttributeChanged",
+            args: { identity },
+            onLogs: (logs) => {
+              for (const log of logs) {
+                if (log.args.name === attrName && log.args.value === attrValue) {
+                  clearTimeout(timeout);
+                  resolve();
+                  unwatch?.();
+                  break;
+                }
+              }
+            },
+          });
+        });
+
         const txHash = await walletClient.writeContract({
           address: contractAddress,
           abi: DIDRegistry.abi,
@@ -100,6 +150,8 @@ export function useDIDRegistry() {
           args: [identity as Address, attrName as Address, attrValue as Address, BigInt(86400)],
         });
         await publicClient.waitForTransactionReceipt({ hash: txHash });
+
+        await attributeChangedEvent;
       } catch (error) {
         console.error(error);
         throw error;
@@ -109,27 +161,42 @@ export function useDIDRegistry() {
     const handleDeleteDIDService = async (did: string) => {
       try {
         // change the ownership, i.e. controller to the zero address
+        const newOwner = zeroAddress;
         const identity = fromDIDToIdentity(did);
 
-        const identityOwner = await readContract({
-          chainId: chainId,
-          address: contractAddress,
-          abi: DIDRegistry.abi,
-          functionName: "owners",
-          args: [identity],
-        });
+        const ownerChangedEvent = new Promise<void>((resolve, reject) => {
+          const timeout = setTimeout(() => {
+            reject(new Error("Event DIDOwnerChanged not received within 60 seconds"));
+            unwatch?.();
+          }, 60000); // 60 seconds
 
-        if (identityOwner !== walletClient.account.address) {
-          throw new Error(`useDIDRegistry - Identity owner does not match wallet address: ${identityOwner}`);
-        }
+          const unwatch = publicClient.watchContractEvent({
+            address: contractAddress,
+            abi: DIDRegistry.abi,
+            eventName: "DIDOwnerChanged",
+            args: { identity },
+            onLogs: (logs) => {
+              for (const log of logs) {
+                if (log.args.owner === newOwner) {
+                  clearTimeout(timeout);
+                  resolve();
+                  unwatch?.();
+                  break;
+                }
+              }
+            },
+          });
+        });
 
         const txHash = await walletClient.writeContract({
           address: contractAddress,
           abi: DIDRegistry.abi,
           functionName: "changeOwner",
-          args: [identity, zeroAddress],
+          args: [identity, newOwner],
         });
         await publicClient.waitForTransactionReceipt({ hash: txHash });
+
+        await ownerChangedEvent;
       } catch (error) {
         console.error(error);
         throw error;

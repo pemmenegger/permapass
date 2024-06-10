@@ -41,7 +41,6 @@ export const evaluateContract = async (contractConfig: ContractConfig) => {
 
       const txReceipt = await publicClient.waitForTransactionReceipt({
         hash: deploymentTxHash,
-        confirmations: 1,
       });
 
       return txReceipt;
@@ -70,7 +69,7 @@ export const evaluateContract = async (contractConfig: ContractConfig) => {
     logInfo("Evaluate Creation...");
     const { txReceipt, performance } = await evaluateTransaction(async () => {
       const txHash = await contractConfig.functions.create(contractAddress, walletClient.account.address);
-      const txReceipt = await publicClient.waitForTransactionReceipt({ hash: txHash, confirmations: 1 });
+      const txReceipt = await publicClient.waitForTransactionReceipt({ hash: txHash });
       return txReceipt;
     });
 
@@ -107,7 +106,7 @@ export const evaluateContract = async (contractConfig: ContractConfig) => {
     logInfo("Evaluate Update...");
     const { txReceipt, performance } = await evaluateTransaction(async () => {
       const txHash = await contractConfig.functions.update(contractAddress);
-      const txReceipt = await publicClient.waitForTransactionReceipt({ hash: txHash, confirmations: 1 });
+      const txReceipt = await publicClient.waitForTransactionReceipt({ hash: txHash });
       return txReceipt;
     });
 
@@ -129,7 +128,7 @@ export const evaluateContract = async (contractConfig: ContractConfig) => {
     logInfo("Evaluate Delete...");
     const { txReceipt, performance } = await evaluateTransaction(async () => {
       const txHash = await contractConfig.functions.delete(contractAddress);
-      const txReceipt = await publicClient.waitForTransactionReceipt({ hash: txHash, confirmations: 1 });
+      const txReceipt = await publicClient.waitForTransactionReceipt({ hash: txHash });
       return txReceipt;
     });
 

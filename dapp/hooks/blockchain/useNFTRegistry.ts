@@ -32,6 +32,32 @@ export function useNFTRegistry() {
       try {
         const to = walletClient.account.address;
 
+        const tokenIdPromise = new Promise<bigint>((resolve, reject) => {
+          const timeout = setTimeout(() => {
+            reject(new Error("Event Minted not received within 60 seconds"));
+            unwatch?.();
+          }, 60000); // 60 seconds
+
+          const unwatch = publicClient.watchContractEvent({
+            address: contractAddress,
+            abi: NFTRegistry.abi,
+            eventName: "Minted",
+            args: { to, uri: tokenURI },
+            onLogs: (logs) => {
+              if (logs.length != 1) {
+                throw new Error(`useNFTRegistry - Multiple or no Minted events found for token URI`);
+              }
+              const tokenId = logs[0].args.tokenId;
+              if (!tokenId) {
+                throw new Error(`useNFTRegistry - Minted event missing tokenId`);
+              }
+              clearTimeout(timeout);
+              resolve(tokenId);
+              unwatch?.();
+            },
+          });
+        });
+
         const txHash = await walletClient.writeContract({
           address: contractAddress,
           abi: NFTRegistry.abi,
@@ -40,28 +66,13 @@ export function useNFTRegistry() {
         });
         await publicClient.waitForTransactionReceipt({ hash: txHash });
 
-        const events = await publicClient.getContractEvents({
-          address: contractAddress,
-          abi: NFTRegistry.abi,
-          eventName: "Minted",
-          args: { to, uri: tokenURI },
-        });
-
-        if (events.length != 1) {
-          if (events.length === 0) {
-            console.log("no minted events found");
-          }
-          for (const event of events) {
-            console.log(JSON.stringify(event, null, 2));
-          }
-          throw new Error(`useNFTRegistry - Minted event not found for token URI`);
-        }
+        const tokenId = await tokenIdPromise;
 
         const metadata: NFTPassportMetadata = {
           type: "nft",
           chainId,
           address: contractAddress,
-          tokenId: events[0].args.tokenId!,
+          tokenId,
         };
 
         return metadata;
@@ -73,6 +84,30 @@ export function useNFTRegistry() {
 
     const handleUpdateTokenURI = async (tokenId: bigint, tokenURI: ArweaveURI) => {
       try {
+        const tokenURIChangedEvent = new Promise<void>((resolve, reject) => {
+          const timeout = setTimeout(() => {
+            reject(new Error("Event TokenURIChanged not received within 60 seconds"));
+            unwatch?.();
+          }, 60000); // 60 seconds
+
+          const unwatch = publicClient.watchContractEvent({
+            address: contractAddress,
+            abi: NFTRegistry.abi,
+            eventName: "TokenURIChanged",
+            args: { tokenId },
+            onLogs: (logs) => {
+              for (const log of logs) {
+                if (log.args.uri === tokenURI) {
+                  clearTimeout(timeout);
+                  resolve();
+                  unwatch?.();
+                  break;
+                }
+              }
+            },
+          });
+        });
+
         const txHash = await walletClient.writeContract({
           address: contractAddress,
           abi: NFTRegistry.abi,
@@ -80,6 +115,8 @@ export function useNFTRegistry() {
           args: [tokenId, tokenURI],
         });
         await publicClient.waitForTransactionReceipt({ hash: txHash });
+
+        await tokenURIChangedEvent;
       } catch (error) {
         console.error(error);
         throw error;

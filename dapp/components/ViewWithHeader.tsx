@@ -50,12 +50,10 @@ const styles = StyleSheet.create({
   },
   scrollViewContentContainer: {
     flexGrow: 1,
-    // paddingHorizontal: commonStyles.outerMarginHorizontal,
     paddingTop: 90,
   },
   contentContainer: {
     flex: 1,
-    // paddingHorizontal: commonStyles.outerMarginHorizontal,
     paddingTop: 90,
   },
 });

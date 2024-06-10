@@ -31,10 +31,33 @@ export function usePBTRegistry() {
 
     const handleCreatePBT = async (chipSignature: HaLoNFCChipSignatureOutput, tokenURI: ArweaveURI) => {
       try {
-        console.log("Creating PBT with chip signature:");
-        console.log(JSON.stringify(chipSignature, null, 2));
-
         const { chipAddress, signatureFromChip, blockNumberUsedInSig } = chipSignature;
+
+        const tokenIdPromise = new Promise<bigint>((resolve, reject) => {
+          const timeout = setTimeout(() => {
+            reject(new Error("Event PBTMint not received within 60 seconds"));
+            unwatch?.();
+          }, 60000); // 60 seconds
+
+          const unwatch = publicClient.watchContractEvent({
+            address: contractAddress,
+            abi: PBTRegistry.abi,
+            eventName: "PBTMint",
+            args: { chipAddress },
+            onLogs: (logs) => {
+              if (logs.length != 1) {
+                throw new Error(`usePBTRegistry - Multiple or no Minted events found for token URI`);
+              }
+              const tokenId = logs[0].args.tokenId;
+              if (!tokenId) {
+                throw new Error(`usePBTRegistry - Minted event missing tokenId`);
+              }
+              clearTimeout(timeout);
+              resolve(tokenId);
+              unwatch?.();
+            },
+          });
+        });
 
         const txHash = await walletClient.writeContract({
           address: contractAddress,
@@ -44,24 +67,13 @@ export function usePBTRegistry() {
         });
         await publicClient.waitForTransactionReceipt({ hash: txHash });
 
-        const events = await publicClient.getContractEvents({
-          address: contractAddress,
-          abi: PBTRegistry.abi,
-          eventName: "PBTMint",
-          args: { chipAddress },
-        });
-
-        if (events.length > 1) {
-          throw new Error(`usePBTRegistry - Multiple Mint events found for token URI: ${tokenURI}`);
-        } else if (events.length === 0) {
-          throw new Error(`usePBTRegistry - Mint event not found for token URI: ${tokenURI}`);
-        }
+        const tokenId = await tokenIdPromise;
 
         const metadata: PBTPassportMetadata = {
           type: "pbt",
           chainId,
           address: contractAddress,
-          tokenId: events[0].args.tokenId!,
+          tokenId,
         };
 
         return metadata;
@@ -73,6 +85,30 @@ export function usePBTRegistry() {
 
     const handleUpdateTokenURI = async (tokenId: bigint, tokenURI: ArweaveURI) => {
       try {
+        const tokenURIChangedEvent = new Promise<void>((resolve, reject) => {
+          const timeout = setTimeout(() => {
+            reject(new Error("Event TokenURIChanged not received within 60 seconds"));
+            unwatch?.();
+          }, 60000); // 60 seconds
+
+          const unwatch = publicClient.watchContractEvent({
+            address: contractAddress,
+            abi: PBTRegistry.abi,
+            eventName: "TokenURIChanged",
+            args: { tokenId },
+            onLogs: (logs) => {
+              for (const log of logs) {
+                if (log.args.uri === tokenURI) {
+                  clearTimeout(timeout);
+                  resolve();
+                  unwatch?.();
+                  break;
+                }
+              }
+            },
+          });
+        });
+
         const txHash = await walletClient.writeContract({
           address: contractAddress,
           abi: PBTRegistry.abi,
@@ -80,6 +116,8 @@ export function usePBTRegistry() {
           args: [tokenId, tokenURI],
         });
         await publicClient.waitForTransactionReceipt({ hash: txHash });
+
+        await tokenURIChangedEvent;
       } catch (error) {
         console.error(error);
         throw error;

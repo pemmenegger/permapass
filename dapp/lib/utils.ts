@@ -4,7 +4,7 @@ import { ArweaveURI, ArweaveURL, PassportCreate } from "../types";
 import { router } from "expo-router";
 import { Alert } from "react-native";
 import * as DocumentPicker from "expo-document-picker";
-import { WalletClient, sepolia, useWalletClient } from "wagmi";
+import { WalletClient, sepolia } from "wagmi";
 
 export const encodeDataCarrierURL = (metadataURI: ArweaveURI) => {
   return config.BASE_URI_SCHEME + `read?metadataURI=${metadataURI}`;
