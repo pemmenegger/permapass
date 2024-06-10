@@ -5,8 +5,7 @@ import { generatePrivateKey, privateKeyToAccount, sign } from "viem/accounts";
 import { encodePacked, fromHex, keccak256, pad, stringToBytes, toHex, zeroAddress } from "viem";
 import { ArweaveURI, DIDPassportMetadata, PassportReadDetails } from "../../types";
 import { getPublicClient } from "../../lib/wagmi";
-import { fromDIDToIdentity } from "../../lib/utils";
-import config from "../../lib/config";
+import { fromDIDToIdentity, writeContractAndAwaitEvent } from "../../lib/utils";
 
 export function useDIDRegistry() {
   const { data: walletClient, isError, isLoading } = useWalletClient();
@@ -15,6 +14,7 @@ export function useDIDRegistry() {
     ((didUrl: string, passportDataURI: ArweaveURI) => Promise<void>) | undefined
   >(undefined);
   const [deleteDID, setDeleteDID] = useState<((didUrl: string) => Promise<void>) | undefined>(undefined);
+  const contractName = "DIDRegistry";
 
   useEffect(() => {
     if (!walletClient) {
@@ -55,39 +55,38 @@ export function useDIDRegistry() {
 
         const signature = await sign({ hash: msgHash, privateKey });
 
-        const ownerChangedEvent = new Promise<void>((resolve, reject) => {
-          const timeout = setTimeout(() => {
-            reject(new Error(`Event DIDOwnerChanged not received within ${config.EVENT_WAITING_TIMEOUT_MIN} minutes`));
-            unwatch?.();
-          }, config.EVENT_WAITING_TIMEOUT_MS);
-
-          const unwatch = publicClient.watchContractEvent({
+        const writeContractFn = async () =>
+          await walletClient.writeContract({
             address: contractAddress,
             abi: DIDRegistry.abi,
-            eventName: "DIDOwnerChanged",
-            args: { identity },
-            onLogs: (logs) => {
-              for (const log of logs) {
-                if (log.args.owner === newOwner) {
-                  clearTimeout(timeout);
-                  resolve();
-                  unwatch?.();
-                  break;
-                }
-              }
-            },
+            functionName: "changeOwnerSigned",
+            args: [identity, Number(signature.v), signature.r, signature.s, newOwner],
           });
-        });
 
-        const txHash = await walletClient.writeContract({
-          address: contractAddress,
-          abi: DIDRegistry.abi,
-          functionName: "changeOwnerSigned",
-          args: [identity, Number(signature.v), signature.r, signature.s, newOwner],
-        });
-        await publicClient.waitForTransactionReceipt({ hash: txHash });
+        const eventName = "DIDOwnerChanged";
+        const eventWatcher = () => {
+          let unwatch: (() => void) | undefined;
+          const promise = new Promise<void>((resolve) => {
+            unwatch = publicClient.watchContractEvent({
+              address: contractAddress,
+              abi: DIDRegistry.abi,
+              eventName,
+              args: { identity },
+              onLogs: (logs) => {
+                for (const log of logs) {
+                  console.log(`${contractName} - ${eventName} event received`);
+                  if (log.args.owner === newOwner) {
+                    console.log(`${contractName} - ${eventName} event found with newOwner: ${newOwner}`);
+                    resolve();
+                  }
+                }
+              },
+            });
+          });
+          return { unwatch: unwatch!, promise };
+        };
 
-        await ownerChangedEvent;
+        await writeContractAndAwaitEvent<void>(publicClient, writeContractFn, eventWatcher, eventName, contractName);
 
         const metadata: DIDPassportMetadata = {
           type: "did",
@@ -118,41 +117,40 @@ export function useDIDRegistry() {
         const attrValueBytes = stringToBytes(value);
         const attrValue = toHex(attrValueBytes);
 
-        const attributeChangedEvent = new Promise<void>((resolve, reject) => {
-          const timeout = setTimeout(() => {
-            reject(
-              new Error(`Event DIDAttributeChanged not received within ${config.EVENT_WAITING_TIMEOUT_MIN} minutes`)
-            );
-            unwatch?.();
-          }, config.EVENT_WAITING_TIMEOUT_MS);
-
-          const unwatch = publicClient.watchContractEvent({
+        const writeContractFn = async () =>
+          await walletClient.writeContract({
             address: contractAddress,
             abi: DIDRegistry.abi,
-            eventName: "DIDAttributeChanged",
-            args: { identity },
-            onLogs: (logs) => {
-              for (const log of logs) {
-                if (log.args.name === attrName && log.args.value === attrValue) {
-                  clearTimeout(timeout);
-                  resolve();
-                  unwatch?.();
-                  break;
-                }
-              }
-            },
+            functionName: "setAttribute",
+            args: [identity as Address, attrName as Address, attrValue as Address, BigInt(86400)],
           });
-        });
 
-        const txHash = await walletClient.writeContract({
-          address: contractAddress,
-          abi: DIDRegistry.abi,
-          functionName: "setAttribute",
-          args: [identity as Address, attrName as Address, attrValue as Address, BigInt(86400)],
-        });
-        await publicClient.waitForTransactionReceipt({ hash: txHash });
+        const eventName = "DIDAttributeChanged";
+        const eventWatcher = () => {
+          let unwatch: (() => void) | undefined;
+          const promise = new Promise<void>((resolve) => {
+            unwatch = publicClient.watchContractEvent({
+              address: contractAddress,
+              abi: DIDRegistry.abi,
+              eventName,
+              args: { identity },
+              onLogs: (logs) => {
+                for (const log of logs) {
+                  console.log(`${contractName} - ${eventName} event received`);
+                  if (log.args.name === attrName && log.args.value === attrValue) {
+                    console.log(
+                      `${contractName} - ${eventName} event found with name: ${attrName} and value: ${attrValue}`
+                    );
+                    resolve();
+                  }
+                }
+              },
+            });
+          });
+          return { unwatch: unwatch!, promise };
+        };
 
-        await attributeChangedEvent;
+        await writeContractAndAwaitEvent<void>(publicClient, writeContractFn, eventWatcher, eventName, contractName);
       } catch (error) {
         console.error(error);
         throw error;
@@ -165,39 +163,38 @@ export function useDIDRegistry() {
         const newOwner = zeroAddress;
         const identity = fromDIDToIdentity(did);
 
-        const ownerChangedEvent = new Promise<void>((resolve, reject) => {
-          const timeout = setTimeout(() => {
-            reject(new Error(`Event DIDOwnerChanged not received within ${config.EVENT_WAITING_TIMEOUT_MIN} minutes`));
-            unwatch?.();
-          }, config.EVENT_WAITING_TIMEOUT_MS);
-
-          const unwatch = publicClient.watchContractEvent({
+        const writeContractFn = async () =>
+          await walletClient.writeContract({
             address: contractAddress,
             abi: DIDRegistry.abi,
-            eventName: "DIDOwnerChanged",
-            args: { identity },
-            onLogs: (logs) => {
-              for (const log of logs) {
-                if (log.args.owner === newOwner) {
-                  clearTimeout(timeout);
-                  resolve();
-                  unwatch?.();
-                  break;
-                }
-              }
-            },
+            functionName: "changeOwner",
+            args: [identity, newOwner],
           });
-        });
 
-        const txHash = await walletClient.writeContract({
-          address: contractAddress,
-          abi: DIDRegistry.abi,
-          functionName: "changeOwner",
-          args: [identity, newOwner],
-        });
-        await publicClient.waitForTransactionReceipt({ hash: txHash });
+        const eventName = "DIDOwnerChanged";
+        const eventWatcher = () => {
+          let unwatch: (() => void) | undefined;
+          const promise = new Promise<void>((resolve) => {
+            unwatch = publicClient.watchContractEvent({
+              address: contractAddress,
+              abi: DIDRegistry.abi,
+              eventName,
+              args: { identity },
+              onLogs: (logs) => {
+                for (const log of logs) {
+                  console.log(`${contractName} - ${eventName} event received`);
+                  if (log.args.owner === newOwner) {
+                    console.log(`${contractName} - ${eventName} event found with newOwner: ${newOwner}`);
+                    resolve();
+                  }
+                }
+              },
+            });
+          });
+          return { unwatch: unwatch!, promise };
+        };
 
-        await ownerChangedEvent;
+        await writeContractAndAwaitEvent<void>(publicClient, writeContractFn, eventWatcher, eventName, contractName);
       } catch (error) {
         console.error(error);
         throw error;

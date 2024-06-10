@@ -5,7 +5,7 @@ import { ArweaveURI, PBTPassportMetadata, PassportReadDetails } from "../../type
 import { getPublicClient } from "../../lib/wagmi";
 import { HaLoNFCChipSignatureOutput } from "../useHaloNFCChip";
 import { zeroAddress } from "viem";
-import config from "../../lib/config";
+import { writeContractAndAwaitEvent } from "../../lib/utils";
 
 export function usePBTRegistry() {
   const { data: walletClient, isError, isLoading } = useWalletClient();
@@ -16,6 +16,7 @@ export function usePBTRegistry() {
     ((tokenId: bigint, tokenURI: ArweaveURI) => Promise<void>) | undefined
   >(undefined);
   const [deletePBT, setDeletePBT] = useState<((tokenId: bigint) => Promise<void>) | undefined>(undefined);
+  const contractName = "PBTRegistry";
 
   useEffect(() => {
     if (!walletClient) {
@@ -33,41 +34,47 @@ export function usePBTRegistry() {
       try {
         const { chipAddress, signatureFromChip, blockNumberUsedInSig } = chipSignature;
 
-        const tokenIdPromise = new Promise<bigint>((resolve, reject) => {
-          const timeout = setTimeout(() => {
-            reject(new Error(`Event PBTMint not received within ${config.EVENT_WAITING_TIMEOUT_MIN} minutes`));
-            unwatch?.();
-          }, config.EVENT_WAITING_TIMEOUT_MS);
-
-          const unwatch = publicClient.watchContractEvent({
+        const writeContractFn = async () =>
+          await walletClient.writeContract({
             address: contractAddress,
             abi: PBTRegistry.abi,
-            eventName: "PBTMint",
-            args: { chipAddress },
-            onLogs: (logs) => {
-              if (logs.length != 1) {
-                throw new Error(`usePBTRegistry - Multiple or no Minted events found for token URI`);
-              }
-              const tokenId = logs[0].args.tokenId;
-              if (!tokenId) {
-                throw new Error(`usePBTRegistry - Minted event missing tokenId`);
-              }
-              clearTimeout(timeout);
-              resolve(tokenId);
-              unwatch?.();
-            },
+            functionName: "mintPBT",
+            args: [chipAddress, signatureFromChip, blockNumberUsedInSig, tokenURI],
           });
-        });
 
-        const txHash = await walletClient.writeContract({
-          address: contractAddress,
-          abi: PBTRegistry.abi,
-          functionName: "mintPBT",
-          args: [chipAddress, signatureFromChip, blockNumberUsedInSig, tokenURI],
-        });
-        await publicClient.waitForTransactionReceipt({ hash: txHash });
+        const eventName = "PBTMint";
+        const eventWatcher = () => {
+          let unwatch: (() => void) | undefined;
+          const promise = new Promise<bigint>((resolve, reject) => {
+            unwatch = publicClient.watchContractEvent({
+              address: contractAddress,
+              abi: PBTRegistry.abi,
+              eventName,
+              args: { chipAddress },
+              onLogs: (logs) => {
+                console.log(`${contractName} - ${eventName} event received`);
+                if (logs.length !== 1) {
+                  return reject(new Error(`${contractName} - Multiple or no ${eventName} events found for token URI`));
+                }
+                const tokenId = logs[0].args.tokenId;
+                if (!tokenId) {
+                  return reject(new Error(`${contractName} - ${eventName} event missing tokenId`));
+                }
+                console.log(`${contractName} - ${eventName} event found with tokenId: ${logs[0].args.tokenId}`);
+                resolve(tokenId);
+              },
+            });
+          });
+          return { unwatch: unwatch!, promise };
+        };
 
-        const tokenId = await tokenIdPromise;
+        const tokenId = await writeContractAndAwaitEvent<bigint>(
+          publicClient,
+          writeContractFn,
+          eventWatcher,
+          eventName,
+          contractName
+        );
 
         const metadata: PBTPassportMetadata = {
           type: "pbt",
@@ -85,39 +92,38 @@ export function usePBTRegistry() {
 
     const handleUpdateTokenURI = async (tokenId: bigint, tokenURI: ArweaveURI) => {
       try {
-        const tokenURIChangedEvent = new Promise<void>((resolve, reject) => {
-          const timeout = setTimeout(() => {
-            reject(new Error(`Event TokenURIChanged not received within ${config.EVENT_WAITING_TIMEOUT_MIN} minutes`));
-            unwatch?.();
-          }, config.EVENT_WAITING_TIMEOUT_MS);
-
-          const unwatch = publicClient.watchContractEvent({
+        const writeContractFn = async () =>
+          await walletClient.writeContract({
             address: contractAddress,
             abi: PBTRegistry.abi,
-            eventName: "TokenURIChanged",
-            args: { tokenId },
-            onLogs: (logs) => {
-              for (const log of logs) {
-                if (log.args.uri === tokenURI) {
-                  clearTimeout(timeout);
-                  resolve();
-                  unwatch?.();
-                  break;
-                }
-              }
-            },
+            functionName: "setTokenURI",
+            args: [tokenId, tokenURI],
           });
-        });
 
-        const txHash = await walletClient.writeContract({
-          address: contractAddress,
-          abi: PBTRegistry.abi,
-          functionName: "setTokenURI",
-          args: [tokenId, tokenURI],
-        });
-        await publicClient.waitForTransactionReceipt({ hash: txHash });
+        const eventName = "TokenURIChanged";
+        const eventWatcher = () => {
+          let unwatch: (() => void) | undefined;
+          const promise = new Promise<void>((resolve) => {
+            unwatch = publicClient.watchContractEvent({
+              address: contractAddress,
+              abi: PBTRegistry.abi,
+              eventName,
+              args: { tokenId },
+              onLogs: (logs) => {
+                for (const log of logs) {
+                  console.log(`${contractName} - ${eventName} event received`);
+                  if (log.args.uri === tokenURI) {
+                    console.log(`${contractName} - ${eventName} event found with uri: ${tokenURI}`);
+                    resolve();
+                  }
+                }
+              },
+            });
+          });
+          return { unwatch: unwatch!, promise };
+        };
 
-        await tokenURIChangedEvent;
+        await writeContractAndAwaitEvent<void>(publicClient, writeContractFn, eventWatcher, eventName, contractName);
       } catch (error) {
         console.error(error);
         throw error;

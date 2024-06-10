@@ -114,7 +114,6 @@ export function useNFTRegistry() {
                   if (log.args.uri === tokenURI) {
                     console.log(`${contractName} - ${eventName} event found with uri: ${tokenURI}`);
                     resolve();
-                    return;
                   }
                 }
               },
