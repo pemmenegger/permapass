@@ -8,15 +8,11 @@ import { Alert, Button, View } from "react-native";
 import { useHaLoNFCChip } from "../hooks/useHaloNFCChip";
 import { useHaLoNFCMetadataRegistry } from "../hooks/blockchain/useHaLoNFCMetadataRegistry";
 import { useCreation } from "../context/CreationContext";
-import { getPublicClient } from "../lib/wagmi";
-import { sepolia } from "wagmi";
 
 export default function Page() {
   const { dispatch } = useCreation();
   const { haloNFCChip } = useHaLoNFCChip();
   const { haLoNFCMetadataRegistry } = useHaLoNFCMetadataRegistry();
-
-  const publicClient = getPublicClient(sepolia.id);
 
   const readNFCMetadataURI = async () => {
     try {
@@ -34,16 +30,10 @@ export default function Page() {
     }
   };
 
-  const printBlockNumber = async () => {
-    const blockNumber = await publicClient.getBlockNumber();
-    console.log("Block Number", blockNumber);
-  };
-
   return (
     <ViewWithHeader withScrollView disableBackButton>
       <Title text="Welcome to PermaPass" highlight="PermaPass" />
       <Subtitle text="A permanent passport system for construction products using decentralized technologies." />
-      <Button title="Print Block Number" onPress={printBlockNumber} />
       <StepOption
         title="Create Passport"
         subtitle="Use QR Codes or HaLo NFC chips as data carriers, and NFTs, PBTs, or DIDs for digital product identity."
