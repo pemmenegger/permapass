@@ -1,6 +1,6 @@
 export const PBTRegistry = {
   "31337": "0xa304d89fec68fc2fa8c3325b96f53dbd2b5a1bfa",
-  "11155111": "0x27390724bbe34f751830b399f755419a16c7d251",
+  "11155111": "0x6a1532fe70c5da21ed94ea65bc7b9e0f4996efcc",
   abi: [
     {
       inputs: [],

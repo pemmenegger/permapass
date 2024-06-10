@@ -37,6 +37,7 @@ const DigitalIdentifierStep = ({ createFn, description }: DigitalIdentifierStepP
 
       dispatch({ type: "DIGITAL_IDENTIFIER_CREATED", passportMetadataURI });
     } catch (error: unknown) {
+      console.error(error);
       let errorMessage = "An error occurred while creating digital identifier";
       if (error instanceof Error) {
         errorMessage = error.message;

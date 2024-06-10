@@ -5,6 +5,7 @@ import Title from "../../components/ui/Title";
 import { PrimaryButton, SecondaryButton } from "../../components/ui/buttons";
 import { encodeDataCarrierURL, goToHome } from "../../lib/utils";
 import { useCreation } from "../../context/CreationContext";
+import { commonColors } from "../../styles";
 
 interface QRCodeViewProps {
   url: string;
@@ -49,7 +50,12 @@ export const QRCodeView = ({ url }: QRCodeViewProps) => {
   return (
     <View style={{ alignItems: "center" }}>
       <View style={{ width: qrCodeSize }}>
-        <QRCode value={url} size={qrCodeSize} backgroundColor={"transparent"} getRef={(c) => (qrCodeRef.current = c)} />
+        <QRCode
+          value={url}
+          size={qrCodeSize}
+          backgroundColor={commonColors.bg}
+          getRef={(c) => (qrCodeRef.current = c)}
+        />
         <View style={{ height: 20 }} />
         <SecondaryButton title={isLoading ? "Loading..." : "Share QR Code"} onPress={handleShare} />
       </View>

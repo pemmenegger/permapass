@@ -1,6 +1,6 @@
 export const DIDRegistry = {
   "31337": "0xeb0c10adbb2982a99bcf90f1f787732db1e2c174",
-  "11155111": "0xf063e7018834891a9fe1aab90940c397bc171bf6",
+  "11155111": "0x4e70f5150b90395f9044fe42ec6f3723adb08500",
   abi: [
     {
       anonymous: false,

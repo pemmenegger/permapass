@@ -48,6 +48,12 @@ export function useNFTRegistry() {
         });
 
         if (events.length != 1) {
+          if (events.length === 0) {
+            console.log("no minted events found");
+          }
+          for (const event of events) {
+            console.log(JSON.stringify(event, null, 2));
+          }
           throw new Error(`useNFTRegistry - Minted event not found for token URI`);
         }
 
