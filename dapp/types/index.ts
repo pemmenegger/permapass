@@ -27,16 +27,17 @@ export type DIDPassportMetadata = {
 export interface PassportCreate {
   name: string;
   condition: string;
-  manufacturer: string;
-  manufacturingDate: string;
-  serialNumber: string;
   width: string;
   height: string;
   thickness: string;
-  frameMaterial: string;
-  glassType: string;
-  safetyGlassCertification: string;
-  securityFeatures: string;
+  usage: string;
+  materials: string;
+  dateManufactured: string;
+  warranty: string;
+  environmentalImpact: string;
+  carbonFootprint: string;
+  recycling: string;
+  disposalInstructions: string;
 }
 
 export interface PassportReadDetails {
