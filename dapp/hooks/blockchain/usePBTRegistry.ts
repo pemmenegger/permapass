@@ -5,6 +5,7 @@ import { ArweaveURI, PBTPassportMetadata, PassportReadDetails } from "../../type
 import { getPublicClient } from "../../lib/wagmi";
 import { HaLoNFCChipSignatureOutput } from "../useHaloNFCChip";
 import { zeroAddress } from "viem";
+import config from "../../lib/config";
 
 export function usePBTRegistry() {
   const { data: walletClient, isError, isLoading } = useWalletClient();
@@ -34,9 +35,9 @@ export function usePBTRegistry() {
 
         const tokenIdPromise = new Promise<bigint>((resolve, reject) => {
           const timeout = setTimeout(() => {
-            reject(new Error("Event PBTMint not received within 60 seconds"));
+            reject(new Error(`Event PBTMint not received within ${config.EVENT_WAITING_TIMEOUT_MIN} minutes`));
             unwatch?.();
-          }, 60000); // 60 seconds
+          }, config.EVENT_WAITING_TIMEOUT_MS);
 
           const unwatch = publicClient.watchContractEvent({
             address: contractAddress,
@@ -86,9 +87,9 @@ export function usePBTRegistry() {
       try {
         const tokenURIChangedEvent = new Promise<void>((resolve, reject) => {
           const timeout = setTimeout(() => {
-            reject(new Error("Event TokenURIChanged not received within 60 seconds"));
+            reject(new Error(`Event TokenURIChanged not received within ${config.EVENT_WAITING_TIMEOUT_MIN} minutes`));
             unwatch?.();
-          }, 60000); // 60 seconds
+          }, config.EVENT_WAITING_TIMEOUT_MS);
 
           const unwatch = publicClient.watchContractEvent({
             address: contractAddress,

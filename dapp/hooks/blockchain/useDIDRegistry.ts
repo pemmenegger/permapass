@@ -6,6 +6,7 @@ import { encodePacked, fromHex, keccak256, pad, stringToBytes, toHex, zeroAddres
 import { ArweaveURI, DIDPassportMetadata, PassportReadDetails } from "../../types";
 import { getPublicClient } from "../../lib/wagmi";
 import { fromDIDToIdentity } from "../../lib/utils";
+import config from "../../lib/config";
 
 export function useDIDRegistry() {
   const { data: walletClient, isError, isLoading } = useWalletClient();
@@ -56,9 +57,9 @@ export function useDIDRegistry() {
 
         const ownerChangedEvent = new Promise<void>((resolve, reject) => {
           const timeout = setTimeout(() => {
-            reject(new Error("Event DIDOwnerChanged not received within 60 seconds"));
+            reject(new Error(`Event DIDOwnerChanged not received within ${config.EVENT_WAITING_TIMEOUT_MIN} minutes`));
             unwatch?.();
-          }, 60000); // 60 seconds
+          }, config.EVENT_WAITING_TIMEOUT_MS);
 
           const unwatch = publicClient.watchContractEvent({
             address: contractAddress,
@@ -119,9 +120,11 @@ export function useDIDRegistry() {
 
         const attributeChangedEvent = new Promise<void>((resolve, reject) => {
           const timeout = setTimeout(() => {
-            reject(new Error("Event DIDAttributeChanged not received within 60 seconds"));
+            reject(
+              new Error(`Event DIDAttributeChanged not received within ${config.EVENT_WAITING_TIMEOUT_MIN} minutes`)
+            );
             unwatch?.();
-          }, 60000); // 60 seconds
+          }, config.EVENT_WAITING_TIMEOUT_MS);
 
           const unwatch = publicClient.watchContractEvent({
             address: contractAddress,
@@ -164,9 +167,9 @@ export function useDIDRegistry() {
 
         const ownerChangedEvent = new Promise<void>((resolve, reject) => {
           const timeout = setTimeout(() => {
-            reject(new Error("Event DIDOwnerChanged not received within 60 seconds"));
+            reject(new Error(`Event DIDOwnerChanged not received within ${config.EVENT_WAITING_TIMEOUT_MIN} minutes`));
             unwatch?.();
-          }, 60000); // 60 seconds
+          }, config.EVENT_WAITING_TIMEOUT_MS);
 
           const unwatch = publicClient.watchContractEvent({
             address: contractAddress,
