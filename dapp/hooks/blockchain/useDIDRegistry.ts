@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Address, useWalletClient } from "wagmi";
 import { DIDRegistry } from "../../contracts/DIDRegistry";
-import { readContract } from "@wagmi/core";
 import { generatePrivateKey, privateKeyToAccount, sign } from "viem/accounts";
 import { encodePacked, fromHex, keccak256, pad, stringToBytes, toHex, zeroAddress } from "viem";
 import { ArweaveURI, DIDPassportMetadata, PassportReadDetails } from "../../types";
@@ -39,8 +38,7 @@ export function useDIDRegistry() {
         const identityOwner = account.address;
         const newOwner = walletClient.account.address;
 
-        const nonce = await readContract({
-          chainId: chainId,
+        const nonce = await publicClient.readContract({
           address: contractAddress,
           abi: DIDRegistry.abi,
           functionName: "nonce",
@@ -216,8 +214,7 @@ export function useDIDRegistry() {
     try {
       const passportVersions: PassportReadDetails[] = [];
 
-      let previousChange: bigint = await readContract({
-        chainId,
+      let previousChange: bigint = await publicClient.readContract({
         address: address as Address,
         abi: DIDRegistry.abi,
         functionName: "changed",
@@ -281,9 +278,10 @@ export function useDIDRegistry() {
     const { did, chainId, address } = metadata;
     const identity = fromDIDToIdentity(did);
 
+    const publicClient = getPublicClient(chainId);
+
     try {
-      return await readContract({
-        chainId,
+      return await publicClient.readContract({
         address: address as Address,
         abi: DIDRegistry.abi,
         functionName: "owners",

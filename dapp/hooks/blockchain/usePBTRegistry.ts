@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Address, useWalletClient } from "wagmi";
 import { PBTRegistry } from "../../contracts/PBTRegistry";
-import { readContract } from "@wagmi/core";
 import { ArweaveURI, PBTPassportMetadata, PassportReadDetails } from "../../types";
 import { getPublicClient } from "../../lib/wagmi";
 import { HaLoNFCChipSignatureOutput } from "../useHaloNFCChip";
@@ -150,8 +149,7 @@ export function usePBTRegistry() {
     const publicClient = getPublicClient(chainId);
 
     try {
-      let previousChange: bigint = await readContract({
-        chainId,
+      let previousChange: bigint = await publicClient.readContract({
         address: address as Address,
         abi: PBTRegistry.abi,
         functionName: "changed",
@@ -191,9 +189,10 @@ export function usePBTRegistry() {
   const ownerOf = async (metadata: PBTPassportMetadata): Promise<Address> => {
     const { tokenId, chainId, address } = metadata;
 
+    const publicClient = getPublicClient(chainId);
+
     try {
-      const exists = await readContract({
-        chainId,
+      const exists = await publicClient.readContract({
         address: address as Address,
         abi: PBTRegistry.abi,
         functionName: "exists",
@@ -204,8 +203,7 @@ export function usePBTRegistry() {
         return zeroAddress;
       }
 
-      return await readContract({
-        chainId,
+      return await publicClient.readContract({
         address: address as Address,
         abi: PBTRegistry.abi,
         functionName: "ownerOf",

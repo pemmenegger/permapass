@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Address, useWalletClient } from "wagmi";
 import { NFTRegistry } from "../../contracts/NFTRegistry";
-import { readContract } from "@wagmi/core";
 import { ArweaveURI, NFTPassportMetadata, PassportReadDetails } from "../../types";
 import { getPublicClient } from "../../lib/wagmi";
 import { zeroAddress } from "viem";
@@ -149,8 +148,7 @@ export function useNFTRegistry() {
     const publicClient = getPublicClient(chainId);
 
     try {
-      let previousChange: bigint = await readContract({
-        chainId,
+      let previousChange: bigint = await publicClient.readContract({
         address: address as Address,
         abi: NFTRegistry.abi,
         functionName: "changed",
@@ -190,9 +188,10 @@ export function useNFTRegistry() {
   const ownerOf = async (metadata: NFTPassportMetadata): Promise<Address> => {
     const { tokenId, chainId, address } = metadata;
 
+    const publicClient = getPublicClient(chainId);
+
     try {
-      const exists = await readContract({
-        chainId,
+      const exists = await publicClient.readContract({
         address: address as Address,
         abi: NFTRegistry.abi,
         functionName: "exists",
@@ -203,8 +202,7 @@ export function useNFTRegistry() {
         return zeroAddress;
       }
 
-      return await readContract({
-        chainId,
+      return await publicClient.readContract({
         address: address as Address,
         abi: NFTRegistry.abi,
         functionName: "ownerOf",

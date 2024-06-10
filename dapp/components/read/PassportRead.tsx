@@ -118,6 +118,11 @@ export default function PassportRead({ passportMetadata }: { passportMetadata: P
     }
   };
 
+  if (error) {
+    console.error(error);
+    return <Text>An error occurred while loading the passport history.</Text>;
+  }
+
   if (isUpdating) {
     return <LoadingText isLoading={true} text="Updating Passport" />;
   }
@@ -128,11 +133,6 @@ export default function PassportRead({ passportMetadata }: { passportMetadata: P
 
   if (isLoading) {
     return <LoadingText isLoading={true} text="Loading Passport" />;
-  }
-
-  if (error) {
-    console.error(error);
-    return <Text>An error occurred while loading the passport history.</Text>;
   }
 
   if (!currentPassport) {

@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { Address, sepolia, useWalletClient } from "wagmi";
-import { readContract } from "@wagmi/core";
 import { ArweaveURI } from "../../types";
 import { getPublicClient } from "../../lib/wagmi";
 import { HaLoNFCChipSignatureOutput } from "../useHaloNFCChip";
@@ -52,14 +51,15 @@ export function useHaLoNFCMetadataRegistry() {
       chainId = sepolia.id;
     }
 
-    const contractAddress = HaLoNFCMetadataRegistry[
-      chainId.toString() as keyof typeof HaLoNFCMetadataRegistry
-    ] as Address;
-    if (!contractAddress) throw new Error(`usePBTRegistry - No contract address found for chainId: ${chainId}`);
+    const publicClient = getPublicClient(chainId);
 
     try {
-      const metadataURI = await readContract({
-        chainId,
+      const contractAddress = HaLoNFCMetadataRegistry[
+        chainId.toString() as keyof typeof HaLoNFCMetadataRegistry
+      ] as Address;
+      if (!contractAddress) throw new Error(`usePBTRegistry - No contract address found for chainId: ${chainId}`);
+
+      const metadataURI = await publicClient.readContract({
         address: contractAddress,
         abi: HaLoNFCMetadataRegistry.abi,
         functionName: "metadataURIs",
