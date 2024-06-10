@@ -66,23 +66,32 @@ export function useDIDRegistry() {
         const eventName = "DIDOwnerChanged";
         const eventWatcher = () => {
           let unwatch: (() => void) | undefined;
-          const promise = new Promise<void>((resolve) => {
-            unwatch = publicClient.watchContractEvent({
-              address: contractAddress,
-              abi: DIDRegistry.abi,
-              eventName,
-              args: { identity },
-              onLogs: (logs) => {
-                for (const log of logs) {
-                  console.log(`${contractName} - ${eventName} event received`);
-                  if (log.args.owner === newOwner) {
-                    console.log(`${contractName} - ${eventName} event found with newOwner: ${newOwner}`);
-                    resolve();
+          const promise = new Promise<void>((resolve, reject) => {
+            try {
+              unwatch = publicClient.watchContractEvent({
+                address: contractAddress,
+                abi: DIDRegistry.abi,
+                eventName,
+                args: { identity },
+                onLogs: (logs) => {
+                  for (const log of logs) {
+                    console.log(`${contractName} - ${eventName} event received`);
+                    if (log.args.owner === newOwner) {
+                      console.log(`${contractName} - ${eventName} event found with newOwner: ${newOwner}`);
+                      resolve();
+                    }
                   }
-                }
-              },
-            });
+                },
+              });
+            } catch (err) {
+              reject(err);
+            }
+          }).finally(() => {
+            if (unwatch) {
+              unwatch();
+            }
           });
+
           return { unwatch: unwatch!, promise };
         };
 
@@ -128,25 +137,34 @@ export function useDIDRegistry() {
         const eventName = "DIDAttributeChanged";
         const eventWatcher = () => {
           let unwatch: (() => void) | undefined;
-          const promise = new Promise<void>((resolve) => {
-            unwatch = publicClient.watchContractEvent({
-              address: contractAddress,
-              abi: DIDRegistry.abi,
-              eventName,
-              args: { identity },
-              onLogs: (logs) => {
-                for (const log of logs) {
-                  console.log(`${contractName} - ${eventName} event received`);
-                  if (log.args.name === attrName && log.args.value === attrValue) {
-                    console.log(
-                      `${contractName} - ${eventName} event found with name: ${attrName} and value: ${attrValue}`
-                    );
-                    resolve();
+          const promise = new Promise<void>((resolve, reject) => {
+            try {
+              unwatch = publicClient.watchContractEvent({
+                address: contractAddress,
+                abi: DIDRegistry.abi,
+                eventName,
+                args: { identity },
+                onLogs: (logs) => {
+                  for (const log of logs) {
+                    console.log(`${contractName} - ${eventName} event received`);
+                    if (log.args.name === attrName && log.args.value === attrValue) {
+                      console.log(
+                        `${contractName} - ${eventName} event found with name: ${attrName} and value: ${attrValue}`
+                      );
+                      resolve();
+                    }
                   }
-                }
-              },
-            });
+                },
+              });
+            } catch (err) {
+              reject(err);
+            }
+          }).finally(() => {
+            if (unwatch) {
+              unwatch();
+            }
           });
+
           return { unwatch: unwatch!, promise };
         };
 
@@ -174,23 +192,32 @@ export function useDIDRegistry() {
         const eventName = "DIDOwnerChanged";
         const eventWatcher = () => {
           let unwatch: (() => void) | undefined;
-          const promise = new Promise<void>((resolve) => {
-            unwatch = publicClient.watchContractEvent({
-              address: contractAddress,
-              abi: DIDRegistry.abi,
-              eventName,
-              args: { identity },
-              onLogs: (logs) => {
-                for (const log of logs) {
-                  console.log(`${contractName} - ${eventName} event received`);
-                  if (log.args.owner === newOwner) {
-                    console.log(`${contractName} - ${eventName} event found with newOwner: ${newOwner}`);
-                    resolve();
+          const promise = new Promise<void>((resolve, reject) => {
+            try {
+              unwatch = publicClient.watchContractEvent({
+                address: contractAddress,
+                abi: DIDRegistry.abi,
+                eventName,
+                args: { identity },
+                onLogs: (logs) => {
+                  for (const log of logs) {
+                    console.log(`${contractName} - ${eventName} event received`);
+                    if (log.args.owner === newOwner) {
+                      console.log(`${contractName} - ${eventName} event found with newOwner: ${newOwner}`);
+                      resolve();
+                    }
                   }
-                }
-              },
-            });
+                },
+              });
+            } catch (err) {
+              reject(err);
+            }
+          }).finally(() => {
+            if (unwatch) {
+              unwatch();
+            }
           });
+
           return { unwatch: unwatch!, promise };
         };
 

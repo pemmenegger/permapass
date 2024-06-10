@@ -46,25 +46,36 @@ export function usePBTRegistry() {
         const eventWatcher = () => {
           let unwatch: (() => void) | undefined;
           const promise = new Promise<bigint>((resolve, reject) => {
-            unwatch = publicClient.watchContractEvent({
-              address: contractAddress,
-              abi: PBTRegistry.abi,
-              eventName,
-              args: { chipAddress },
-              onLogs: (logs) => {
-                console.log(`${contractName} - ${eventName} event received`);
-                if (logs.length !== 1) {
-                  return reject(new Error(`${contractName} - Multiple or no ${eventName} events found for token URI`));
-                }
-                const tokenId = logs[0].args.tokenId;
-                if (!tokenId) {
-                  return reject(new Error(`${contractName} - ${eventName} event missing tokenId`));
-                }
-                console.log(`${contractName} - ${eventName} event found with tokenId: ${logs[0].args.tokenId}`);
-                resolve(tokenId);
-              },
-            });
+            try {
+              unwatch = publicClient.watchContractEvent({
+                address: contractAddress,
+                abi: PBTRegistry.abi,
+                eventName,
+                args: { chipAddress },
+                onLogs: (logs) => {
+                  console.log(`${contractName} - ${eventName} event received`);
+                  if (logs.length !== 1) {
+                    return reject(
+                      new Error(`${contractName} - Multiple or no ${eventName} events found for token URI`)
+                    );
+                  }
+                  const tokenId = logs[0].args.tokenId;
+                  if (!tokenId) {
+                    return reject(new Error(`${contractName} - ${eventName} event missing tokenId`));
+                  }
+                  console.log(`${contractName} - ${eventName} event found with tokenId: ${logs[0].args.tokenId}`);
+                  resolve(tokenId);
+                },
+              });
+            } catch (err) {
+              reject(err);
+            }
+          }).finally(() => {
+            if (unwatch) {
+              unwatch();
+            }
           });
+
           return { unwatch: unwatch!, promise };
         };
 
@@ -103,23 +114,32 @@ export function usePBTRegistry() {
         const eventName = "TokenURIChanged";
         const eventWatcher = () => {
           let unwatch: (() => void) | undefined;
-          const promise = new Promise<void>((resolve) => {
-            unwatch = publicClient.watchContractEvent({
-              address: contractAddress,
-              abi: PBTRegistry.abi,
-              eventName,
-              args: { tokenId },
-              onLogs: (logs) => {
-                for (const log of logs) {
-                  console.log(`${contractName} - ${eventName} event received`);
-                  if (log.args.uri === tokenURI) {
-                    console.log(`${contractName} - ${eventName} event found with uri: ${tokenURI}`);
-                    resolve();
+          const promise = new Promise<void>((resolve, reject) => {
+            try {
+              unwatch = publicClient.watchContractEvent({
+                address: contractAddress,
+                abi: PBTRegistry.abi,
+                eventName,
+                args: { tokenId },
+                onLogs: (logs) => {
+                  for (const log of logs) {
+                    console.log(`${contractName} - ${eventName} event received`);
+                    if (log.args.uri === tokenURI) {
+                      console.log(`${contractName} - ${eventName} event found with uri: ${tokenURI}`);
+                      resolve();
+                    }
                   }
-                }
-              },
-            });
+                },
+              });
+            } catch (err) {
+              reject(err);
+            }
+          }).finally(() => {
+            if (unwatch) {
+              unwatch();
+            }
           });
+
           return { unwatch: unwatch!, promise };
         };
 
