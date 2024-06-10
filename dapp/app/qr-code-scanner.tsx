@@ -1,20 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Text, View, StyleSheet, Button, TouchableOpacity } from "react-native";
 import { BarCodeScanner } from "expo-barcode-scanner";
 import { router } from "expo-router";
 import { CrossIcon } from "../components/icons/CrossIcon";
+import { useAsyncEffect } from "../hooks/useAsyncEffect";
 
 export default function Page() {
   const [hasPermission, setHasPermission] = useState<boolean>(false);
   const [scanned, setScanned] = useState<boolean>(false);
 
-  useEffect(() => {
-    const getBarCodeScannerPermissions = async () => {
-      const { status } = await BarCodeScanner.requestPermissionsAsync();
-      setHasPermission(status === "granted");
-    };
-
-    void getBarCodeScannerPermissions();
+  useAsyncEffect(async () => {
+    const { status } = await BarCodeScanner.requestPermissionsAsync();
+    setHasPermission(status === "granted");
   }, []);
 
   const handleBarCodeScanned = ({ data }: { type: any; data: any }) => {
