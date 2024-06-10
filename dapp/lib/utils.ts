@@ -104,8 +104,6 @@ export const writeContractAndAwaitEvent = async <T>(
 
   const wrappedEventPromise = new Promise<T>(async (resolve, reject) => {
     try {
-      console.log(`${contractName} - Watching ${eventName} event...`);
-
       console.log(`${contractName} - Starting timer for ${eventName} event`);
       timeout = setTimeout(() => {
         reject(
@@ -115,6 +113,7 @@ export const writeContractAndAwaitEvent = async <T>(
         );
       }, config.EVENT_WAITING_TIMEOUT_MS);
 
+      console.log(`${contractName} - Watching ${eventName} event...`);
       const result = await eventPromise;
       resolve(result);
     } catch (error) {
@@ -128,11 +127,13 @@ export const writeContractAndAwaitEvent = async <T>(
     await publicClient.waitForTransactionReceipt({ hash: txHash });
     console.log(`${contractName} - Transaction receipt received`);
 
+    const eventResult = await wrappedEventPromise;
+
     console.log(`${contractName} - Clearing timer and unwatching ${eventName} event...`);
     if (timeout) clearTimeout(timeout);
     if (unwatch) unwatch();
 
-    return wrappedEventPromise;
+    return eventResult;
   } catch (error) {
     console.error(`${contractName} - Error during transaction or waiting for receipt: ${error}`);
     if (timeout) clearTimeout(timeout);
