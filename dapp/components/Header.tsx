@@ -6,20 +6,21 @@ import { commonColors } from "../styles";
 
 interface HeaderProps {
   onBack?: () => void;
+  disableBackButton?: boolean;
 }
 
-export default function Header({ onBack }: HeaderProps) {
-  const canGoBack = router.canGoBack();
-  const showBackButton = canGoBack || onBack;
+export default function Header({ onBack, disableBackButton = false }: HeaderProps) {
+  const canNavigateBack = router.canGoBack();
+  const shouldShowBackButton = canNavigateBack || onBack;
 
   return (
-    <View style={styles.container}>
-      {showBackButton && (
+    <View style={styles.headerContainer}>
+      {!disableBackButton && shouldShowBackButton && (
         <Pressable onPress={onBack ? onBack : router.back} style={styles.backButton}>
           <ChevronLeftIcon height={24} strokeWidth={1.5} color={commonColors.black} />
         </Pressable>
       )}
-      <View style={styles.walletConnector}>
+      <View style={styles.walletConnectorContainer}>
         <WalletConnector />
       </View>
     </View>
@@ -27,7 +28,7 @@ export default function Header({ onBack }: HeaderProps) {
 }
 
 const styles = StyleSheet.create({
-  container: {
+  headerContainer: {
     marginVertical: 12,
     flexDirection: "row",
     alignItems: "center",
@@ -35,7 +36,7 @@ const styles = StyleSheet.create({
   backButton: {
     paddingRight: 24,
   },
-  walletConnector: {
+  walletConnectorContainer: {
     flex: 1,
   },
 });

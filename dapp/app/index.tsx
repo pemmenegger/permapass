@@ -31,7 +31,7 @@ export default function Page() {
   };
 
   return (
-    <ViewWithHeader withScrollView>
+    <ViewWithHeader withScrollView disableBackButton>
       <Title text="Welcome to PermaPass" highlight="PermaPass" />
       <Subtitle text="A permanent passport system for construction products using decentralized technologies." />
       <StepOption

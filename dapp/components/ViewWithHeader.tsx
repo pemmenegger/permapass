@@ -6,14 +6,15 @@ import Header from "./Header";
 export interface ViewWithHeaderProps extends React.PropsWithChildren {
   withScrollView?: boolean;
   onBack?: () => void;
+  disableBackButton?: boolean;
 }
 
-export default function ViewWithHeader({ withScrollView, children, onBack }: ViewWithHeaderProps) {
+export default function ViewWithHeader({ withScrollView, children, onBack, disableBackButton }: ViewWithHeaderProps) {
   return (
     <SafeAreaView style={styles.mainSafeArea}>
       <SafeAreaView style={styles.innerSafeArea}>
         <View style={styles.headerWrapper}>
-          <Header onBack={onBack} />
+          <Header onBack={onBack} disableBackButton={disableBackButton} />
         </View>
       </SafeAreaView>
       {withScrollView ? (

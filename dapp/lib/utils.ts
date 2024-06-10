@@ -44,6 +44,7 @@ export const formatDID = (did: string) => {
 };
 
 export const goToHome = () => {
+  // clear history
   while (router.canGoBack()) {
     router.back();
   }
