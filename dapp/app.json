@@ -32,7 +32,7 @@
         ]
       },
       "usesIcloudStorage": true,
-      "buildNumber": "3"
+      "buildNumber": "4"
     },
     "android": {
       "versionCode": 1,
