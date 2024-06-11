@@ -6,33 +6,33 @@
           "gasUsedInWei": 1091413,
           "functionName": "deployContract",
           "durationInMs": 4,
-          "startTimestamp": 1718112758814,
-          "endTimestamp": 1718112758818
+          "startTimestamp": 1718114333464,
+          "endTimestamp": 1718114333468
         }
       ],
       "create": [
         {
-          "gasUsedInWei": 96925,
+          "gasUsedInWei": 96913,
           "functionName": "changeOwnerSigned",
           "durationInMs": 7,
-          "startTimestamp": 1718112758818,
-          "endTimestamp": 1718112758825
+          "startTimestamp": 1718114333468,
+          "endTimestamp": 1718114333475
         },
         {
           "gasUsedInWei": 35006,
           "functionName": "setAttribute",
-          "durationInMs": 4,
-          "startTimestamp": 1718112758825,
-          "endTimestamp": 1718112758829
+          "durationInMs": 3,
+          "startTimestamp": 1718114333475,
+          "endTimestamp": 1718114333478
         }
       ],
       "read": [
         {
           "gasUsedInWei": 0,
           "functionName": "changed",
-          "durationInMs": 3,
-          "startTimestamp": 1718112758829,
-          "endTimestamp": 1718112758832
+          "durationInMs": 4,
+          "startTimestamp": 1718114333478,
+          "endTimestamp": 1718114333482
         }
       ],
       "update": [
@@ -40,17 +40,71 @@
           "gasUsedInWei": 35006,
           "functionName": "setAttribute",
           "durationInMs": 3,
-          "startTimestamp": 1718112758832,
-          "endTimestamp": 1718112758835
+          "startTimestamp": 1718114333482,
+          "endTimestamp": 1718114333485
         }
       ],
       "delete": [
         {
           "gasUsedInWei": 29599,
           "functionName": "changeOwner",
+          "durationInMs": 4,
+          "startTimestamp": 1718114333485,
+          "endTimestamp": 1718114333489
+        }
+      ]
+    },
+    {
+      "deployment": [
+        {
+          "gasUsedInWei": 1091413,
+          "functionName": "deployContract",
+          "durationInMs": 4,
+          "startTimestamp": 1718114338379,
+          "endTimestamp": 1718114338383
+        }
+      ],
+      "create": [
+        {
+          "gasUsedInWei": 96913,
+          "functionName": "changeOwnerSigned",
+          "durationInMs": 7,
+          "startTimestamp": 1718114338383,
+          "endTimestamp": 1718114338390
+        },
+        {
+          "gasUsedInWei": 35006,
+          "functionName": "setAttribute",
           "durationInMs": 3,
-          "startTimestamp": 1718112758835,
-          "endTimestamp": 1718112758838
+          "startTimestamp": 1718114338390,
+          "endTimestamp": 1718114338393
+        }
+      ],
+      "read": [
+        {
+          "gasUsedInWei": 0,
+          "functionName": "changed",
+          "durationInMs": 4,
+          "startTimestamp": 1718114338393,
+          "endTimestamp": 1718114338397
+        }
+      ],
+      "update": [
+        {
+          "gasUsedInWei": 35006,
+          "functionName": "setAttribute",
+          "durationInMs": 3,
+          "startTimestamp": 1718114338397,
+          "endTimestamp": 1718114338400
+        }
+      ],
+      "delete": [
+        {
+          "gasUsedInWei": 29599,
+          "functionName": "changeOwner",
+          "durationInMs": 4,
+          "startTimestamp": 1718114338400,
+          "endTimestamp": 1718114338404
         }
       ]
     }

@@ -29,7 +29,7 @@ export const evaluateContract = async (contractConfig: ContractConfig) => {
   const publicClient = await hre.viem.getPublicClient();
   const [walletClient] = await hre.viem.getWalletClients();
 
-  const logPrefix = `Evaluating ${contractConfig.contractName} on ${hre.network.name}`;
+  const logPrefix = `${contractConfig.contractName} - ${hre.network.name}`;
   const logInfo = (message: string) => {
     console.log(`${logPrefix} - ${message}`);
   };

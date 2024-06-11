@@ -1,78 +1,22 @@
 {
   "31337": [
     {
-      "deployment": {
-        "gasUsedInWei": 1591804,
-        "performance": [
-          {
-            "functionName": "deployContract",
-            "durationInMs": 8,
-            "startTimestamp": 1718110321835,
-            "endTimestamp": 1718110321843
-          }
-        ]
-      },
-      "create": {
-        "gasUsedInWei": 187760,
-        "performance": [
-          {
-            "functionName": "mintNFT",
-            "durationInMs": 6,
-            "startTimestamp": 1718110321843,
-            "endTimestamp": 1718110321849
-          }
-        ]
-      },
-      "read": {
-        "performance": [
-          {
-            "functionName": "tokenURI",
-            "durationInMs": 2,
-            "startTimestamp": 1718110321849,
-            "endTimestamp": 1718110321851
-          }
-        ]
-      },
-      "update": {
-        "gasUsedInWei": 44049,
-        "performance": [
-          {
-            "functionName": "setTokenURI",
-            "durationInMs": 5,
-            "startTimestamp": 1718110321851,
-            "endTimestamp": 1718110321856
-          }
-        ]
-      },
-      "delete": {
-        "gasUsedInWei": 43689,
-        "performance": [
-          {
-            "functionName": "burn",
-            "durationInMs": 4,
-            "startTimestamp": 1718110321856,
-            "endTimestamp": 1718110321860
-          }
-        ]
-      }
-    },
-    {
       "deployment": [
         {
           "gasUsedInWei": 1591804,
           "functionName": "deployContract",
-          "durationInMs": 8,
-          "startTimestamp": 1718110952717,
-          "endTimestamp": 1718110952725
+          "durationInMs": 14,
+          "startTimestamp": 1718114327189,
+          "endTimestamp": 1718114327203
         }
       ],
       "create": [
         {
           "gasUsedInWei": 187760,
           "functionName": "mintNFT",
-          "durationInMs": 6,
-          "startTimestamp": 1718110952725,
-          "endTimestamp": 1718110952731
+          "durationInMs": 8,
+          "startTimestamp": 1718114327203,
+          "endTimestamp": 1718114327211
         }
       ],
       "read": [
@@ -80,55 +24,8 @@
           "gasUsedInWei": 0,
           "functionName": "tokenURI",
           "durationInMs": 3,
-          "startTimestamp": 1718110952731,
-          "endTimestamp": 1718110952734
-        }
-      ],
-      "update": [
-        {
-          "gasUsedInWei": 44049,
-          "functionName": "setTokenURI",
-          "durationInMs": 4,
-          "startTimestamp": 1718110952734,
-          "endTimestamp": 1718110952738
-        }
-      ],
-      "delete": [
-        {
-          "gasUsedInWei": 43689,
-          "functionName": "burn",
-          "durationInMs": 4,
-          "startTimestamp": 1718110952738,
-          "endTimestamp": 1718110952742
-        }
-      ]
-    },
-    {
-      "deployment": [
-        {
-          "gasUsedInWei": 1591804,
-          "functionName": "deployContract",
-          "durationInMs": 8,
-          "startTimestamp": 1718111130528,
-          "endTimestamp": 1718111130536
-        }
-      ],
-      "create": [
-        {
-          "gasUsedInWei": 187760,
-          "functionName": "mintNFT",
-          "durationInMs": 7,
-          "startTimestamp": 1718111130536,
-          "endTimestamp": 1718111130543
-        }
-      ],
-      "read": [
-        {
-          "gasUsedInWei": 0,
-          "functionName": "tokenURI",
-          "durationInMs": 2,
-          "startTimestamp": 1718111130543,
-          "endTimestamp": 1718111130545
+          "startTimestamp": 1718114327211,
+          "endTimestamp": 1718114327214
         }
       ],
       "update": [
@@ -136,17 +33,17 @@
           "gasUsedInWei": 44049,
           "functionName": "setTokenURI",
           "durationInMs": 5,
-          "startTimestamp": 1718111130545,
-          "endTimestamp": 1718111130550
+          "startTimestamp": 1718114327214,
+          "endTimestamp": 1718114327219
         }
       ],
       "delete": [
         {
           "gasUsedInWei": 43689,
           "functionName": "burn",
-          "durationInMs": 3,
-          "startTimestamp": 1718111130550,
-          "endTimestamp": 1718111130553
+          "durationInMs": 5,
+          "startTimestamp": 1718114327219,
+          "endTimestamp": 1718114327224
         }
       ]
     },
@@ -156,35 +53,35 @@
           "gasUsedInWei": 1591804,
           "functionName": "deployContract",
           "durationInMs": 7,
-          "startTimestamp": 1718112758754,
-          "endTimestamp": 1718112758761
+          "startTimestamp": 1718114333420,
+          "endTimestamp": 1718114333427
         }
       ],
       "create": [
         {
           "gasUsedInWei": 187760,
           "functionName": "mintNFT",
-          "durationInMs": 6,
-          "startTimestamp": 1718112758761,
-          "endTimestamp": 1718112758767
+          "durationInMs": 7,
+          "startTimestamp": 1718114333427,
+          "endTimestamp": 1718114333434
         }
       ],
       "read": [
         {
           "gasUsedInWei": 0,
           "functionName": "tokenURI",
-          "durationInMs": 3,
-          "startTimestamp": 1718112758767,
-          "endTimestamp": 1718112758770
+          "durationInMs": 2,
+          "startTimestamp": 1718114333434,
+          "endTimestamp": 1718114333436
         }
       ],
       "update": [
         {
           "gasUsedInWei": 44049,
           "functionName": "setTokenURI",
-          "durationInMs": 4,
-          "startTimestamp": 1718112758770,
-          "endTimestamp": 1718112758774
+          "durationInMs": 5,
+          "startTimestamp": 1718114333436,
+          "endTimestamp": 1718114333441
         }
       ],
       "delete": [
@@ -192,8 +89,104 @@
           "gasUsedInWei": 43689,
           "functionName": "burn",
           "durationInMs": 4,
-          "startTimestamp": 1718112758774,
-          "endTimestamp": 1718112758778
+          "startTimestamp": 1718114333441,
+          "endTimestamp": 1718114333445
+        }
+      ]
+    },
+    {
+      "deployment": [
+        {
+          "gasUsedInWei": 1591804,
+          "functionName": "deployContract",
+          "durationInMs": 7,
+          "startTimestamp": 1718114338335,
+          "endTimestamp": 1718114338342
+        }
+      ],
+      "create": [
+        {
+          "gasUsedInWei": 187760,
+          "functionName": "mintNFT",
+          "durationInMs": 6,
+          "startTimestamp": 1718114338342,
+          "endTimestamp": 1718114338348
+        }
+      ],
+      "read": [
+        {
+          "gasUsedInWei": 0,
+          "functionName": "tokenURI",
+          "durationInMs": 3,
+          "startTimestamp": 1718114338348,
+          "endTimestamp": 1718114338351
+        }
+      ],
+      "update": [
+        {
+          "gasUsedInWei": 44049,
+          "functionName": "setTokenURI",
+          "durationInMs": 4,
+          "startTimestamp": 1718114338351,
+          "endTimestamp": 1718114338355
+        }
+      ],
+      "delete": [
+        {
+          "gasUsedInWei": 43689,
+          "functionName": "burn",
+          "durationInMs": 5,
+          "startTimestamp": 1718114338355,
+          "endTimestamp": 1718114338360
+        }
+      ]
+    }
+  ],
+  "11155111": [
+    {
+      "deployment": [
+        {
+          "gasUsedInWei": 1591804,
+          "functionName": "deployContract",
+          "durationInMs": 26386,
+          "startTimestamp": 1718113921773,
+          "endTimestamp": 1718113948159
+        }
+      ],
+      "create": [
+        {
+          "gasUsedInWei": 187760,
+          "functionName": "mintNFT",
+          "durationInMs": 21825,
+          "startTimestamp": 1718113948160,
+          "endTimestamp": 1718113969985
+        }
+      ],
+      "read": [
+        {
+          "gasUsedInWei": 0,
+          "functionName": "tokenURI",
+          "durationInMs": 125,
+          "startTimestamp": 1718113969986,
+          "endTimestamp": 1718113970111
+        }
+      ],
+      "update": [
+        {
+          "gasUsedInWei": 43492,
+          "functionName": "setTokenURI",
+          "durationInMs": 13522,
+          "startTimestamp": 1718113970112,
+          "endTimestamp": 1718113983634
+        }
+      ],
+      "delete": [
+        {
+          "gasUsedInWei": 43689,
+          "functionName": "burn",
+          "durationInMs": 13470,
+          "startTimestamp": 1718113983634,
+          "endTimestamp": 1718113997104
         }
       ]
     }
