@@ -1,0 +1,59 @@
+{
+  "31337": [
+    {
+      "deployment": [
+        {
+          "gasUsedInWei": 1091413,
+          "functionName": "deployContract",
+          "durationInMs": 4,
+          "startTimestamp": 1718112758814,
+          "endTimestamp": 1718112758818
+        }
+      ],
+      "create": [
+        {
+          "gasUsedInWei": 96925,
+          "functionName": "changeOwnerSigned",
+          "durationInMs": 7,
+          "startTimestamp": 1718112758818,
+          "endTimestamp": 1718112758825
+        },
+        {
+          "gasUsedInWei": 35006,
+          "functionName": "setAttribute",
+          "durationInMs": 4,
+          "startTimestamp": 1718112758825,
+          "endTimestamp": 1718112758829
+        }
+      ],
+      "read": [
+        {
+          "gasUsedInWei": 0,
+          "functionName": "changed",
+          "durationInMs": 3,
+          "startTimestamp": 1718112758829,
+          "endTimestamp": 1718112758832
+        }
+      ],
+      "update": [
+        {
+          "gasUsedInWei": 35006,
+          "functionName": "setAttribute",
+          "durationInMs": 3,
+          "startTimestamp": 1718112758832,
+          "endTimestamp": 1718112758835
+        }
+      ],
+      "delete": [
+        {
+          "gasUsedInWei": 29599,
+          "functionName": "changeOwner",
+          "durationInMs": 3,
+          "startTimestamp": 1718112758835,
+          "endTimestamp": 1718112758838
+        }
+      ]
+    }
+  ],
+  "contractName": "DIDRegistry"
+}

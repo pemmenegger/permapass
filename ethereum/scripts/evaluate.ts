@@ -1,6 +1,17 @@
 import hre from "hardhat";
 import { evaluateContract } from "../helpers/evaluateContract";
-import { Address, Hex, PublicClient, encodePacked, keccak256 } from "viem";
+import {
+  Address,
+  Hex,
+  PublicClient,
+  encodePacked,
+  fromHex,
+  keccak256,
+  pad,
+  stringToBytes,
+  toHex,
+  zeroAddress,
+} from "viem";
 import { generatePrivateKey, privateKeyToAccount, sign } from "viem/accounts";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
@@ -31,14 +42,37 @@ const getHaLoNFCChipProperties = async (hre: HardhatRuntimeEnvironment) => {
   };
 };
 
+const computeSetProductPassportServiceProperties = (testPassportDataURI: string) => {
+  const key = "did/svc/ProductPassport";
+  const value = testPassportDataURI;
+
+  const attrNameBytes = stringToBytes(key);
+  const attrNameBytesPadded = pad(attrNameBytes, { size: 32, dir: "right" });
+  const attrName = toHex(attrNameBytesPadded);
+
+  const attrValueBytes = stringToBytes(value);
+  const attrValue = toHex(attrValueBytes);
+
+  return {
+    attrName,
+    attrValue,
+  };
+};
+
+const generateNewAccount = async () => {
+  const privateKey = generatePrivateKey();
+  const account = privateKeyToAccount(privateKey as Address);
+  return { privateKey, identity: account.address };
+};
+
 /*
  * Run this script using the following command:
  * npx hardhat run scripts/evaluate.ts --network <network>
  */
 async function main() {
   const { testChipAddress, testSignatureFromChip, testBlockNumberUsedInSig } = await getHaLoNFCChipProperties(hre);
-  const testTokenURI = "ar://rgiLrvb-FXtlcbrA5LP-b-ytIkUXXNnk19X-oEhprAs";
-  const testUpdatedTokenURI = "ar://rgiLrvb-FXtlcbrA5LP-b-ytIkUXXNnk19X-ABCDEFG";
+  const testPassportDataURI = "ar://rgiLrvb-FXtlcbrA5LP-b-ytIkUXXNnk19X-oEhprAs";
+  const testUpdatedPassportDataURI = "ar://rgiLrvb-FXtlcbrA5LP-b-ytIkUXXNnk19X-ABCDEFG";
 
   console.log("Compiling contracts...");
   await hre.run("compile");
@@ -50,14 +84,16 @@ async function main() {
     abi: NFTRegistryArtifact.abi,
     bytecode: NFTRegistryArtifact.bytecode,
     functions: {
-      create: async (contractAddress: Address, walletAddress: Address) => {
-        const contract = await hre.viem.getContractAt("NFTRegistry", contractAddress);
-        const txHash = await contract.write.mintNFT([walletAddress, testTokenURI]);
-        return {
-          txHash,
-          functionName: "mintNFT",
-        };
-      },
+      create: [
+        async (contractAddress: Address, walletAddress: Address) => {
+          const contract = await hre.viem.getContractAt("NFTRegistry", contractAddress);
+          const txHash = await contract.write.mintNFT([walletAddress, testPassportDataURI]);
+          return {
+            txHash,
+            functionName: "mintNFT",
+          };
+        },
+      ],
       read: async (contractAddress: Address) => {
         const contract = await hre.viem.getContractAt("NFTRegistry", contractAddress);
         const tokenURI = await contract.read.tokenURI([BigInt(1)]);
@@ -68,7 +104,7 @@ async function main() {
       },
       update: async (contractAddress: Address) => {
         const contract = await hre.viem.getContractAt("NFTRegistry", contractAddress);
-        const txHash = await contract.write.setTokenURI([BigInt(1), testUpdatedTokenURI]);
+        const txHash = await contract.write.setTokenURI([BigInt(1), testUpdatedPassportDataURI]);
         return {
           txHash,
           functionName: "setTokenURI",
@@ -92,20 +128,22 @@ async function main() {
     abi: PBTRegistryArtifact.abi,
     bytecode: PBTRegistryArtifact.bytecode,
     functions: {
-      create: async (contractAddress: Address) => {
-        const contract = await hre.viem.getContractAt("PBTRegistry", contractAddress);
-        const txHash = await contract.write.mintPBT([
-          testChipAddress,
-          testSignatureFromChip,
-          testBlockNumberUsedInSig,
-          testTokenURI,
-        ]);
+      create: [
+        async (contractAddress: Address) => {
+          const contract = await hre.viem.getContractAt("PBTRegistry", contractAddress);
+          const txHash = await contract.write.mintPBT([
+            testChipAddress,
+            testSignatureFromChip,
+            testBlockNumberUsedInSig,
+            testPassportDataURI,
+          ]);
 
-        return {
-          txHash,
-          functionName: "mintPBT",
-        };
-      },
+          return {
+            txHash,
+            functionName: "mintPBT",
+          };
+        },
+      ],
       read: async (contractAddress: Address) => {
         const contract = await hre.viem.getContractAt("PBTRegistry", contractAddress);
         const tokenURI = await contract.read.tokenURI([BigInt(1)]);
@@ -116,7 +154,7 @@ async function main() {
       },
       update: async (contractAddress: Address) => {
         const contract = await hre.viem.getContractAt("PBTRegistry", contractAddress);
-        const txHash = await contract.write.setTokenURI([BigInt(1), testUpdatedTokenURI]);
+        const txHash = await contract.write.setTokenURI([BigInt(1), testUpdatedPassportDataURI]);
         return {
           txHash,
           functionName: "setTokenURI",
@@ -133,55 +171,116 @@ async function main() {
     },
   });
 
-  // const DIDRegistryArtifact = await hre.artifacts.readArtifact("DIDRegistry");
-  // await evaluateContract({
-  //   contractName: "DIDRegistry",
-  //   abi: DIDRegistryArtifact.abi,
-  //   bytecode: DIDRegistryArtifact.bytecode,
-  //   functions: {
-  //     create: async (contractAddress: Address, walletAddress: Address) => {
-  //       const contract = await hre.viem.getContractAt("DIDRegistry", contractAddress);
+  console.log("--- DIDRegistry Evaluation ---");
+  const DIDRegistryArtifact = await hre.artifacts.readArtifact("DIDRegistry");
 
-  //       // Generate a new private key and account for the construction product
-  //       const privateKey = generatePrivateKey();
-  //       const account = privateKeyToAccount(privateKey as Address);
+  // Preparation: Generate a new private key and account for the construction product
+  const { privateKey, identity } = await generateNewAccount();
 
-  //       const identity = account.address;
-  //       const identityOwner = account.address;
-  //       const newOwner = walletAddress;
+  // Preparation. Compute the attribute name and value for the setAttribute function
+  const { attrName: attrNameCreate, attrValue: attrValueCreate } =
+    computeSetProductPassportServiceProperties(testPassportDataURI);
+  const { attrName: attrNameUpdate, attrValue: attrValueUpdate } =
+    computeSetProductPassportServiceProperties(testUpdatedPassportDataURI);
 
-  //       // computing signature with the construction product's private key
-  //       // this allows the user to claim ownership of the construction product's identity
-  //       const nonce = await contract.read.nonce([identityOwner]);
-  //       const msgHash = keccak256(
-  //         encodePacked(
-  //           ["bytes1", "bytes1", "address", "uint", "address", "string", "address"],
-  //           ["0x19", "0x00", contractAddress, nonce, identity, "changeOwner", newOwner]
-  //         )
-  //       );
-  //       const signature = await sign({ hash: msgHash, privateKey });
+  await evaluateContract({
+    contractName: "DIDRegistry",
+    abi: DIDRegistryArtifact.abi,
+    bytecode: DIDRegistryArtifact.bytecode,
+    functions: {
+      create: [
+        async (contractAddress: Address, walletAddress: Address) => {
+          const contract = await hre.viem.getContractAt("DIDRegistry", contractAddress);
 
-  //       // claim ownership of the construction product's identity
-  //       const txHash = await contract.write.changeOwnerSigned([
-  //         identity,
-  //         Number(signature.v),
-  //         signature.r,
-  //         signature.s,
-  //         newOwner,
-  //       ]);
-  //       return txHash;
-  //     },
-  //     read: async () => {
-  //       return;
-  //     },
-  //     update: async () => {
-  //       return "0x";
-  //     },
-  //     delete: async () => {
-  //       return "0x";
-  //     },
-  //   },
-  // });
+          const identityOwner = identity;
+          const newOwner = walletAddress;
+
+          // computing signature with the construction product's private key
+          // this allows the user to claim ownership of the construction product's identity
+          const nonce = await contract.read.nonce([identityOwner]);
+          const msgHash = keccak256(
+            encodePacked(
+              ["bytes1", "bytes1", "address", "uint", "address", "string", "address"],
+              ["0x19", "0x00", contractAddress, nonce, identity, "changeOwner", newOwner]
+            )
+          );
+          const signature = await sign({ hash: msgHash, privateKey });
+
+          // claim ownership of the construction product's identity
+          const txHash = await contract.write.changeOwnerSigned([
+            identity,
+            Number(signature.v),
+            signature.r,
+            signature.s,
+            newOwner,
+          ]);
+          return { txHash, functionName: "changeOwnerSigned" };
+        },
+        async (contractAddress: Address) => {
+          const contract = await hre.viem.getContractAt("DIDRegistry", contractAddress);
+          const txHash = await contract.write.setAttribute([identity, attrNameCreate, attrValueCreate, BigInt(86400)]);
+          return { txHash, functionName: "setAttribute" };
+        },
+      ],
+      read: async (contractAddress: Address, publicClient: PublicClient) => {
+        const contract = await hre.viem.getContractAt("DIDRegistry", contractAddress);
+        let previousChange: bigint = await contract.read.changed([identity]);
+
+        while (previousChange) {
+          const [attributeChangedEvents, ownerChangedEvents] = await Promise.all([
+            publicClient.getContractEvents({
+              address: contractAddress,
+              abi: DIDRegistryArtifact.abi,
+              eventName: "DIDAttributeChanged",
+              args: { identity },
+              fromBlock: previousChange,
+              toBlock: previousChange,
+            }),
+            publicClient.getContractEvents({
+              address: contractAddress,
+              abi: DIDRegistryArtifact.abi,
+              eventName: "DIDOwnerChanged",
+              args: { identity },
+              fromBlock: previousChange,
+              toBlock: previousChange,
+            }),
+          ]);
+
+          if (attributeChangedEvents.length > 0) {
+            for (const event of attributeChangedEvents) {
+              const { name, value } = event.args;
+              if (!name || !value) {
+                throw new Error(`Missing name or value in attributeChanged event: ${event.args}`);
+              }
+              const attributeName = fromHex(name, "string").replace(/\0/g, "");
+              if (attributeName === "did/svc/ProductPassport") {
+                console.log(`DIDRegistry read ${attributeName}: ${fromHex(value, "string")}`);
+              }
+            }
+            const lastEvent = attributeChangedEvents[attributeChangedEvents.length - 1];
+            previousChange = lastEvent ? BigInt(lastEvent.args.previousChange!) : 0n;
+          } else if (ownerChangedEvents.length > 0) {
+            const lastEvent = ownerChangedEvents[ownerChangedEvents.length - 1];
+            previousChange = lastEvent ? BigInt(lastEvent.args.previousChange!) : 0n;
+          } else {
+            previousChange = 0n;
+          }
+        }
+
+        return { functionName: "changed" };
+      },
+      update: async (contractAddress: Address) => {
+        const contract = await hre.viem.getContractAt("DIDRegistry", contractAddress);
+        const txHash = await contract.write.setAttribute([identity, attrNameUpdate, attrValueUpdate, BigInt(86400)]);
+        return { txHash, functionName: "setAttribute" };
+      },
+      delete: async (contractAddress: Address) => {
+        const contract = await hre.viem.getContractAt("DIDRegistry", contractAddress);
+        const txHash = await contract.write.changeOwner([identity, zeroAddress]);
+        return { txHash, functionName: "changeOwner" };
+      },
+    },
+  });
 }
 
 main()

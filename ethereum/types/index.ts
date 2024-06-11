@@ -5,24 +5,14 @@ export interface EvaluationPerformance {
   endTimestamp: number;
 }
 
+interface EvaluationEntry extends EvaluationPerformance {
+  gasUsedInWei: number;
+}
+
 export interface Evaluation {
-  deployment?: {
-    gasUsedInWei: number;
-    performance: EvaluationPerformance[];
-  };
-  create?: {
-    gasUsedInWei: number;
-    performance: EvaluationPerformance[];
-  };
-  read?: {
-    performance: EvaluationPerformance[];
-  };
-  update?: {
-    gasUsedInWei: number;
-    performance: EvaluationPerformance[];
-  };
-  delete?: {
-    gasUsedInWei: number;
-    performance: EvaluationPerformance[];
-  };
+  deployment?: EvaluationEntry[];
+  create?: EvaluationEntry[];
+  read?: EvaluationEntry[];
+  update?: EvaluationEntry[];
+  delete?: EvaluationEntry[];
 }

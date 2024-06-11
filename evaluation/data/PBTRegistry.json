@@ -55,6 +55,147 @@
           }
         ]
       }
+    },
+    {
+      "deployment": [
+        {
+          "gasUsedInWei": 1875695,
+          "functionName": "deployContract",
+          "durationInMs": 3,
+          "startTimestamp": 1718110952743,
+          "endTimestamp": 1718110952746
+        }
+      ],
+      "create": [
+        {
+          "gasUsedInWei": 239444,
+          "functionName": "mintPBT",
+          "durationInMs": 4,
+          "startTimestamp": 1718110952746,
+          "endTimestamp": 1718110952750
+        }
+      ],
+      "read": [
+        {
+          "gasUsedInWei": 0,
+          "functionName": "tokenURI",
+          "durationInMs": 1,
+          "startTimestamp": 1718110952750,
+          "endTimestamp": 1718110952751
+        }
+      ],
+      "update": [
+        {
+          "gasUsedInWei": 44077,
+          "functionName": "setTokenURI",
+          "durationInMs": 3,
+          "startTimestamp": 1718110952752,
+          "endTimestamp": 1718110952755
+        }
+      ],
+      "delete": [
+        {
+          "gasUsedInWei": 31040,
+          "functionName": "burn",
+          "durationInMs": 4,
+          "startTimestamp": 1718110952755,
+          "endTimestamp": 1718110952759
+        }
+      ]
+    },
+    {
+      "deployment": [
+        {
+          "gasUsedInWei": 1875695,
+          "functionName": "deployContract",
+          "durationInMs": 4,
+          "startTimestamp": 1718111130554,
+          "endTimestamp": 1718111130558
+        }
+      ],
+      "create": [
+        {
+          "gasUsedInWei": 239444,
+          "functionName": "mintPBT",
+          "durationInMs": 4,
+          "startTimestamp": 1718111130558,
+          "endTimestamp": 1718111130562
+        }
+      ],
+      "read": [
+        {
+          "gasUsedInWei": 0,
+          "functionName": "tokenURI",
+          "durationInMs": 1,
+          "startTimestamp": 1718111130562,
+          "endTimestamp": 1718111130563
+        }
+      ],
+      "update": [
+        {
+          "gasUsedInWei": 44077,
+          "functionName": "setTokenURI",
+          "durationInMs": 4,
+          "startTimestamp": 1718111130563,
+          "endTimestamp": 1718111130567
+        }
+      ],
+      "delete": [
+        {
+          "gasUsedInWei": 31040,
+          "functionName": "burn",
+          "durationInMs": 3,
+          "startTimestamp": 1718111130567,
+          "endTimestamp": 1718111130570
+        }
+      ]
+    },
+    {
+      "deployment": [
+        {
+          "gasUsedInWei": 1875695,
+          "functionName": "deployContract",
+          "durationInMs": 3,
+          "startTimestamp": 1718112758779,
+          "endTimestamp": 1718112758782
+        }
+      ],
+      "create": [
+        {
+          "gasUsedInWei": 239444,
+          "functionName": "mintPBT",
+          "durationInMs": 5,
+          "startTimestamp": 1718112758782,
+          "endTimestamp": 1718112758787
+        }
+      ],
+      "read": [
+        {
+          "gasUsedInWei": 0,
+          "functionName": "tokenURI",
+          "durationInMs": 1,
+          "startTimestamp": 1718112758787,
+          "endTimestamp": 1718112758788
+        }
+      ],
+      "update": [
+        {
+          "gasUsedInWei": 44077,
+          "functionName": "setTokenURI",
+          "durationInMs": 4,
+          "startTimestamp": 1718112758788,
+          "endTimestamp": 1718112758792
+        }
+      ],
+      "delete": [
+        {
+          "gasUsedInWei": 31040,
+          "functionName": "burn",
+          "durationInMs": 3,
+          "startTimestamp": 1718112758792,
+          "endTimestamp": 1718112758795
+        }
+      ]
     }
   ],
   "contractName": "PBTRegistry"

@@ -2,7 +2,7 @@ import hre from "hardhat";
 import { evaluateTransaction } from "../helpers/evaluateTransaction";
 import { exportEvaluation } from "../helpers/exportEvaluation";
 import { Evaluation } from "../types";
-import { Abi, Address, Hex } from "viem";
+import { Abi, Address, Hex, PublicClient } from "viem";
 
 interface WriteResponse {
   txHash: Hex;
@@ -18,8 +18,8 @@ export interface ContractConfig {
   abi: Abi;
   bytecode: Hex;
   functions: {
-    create: (contractAddress: Address, walletAddress: Address) => Promise<WriteResponse>;
-    read: (contractAddress: Address) => Promise<ReadResponse>;
+    create: Array<(contractAddress: Address, walletAddress: Address) => Promise<WriteResponse>>;
+    read: (contractAddress: Address, publicClient: PublicClient) => Promise<ReadResponse>;
     update: (contractAddress: Address) => Promise<WriteResponse>;
     delete: (contractAddress: Address) => Promise<WriteResponse>;
   };
@@ -60,10 +60,12 @@ export const evaluateContract = async (contractConfig: ContractConfig) => {
     }
 
     contractAddress = txReceipt.contractAddress;
-    evaluation.deployment = {
-      gasUsedInWei: Number(txReceipt.gasUsed),
-      performance: [performance],
-    };
+    evaluation.deployment = [
+      {
+        gasUsedInWei: Number(txReceipt.gasUsed),
+        ...performance,
+      },
+    ];
     logInfo(`Successful`);
   } catch (e) {
     logError(`Deployment error: ${e}`);
@@ -76,23 +78,25 @@ export const evaluateContract = async (contractConfig: ContractConfig) => {
 
   try {
     logInfo("Evaluate Creation...");
-    const { txReceipt, performance } = await evaluateTransaction(async () => {
-      const { txHash, functionName } = await contractConfig.functions.create(
-        contractAddress,
-        walletClient.account.address
-      );
-      const txReceipt = await publicClient.waitForTransactionReceipt({ hash: txHash });
-      return { txReceipt, functionName };
-    });
+    evaluation.create = [];
 
-    if (!txReceipt) {
-      throw new Error("Creation failed: Transaction receipt is missing.");
+    for (const createFunc of contractConfig.functions.create) {
+      const { txReceipt, performance } = await evaluateTransaction(async () => {
+        const { txHash, functionName } = await createFunc(contractAddress, walletClient.account.address);
+        const txReceipt = await publicClient.waitForTransactionReceipt({ hash: txHash });
+        return { txReceipt, functionName };
+      });
+
+      if (!txReceipt) {
+        throw new Error("Creation failed: Transaction receipt is missing.");
+      }
+
+      evaluation.create.push({
+        gasUsedInWei: Number(txReceipt.gasUsed),
+        ...performance,
+      });
     }
 
-    evaluation.create = {
-      gasUsedInWei: Number(txReceipt.gasUsed),
-      performance: [performance],
-    };
     logInfo(`Successful`);
   } catch (e) {
     logError(`Creation evaluation error: ${e}`);
@@ -102,13 +106,16 @@ export const evaluateContract = async (contractConfig: ContractConfig) => {
   try {
     logInfo("Evaluate Read...");
     const { performance } = await evaluateTransaction(async () => {
-      const { functionName } = await contractConfig.functions.read(contractAddress);
+      const { functionName } = await contractConfig.functions.read(contractAddress, publicClient);
       return { functionName };
     });
 
-    evaluation.read = {
-      performance: [performance],
-    };
+    evaluation.read = [
+      {
+        gasUsedInWei: 0,
+        ...performance,
+      },
+    ];
     logInfo(`Successful`);
   } catch (e) {
     logError(`Read evaluation error: ${e}`);
@@ -127,10 +134,12 @@ export const evaluateContract = async (contractConfig: ContractConfig) => {
       throw new Error("Update failed: Transaction receipt is missing.");
     }
 
-    evaluation.update = {
-      gasUsedInWei: Number(txReceipt.gasUsed),
-      performance: [performance],
-    };
+    evaluation.update = [
+      {
+        gasUsedInWei: Number(txReceipt.gasUsed),
+        ...performance,
+      },
+    ];
     logInfo(`Successful`);
   } catch (e) {
     logError(`Update evaluation error: ${e}`);
@@ -149,10 +158,12 @@ export const evaluateContract = async (contractConfig: ContractConfig) => {
       throw new Error("Deletion failed: Transaction receipt is missing.");
     }
 
-    evaluation.delete = {
-      gasUsedInWei: Number(txReceipt.gasUsed),
-      performance: [performance],
-    };
+    evaluation.delete = [
+      {
+        gasUsedInWei: Number(txReceipt.gasUsed),
+        ...performance,
+      },
+    ];
     logInfo(`Successful`);
   } catch (e) {
     logError(`Delete evaluation error: ${e}`);
