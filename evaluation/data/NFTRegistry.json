@@ -122,6 +122,88 @@
           "endTimestamp": 1717758696603
         }
       }
+    },
+    {
+      "deployment": {
+        "gasUsedInWei": 1591804,
+        "performance": {
+          "durationInMs": 7,
+          "startTimestamp": 1718107982947,
+          "endTimestamp": 1718107982954
+        }
+      },
+      "create": {
+        "gasUsedInWei": 187760,
+        "performance": {
+          "durationInMs": 6,
+          "startTimestamp": 1718107982954,
+          "endTimestamp": 1718107982960
+        }
+      },
+      "read": {
+        "performance": {
+          "durationInMs": 2,
+          "startTimestamp": 1718107982960,
+          "endTimestamp": 1718107982962
+        }
+      },
+      "update": {
+        "gasUsedInWei": 44049,
+        "performance": {
+          "durationInMs": 4,
+          "startTimestamp": 1718107982962,
+          "endTimestamp": 1718107982966
+        }
+      },
+      "delete": {
+        "gasUsedInWei": 43689,
+        "performance": {
+          "durationInMs": 5,
+          "startTimestamp": 1718107982966,
+          "endTimestamp": 1718107982971
+        }
+      }
+    },
+    {
+      "deployment": {
+        "gasUsedInWei": 1591804,
+        "performance": {
+          "durationInMs": 7,
+          "startTimestamp": 1718108029283,
+          "endTimestamp": 1718108029290
+        }
+      },
+      "create": {
+        "gasUsedInWei": 187760,
+        "performance": {
+          "durationInMs": 7,
+          "startTimestamp": 1718108029290,
+          "endTimestamp": 1718108029297
+        }
+      },
+      "read": {
+        "performance": {
+          "durationInMs": 2,
+          "startTimestamp": 1718108029297,
+          "endTimestamp": 1718108029299
+        }
+      },
+      "update": {
+        "gasUsedInWei": 44049,
+        "performance": {
+          "durationInMs": 5,
+          "startTimestamp": 1718108029299,
+          "endTimestamp": 1718108029304
+        }
+      },
+      "delete": {
+        "gasUsedInWei": 43689,
+        "performance": {
+          "durationInMs": 5,
+          "startTimestamp": 1718108029304,
+          "endTimestamp": 1718108029309
+        }
+      }
     }
   ],
   "11155111": [

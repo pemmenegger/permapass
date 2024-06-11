@@ -1,0 +1,87 @@
+{
+  "31337": [
+    {
+      "deployment": {
+        "gasUsedInWei": 1875695,
+        "performance": {
+          "durationInMs": 3,
+          "startTimestamp": 1718107982972,
+          "endTimestamp": 1718107982975
+        }
+      },
+      "create": {
+        "gasUsedInWei": 239444,
+        "performance": {
+          "durationInMs": 4,
+          "startTimestamp": 1718107982976,
+          "endTimestamp": 1718107982980
+        }
+      },
+      "read": {
+        "performance": {
+          "durationInMs": 1,
+          "startTimestamp": 1718107982980,
+          "endTimestamp": 1718107982981
+        }
+      },
+      "update": {
+        "gasUsedInWei": 44077,
+        "performance": {
+          "durationInMs": 3,
+          "startTimestamp": 1718107982982,
+          "endTimestamp": 1718107982985
+        }
+      },
+      "delete": {
+        "gasUsedInWei": 31040,
+        "performance": {
+          "durationInMs": 3,
+          "startTimestamp": 1718107982985,
+          "endTimestamp": 1718107982988
+        }
+      }
+    },
+    {
+      "deployment": {
+        "gasUsedInWei": 1875695,
+        "performance": {
+          "durationInMs": 3,
+          "startTimestamp": 1718108029310,
+          "endTimestamp": 1718108029313
+        }
+      },
+      "create": {
+        "gasUsedInWei": 239444,
+        "performance": {
+          "durationInMs": 4,
+          "startTimestamp": 1718108029314,
+          "endTimestamp": 1718108029318
+        }
+      },
+      "read": {
+        "performance": {
+          "durationInMs": 1,
+          "startTimestamp": 1718108029318,
+          "endTimestamp": 1718108029319
+        }
+      },
+      "update": {
+        "gasUsedInWei": 44077,
+        "performance": {
+          "durationInMs": 3,
+          "startTimestamp": 1718108029319,
+          "endTimestamp": 1718108029322
+        }
+      },
+      "delete": {
+        "gasUsedInWei": 31040,
+        "performance": {
+          "durationInMs": 4,
+          "startTimestamp": 1718108029322,
+          "endTimestamp": 1718108029326
+        }
+      }
+    }
+  ],
+  "contractName": "PBTRegistry"
+}

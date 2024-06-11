@@ -107,4 +107,16 @@ contract PBTRegistry is PBTSimple {
     function burn(uint256 tokenId) external onlyTokenOwner(tokenId) {
         _burn(tokenId);
     }
+
+    /**
+     * @dev For evaluation purposes we set the blockhash window to 6000000.
+     */
+    function getMaxBlockhashValidWindow()
+        public
+        pure
+        override
+        returns (uint256)
+    {
+        return 6000000;
+    }
 }
