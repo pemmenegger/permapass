@@ -4,15 +4,24 @@ import { exportEvaluation } from "../helpers/exportEvaluation";
 import { Evaluation } from "../types";
 import { Abi, Address, Hex } from "viem";
 
+interface WriteResponse {
+  txHash: Hex;
+  functionName: string;
+}
+
+interface ReadResponse {
+  functionName: string;
+}
+
 export interface ContractConfig {
   contractName: string;
   abi: Abi;
   bytecode: Hex;
   functions: {
-    create: (contractAddress: Address, walletAddress: Address) => Promise<Hex>;
-    read: (contractAddress: Address) => Promise<void>;
-    update: (contractAddress: Address) => Promise<Hex>;
-    delete: (contractAddress: Address) => Promise<Hex>;
+    create: (contractAddress: Address, walletAddress: Address) => Promise<WriteResponse>;
+    read: (contractAddress: Address) => Promise<ReadResponse>;
+    update: (contractAddress: Address) => Promise<WriteResponse>;
+    delete: (contractAddress: Address) => Promise<WriteResponse>;
   };
 }
 
@@ -43,7 +52,7 @@ export const evaluateContract = async (contractConfig: ContractConfig) => {
         hash: deploymentTxHash,
       });
 
-      return txReceipt;
+      return { txReceipt, functionName: "deployContract" };
     });
 
     if (!txReceipt || !txReceipt.contractAddress) {
@@ -53,7 +62,7 @@ export const evaluateContract = async (contractConfig: ContractConfig) => {
     contractAddress = txReceipt.contractAddress;
     evaluation.deployment = {
       gasUsedInWei: Number(txReceipt.gasUsed),
-      performance,
+      performance: [performance],
     };
     logInfo(`Successful`);
   } catch (e) {
@@ -68,9 +77,12 @@ export const evaluateContract = async (contractConfig: ContractConfig) => {
   try {
     logInfo("Evaluate Creation...");
     const { txReceipt, performance } = await evaluateTransaction(async () => {
-      const txHash = await contractConfig.functions.create(contractAddress, walletClient.account.address);
+      const { txHash, functionName } = await contractConfig.functions.create(
+        contractAddress,
+        walletClient.account.address
+      );
       const txReceipt = await publicClient.waitForTransactionReceipt({ hash: txHash });
-      return txReceipt;
+      return { txReceipt, functionName };
     });
 
     if (!txReceipt) {
@@ -79,7 +91,7 @@ export const evaluateContract = async (contractConfig: ContractConfig) => {
 
     evaluation.create = {
       gasUsedInWei: Number(txReceipt.gasUsed),
-      performance,
+      performance: [performance],
     };
     logInfo(`Successful`);
   } catch (e) {
@@ -90,11 +102,12 @@ export const evaluateContract = async (contractConfig: ContractConfig) => {
   try {
     logInfo("Evaluate Read...");
     const { performance } = await evaluateTransaction(async () => {
-      await contractConfig.functions.read(contractAddress);
+      const { functionName } = await contractConfig.functions.read(contractAddress);
+      return { functionName };
     });
 
     evaluation.read = {
-      performance,
+      performance: [performance],
     };
     logInfo(`Successful`);
   } catch (e) {
@@ -105,9 +118,9 @@ export const evaluateContract = async (contractConfig: ContractConfig) => {
   try {
     logInfo("Evaluate Update...");
     const { txReceipt, performance } = await evaluateTransaction(async () => {
-      const txHash = await contractConfig.functions.update(contractAddress);
+      const { txHash, functionName } = await contractConfig.functions.update(contractAddress);
       const txReceipt = await publicClient.waitForTransactionReceipt({ hash: txHash });
-      return txReceipt;
+      return { txReceipt, functionName };
     });
 
     if (!txReceipt) {
@@ -116,7 +129,7 @@ export const evaluateContract = async (contractConfig: ContractConfig) => {
 
     evaluation.update = {
       gasUsedInWei: Number(txReceipt.gasUsed),
-      performance,
+      performance: [performance],
     };
     logInfo(`Successful`);
   } catch (e) {
@@ -127,9 +140,9 @@ export const evaluateContract = async (contractConfig: ContractConfig) => {
   try {
     logInfo("Evaluate Delete...");
     const { txReceipt, performance } = await evaluateTransaction(async () => {
-      const txHash = await contractConfig.functions.delete(contractAddress);
+      const { txHash, functionName } = await contractConfig.functions.delete(contractAddress);
       const txReceipt = await publicClient.waitForTransactionReceipt({ hash: txHash });
-      return txReceipt;
+      return { txReceipt, functionName };
     });
 
     if (!txReceipt) {
@@ -138,7 +151,7 @@ export const evaluateContract = async (contractConfig: ContractConfig) => {
 
     evaluation.delete = {
       gasUsedInWei: Number(txReceipt.gasUsed),
-      performance,
+      performance: [performance],
     };
     logInfo(`Successful`);
   } catch (e) {

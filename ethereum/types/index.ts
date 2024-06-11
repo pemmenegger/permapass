@@ -1,4 +1,5 @@
 export interface EvaluationPerformance {
+  functionName: string;
   durationInMs: number;
   startTimestamp: number;
   endTimestamp: number;
@@ -7,21 +8,21 @@ export interface EvaluationPerformance {
 export interface Evaluation {
   deployment?: {
     gasUsedInWei: number;
-    performance: EvaluationPerformance;
+    performance: EvaluationPerformance[];
   };
   create?: {
     gasUsedInWei: number;
-    performance: EvaluationPerformance;
+    performance: EvaluationPerformance[];
   };
   read?: {
-    performance: EvaluationPerformance;
+    performance: EvaluationPerformance[];
   };
   update?: {
     gasUsedInWei: number;
-    performance: EvaluationPerformance;
+    performance: EvaluationPerformance[];
   };
   delete?: {
     gasUsedInWei: number;
-    performance: EvaluationPerformance;
+    performance: EvaluationPerformance[];
   };
 }

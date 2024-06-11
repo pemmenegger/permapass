@@ -1,6 +1,7 @@
 import hre from "hardhat";
 import { evaluateContract } from "../helpers/evaluateContract";
-import { Address, Hex } from "viem";
+import { Address, Hex, PublicClient, encodePacked, keccak256 } from "viem";
+import { generatePrivateKey, privateKeyToAccount, sign } from "viem/accounts";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
 const getHaLoNFCChipProperties = async (hre: HardhatRuntimeEnvironment) => {
@@ -52,22 +53,34 @@ async function main() {
       create: async (contractAddress: Address, walletAddress: Address) => {
         const contract = await hre.viem.getContractAt("NFTRegistry", contractAddress);
         const txHash = await contract.write.mintNFT([walletAddress, testTokenURI]);
-        return txHash;
+        return {
+          txHash,
+          functionName: "mintNFT",
+        };
       },
       read: async (contractAddress: Address) => {
         const contract = await hre.viem.getContractAt("NFTRegistry", contractAddress);
         const tokenURI = await contract.read.tokenURI([BigInt(1)]);
         console.log(`NFTRegistry read ${tokenURI}`);
+        return {
+          functionName: "tokenURI",
+        };
       },
       update: async (contractAddress: Address) => {
         const contract = await hre.viem.getContractAt("NFTRegistry", contractAddress);
         const txHash = await contract.write.setTokenURI([BigInt(1), testUpdatedTokenURI]);
-        return txHash;
+        return {
+          txHash,
+          functionName: "setTokenURI",
+        };
       },
       delete: async (contractAddress: Address) => {
         const contract = await hre.viem.getContractAt("NFTRegistry", contractAddress);
         const txHash = await contract.write.burn([BigInt(1)]);
-        return txHash;
+        return {
+          txHash,
+          functionName: "burn",
+        };
       },
     },
   });
@@ -87,22 +100,35 @@ async function main() {
           testBlockNumberUsedInSig,
           testTokenURI,
         ]);
-        return txHash;
+
+        return {
+          txHash,
+          functionName: "mintPBT",
+        };
       },
       read: async (contractAddress: Address) => {
         const contract = await hre.viem.getContractAt("PBTRegistry", contractAddress);
         const tokenURI = await contract.read.tokenURI([BigInt(1)]);
         console.log(`PBTRegistry read ${tokenURI}`);
+        return {
+          functionName: "tokenURI",
+        };
       },
       update: async (contractAddress: Address) => {
         const contract = await hre.viem.getContractAt("PBTRegistry", contractAddress);
         const txHash = await contract.write.setTokenURI([BigInt(1), testUpdatedTokenURI]);
-        return txHash;
+        return {
+          txHash,
+          functionName: "setTokenURI",
+        };
       },
       delete: async (contractAddress: Address) => {
         const contract = await hre.viem.getContractAt("PBTRegistry", contractAddress);
         const txHash = await contract.write.burn([BigInt(1)]);
-        return txHash;
+        return {
+          txHash,
+          functionName: "burn",
+        };
       },
     },
   });
@@ -113,13 +139,37 @@ async function main() {
   //   abi: DIDRegistryArtifact.abi,
   //   bytecode: DIDRegistryArtifact.bytecode,
   //   functions: {
-  //     create: async () => {
-  //       const contract = await hre.viem.getContractAt("NFTRegistry", contractAddress);
-  //     const txHash = await contract.write.mintNFT([
-  //       walletAddress,
-  //       "ar://rgiLrvb-FXtlcbrA5LP-b-ytIkUXXNnk19X-oEhprAs",
-  //     ]);
-  //     return txHash;
+  //     create: async (contractAddress: Address, walletAddress: Address) => {
+  //       const contract = await hre.viem.getContractAt("DIDRegistry", contractAddress);
+
+  //       // Generate a new private key and account for the construction product
+  //       const privateKey = generatePrivateKey();
+  //       const account = privateKeyToAccount(privateKey as Address);
+
+  //       const identity = account.address;
+  //       const identityOwner = account.address;
+  //       const newOwner = walletAddress;
+
+  //       // computing signature with the construction product's private key
+  //       // this allows the user to claim ownership of the construction product's identity
+  //       const nonce = await contract.read.nonce([identityOwner]);
+  //       const msgHash = keccak256(
+  //         encodePacked(
+  //           ["bytes1", "bytes1", "address", "uint", "address", "string", "address"],
+  //           ["0x19", "0x00", contractAddress, nonce, identity, "changeOwner", newOwner]
+  //         )
+  //       );
+  //       const signature = await sign({ hash: msgHash, privateKey });
+
+  //       // claim ownership of the construction product's identity
+  //       const txHash = await contract.write.changeOwnerSigned([
+  //         identity,
+  //         Number(signature.v),
+  //         signature.r,
+  //         signature.s,
+  //         newOwner,
+  //       ]);
+  //       return txHash;
   //     },
   //     read: async () => {
   //       return;
