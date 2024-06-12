@@ -1,18 +1,32 @@
+import { Abi, Hex } from "viem";
+
 export interface EvaluationPerformance {
-  functionName: string;
   durationInMs: number;
   startTimestamp: number;
   endTimestamp: number;
 }
 
-interface EvaluationEntry extends EvaluationPerformance {
+interface ContractEvaluationEntry extends EvaluationPerformance {
+  functionName: string;
   gasUsedInWei: number;
 }
 
-export interface Evaluation {
-  deployment?: EvaluationEntry[];
-  create?: EvaluationEntry[];
-  read?: EvaluationEntry[];
-  update?: EvaluationEntry[];
-  delete?: EvaluationEntry[];
+export interface ContractEvaluation {
+  deployment: ContractEvaluationEntry[];
+  create: ContractEvaluationEntry[];
+  read: ContractEvaluationEntry[];
+  update: ContractEvaluationEntry[];
+  delete: ContractEvaluationEntry[];
+}
+
+export interface DataUploadEvaluation {
+  create: EvaluationPerformance[];
+  update: EvaluationPerformance[];
+}
+
+export type ArweaveURI = `ar://${string}`;
+
+export interface Logger {
+  info: (message: string) => void;
+  error: (message: string) => void;
 }

@@ -1,36 +1,19 @@
 import hre from "hardhat";
-import { evaluateDIDRegistry } from "../helpers/evaluateDIDRegistry";
-import { evaluateNFTRegistry } from "../helpers/evaluateNFTRegistry";
-import { evaluatePBTRegistry } from "../helpers/evaluatePBTRegistry";
 
 /*
  * Run this script using the following command:
  * npx hardhat run scripts/evaluate.ts --network <network>
  */
 async function main() {
-  const testPassportDataURI = "ar://rgiLrvb-FXtlcbrA5LP-b-ytIkUXXNnk19X-oEhprAs";
-  const testUpdatedPassportDataURI = "ar://rgiLrvb-FXtlcbrA5LP-b-ytIkUXXNnk19X-ABCDEFG";
-
   console.log("Compiling contracts...");
   await hre.run("compile");
+  console.log("Contracts compiled");
 
-  await evaluatePBTRegistry({
-    hre,
-    testPassportDataURI,
-    testUpdatedPassportDataURI,
-  });
-
-  await evaluateNFTRegistry({
-    hre,
-    testPassportDataURI,
-    testUpdatedPassportDataURI,
-  });
-
-  await evaluateDIDRegistry({
-    hre,
-    testPassportDataURI,
-    testUpdatedPassportDataURI,
-  });
+  await hre.run("evaluateArweaveUpload");
+  await hre.run("evaluateDIDRegistry");
+  await hre.run("evaluateHaLoNFCMetadataRegistry");
+  await hre.run("evaluateNFTRegistry");
+  await hre.run("evaluatePBTRegistry");
 }
 
 main()

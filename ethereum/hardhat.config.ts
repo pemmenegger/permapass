@@ -3,6 +3,12 @@ import "@nomicfoundation/hardhat-toolbox-viem";
 
 import "dotenv/config";
 
+import "./tasks/evaluateArweaveUpload";
+import "./tasks/evaluateDIDRegistry";
+import "./tasks/evaluateHaLoNFCMetadataRegistry";
+import "./tasks/evaluateNFTRegistry";
+import "./tasks/evaluatePBTRegistry";
+
 const INFURA_API_KEY = process.env.INFURA_API_KEY;
 if (!INFURA_API_KEY) throw new Error("Please set INFURA_API_KEY in the .env file");
 
