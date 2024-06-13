@@ -1,168 +1,175 @@
-import json
 import os
-from datetime import datetime
 
-import matplotlib.dates as mdates
-import matplotlib.pyplot as plt
-import pytz
-
-TARGET_CHAIN_ID = "11155111"
-TARGET_CHAIN_NAME = {"31337": "Hardhat", "11155111": "Sepolia"}.get(
-    TARGET_CHAIN_ID, "Unknown"
-)
-TARGET_TIMEZONE = pytz.timezone("Europe/Zurich")
-
-
-def read_json_file(filename):
-    with open(filename, "r") as file:
-        return json.load(file)
-
-
-def convert_timestamp_to_time_string(timestamp):
-    dt = datetime.fromtimestamp(timestamp / 1000, tz=TARGET_TIMEZONE)
-    return dt.strftime("%H:%M")
-
-
-def plot_data(data, action, folder_path, plot_type):
-    action_data = data.get(TARGET_CHAIN_ID, [])
-
-    if not action_data:
-        print(f"No data available for chain '{TARGET_CHAIN_NAME}'")
-        return
-
-    timestamps = [
-        d[action]["performance"]["startTimestamp"] for d in action_data if action in d
-    ]
-    if plot_type == "duration":
-        values = [
-            d[action]["performance"]["durationInMs"] / 1000
-            for d in action_data
-            if action in d
-        ]
-        ylabel = "Duration (s)"
-    elif plot_type == "gas_used":
-        values = [
-            d[action]["gasUsedInWei"]
-            for d in action_data
-            if action in d and "gasUsedInWei" in d[action]
-        ]
-        ylabel = "Gas Used (Wei)"
-
-    if not timestamps or not values:
-        print(f"No data available for action '{action}' with plot type '{plot_type}'")
-        return
-
-    time_datetimes = [
-        datetime.fromtimestamp(ts / 1000, tz=TARGET_TIMEZONE) for ts in timestamps
-    ]
-
-    plt.figure(figsize=(10, 6))
-    plt.plot(
-        time_datetimes,
-        values,
-        marker="o",
-        label=f"{action.capitalize()} {plot_type.capitalize()}",
-    )
-
-    plt.gca().xaxis.set_major_formatter(
-        mdates.DateFormatter("%H:%M", tz=TARGET_TIMEZONE)
-    )
-
-    plt.xlabel("Execution Time (HH:MM) in timezone CEST")
-    plt.ylabel(ylabel)
-    title = " ".join([word.capitalize() for word in plot_type.split("_")])
-    plt.title(f"{action.capitalize()} {title} on {TARGET_CHAIN_NAME}")
-    plt.xticks(rotation=45)
-    plt.grid(True)
-    plt.legend()
-
-    plt.savefig(os.path.join(folder_path, f"{action}_{plot_type}.png"))
-    plt.close()
-
-
-def plot_summary(data, folder_path, plot_type):
-    action_data = data.get(TARGET_CHAIN_ID, [])
-
-    if not action_data:
-        print(f"No data available for chain '{TARGET_CHAIN_NAME}'")
-        return
-
-    actions = ["deployment", "create", "read", "update", "delete"]
-    plt.figure(figsize=(14, 8))
-
-    for action in actions:
-        timestamps = [
-            d[action]["performance"]["startTimestamp"]
-            for d in action_data
-            if action in d
-        ]
-        if plot_type == "duration":
-            values = [
-                d[action]["performance"]["durationInMs"] / 1000
-                for d in action_data
-                if action in d
-            ]
-            ylabel = "Duration (s)"
-        elif plot_type == "gas_used":
-            values = [
-                d[action]["gasUsedInWei"]
-                for d in action_data
-                if action in d and "gasUsedInWei" in d[action]
-            ]
-            ylabel = "Gas Used (Wei)"
-
-        if not timestamps or not values:
-            print(
-                f"No data available for action '{action}' with plot type '{plot_type}'"
-            )
-            continue
-
-        time_datetimes = [
-            datetime.fromtimestamp(ts / 1000, tz=TARGET_TIMEZONE) for ts in timestamps
-        ]
-
-        plt.plot(
-            time_datetimes,
-            values,
-            marker="o",
-            label=f"{action.capitalize()}",
-        )
-
-    plt.gca().xaxis.set_major_formatter(
-        mdates.DateFormatter("%H:%M", tz=TARGET_TIMEZONE)
-    )
-
-    plt.xlabel("Execution Time (HH:MM) in timezone CEST")
-    plt.ylabel(ylabel)
-    title = " ".join([word.capitalize() for word in plot_type.split("_")])
-    plt.title(f"Summary of {title} on {TARGET_CHAIN_NAME}")
-    plt.xticks(rotation=45)
-    plt.grid(True)
-    plt.legend()
-
-    plt.savefig(os.path.join(folder_path, f"summary_{plot_type}.png"))
-    plt.close()
-
-
-def plot_contract_data(contract_name):
-    folder_path = os.path.join("plots", contract_name)
-    os.makedirs(folder_path, exist_ok=True)
-
-    filename = os.path.join("data", f"{contract_name}.json")
-    data = read_json_file(filename)
-
-    actions = ["deployment", "create", "read", "update", "delete"]
-    for action in actions:
-        plot_data(data, action, folder_path, "duration")
-        plot_data(data, action, folder_path, "gas_used")
-
-    plot_summary(data, folder_path, "duration")
-    plot_summary(data, folder_path, "gas_used")
+from utils import load_json, plot_durations, process_registry_data
 
 
 def main():
-    contract_name = "NFTRegistry"
-    plot_contract_data(contract_name)
+    # Plot Arweave Upload Durations
+    arweave_data = load_json("data/ArweaveUpload.json")
+    plot_durations(
+        data_list=[arweave_data["create"], arweave_data["update"]],
+        labels=["passport-create.json", "passport-update.json"],
+        title="Arweave Upload Durations via Irys Node 2",
+        output_path=os.path.join("plots"),
+        output_filename="arweave_upload.png",
+        x_axis="ms",
+    )
+
+    did_durations = {
+        "deployment": [],
+        "create": [],
+        "read": [],
+        "update": [],
+        "delete": [],
+    }
+    labels_template = {
+        "deployment": "Deployment",
+        "create": "Create",
+        "read": "Read",
+        "update": "Update",
+        "delete": "Delete",
+    }
+
+    # Plot DID Registry Durations
+    did_registry_data = load_json("data/contracts/DIDRegistry.json")
+    process_registry_data(did_registry_data, did_durations)
+    plot_durations(
+        data_list=[did_durations[key] for key in did_durations.keys()],
+        labels=[labels_template[key] for key in did_durations.keys()],
+        title="DID Registry Durations",
+        output_path=os.path.join("plots"),
+        output_filename="did_registry_durations.png",
+        x_axis="s",
+    )
+
+    nft_durations = {
+        "deployment": [],
+        "create": [],
+        "read": [],
+        "update": [],
+        "delete": [],
+    }
+    labels_template = {
+        "deployment": "Deployment",
+        "create": "Create",
+        "read": "Read",
+        "update": "Update",
+        "delete": "Delete",
+    }
+
+    # Plot NFT Registry Durations
+    nft_registry_data = load_json("data/contracts/NFTRegistry.json")
+    process_registry_data(nft_registry_data, nft_durations)
+    plot_durations(
+        data_list=[nft_durations[key] for key in nft_durations.keys()],
+        labels=[labels_template[key] for key in nft_durations.keys()],
+        title="NFT Registry Durations",
+        output_path=os.path.join("plots"),
+        output_filename="nft_registry_durations.png",
+        x_axis="s",
+    )
+
+    pbt_durations = {
+        "deployment": [],
+        "create": [],
+        "read": [],
+        "update": [],
+        "delete": [],
+    }
+    labels_template = {
+        "deployment": "Deployment",
+        "create": "Create",
+        "read": "Read",
+        "update": "Update",
+        "delete": "Delete",
+    }
+
+    # Plot PBT Registry Durations
+    pbt_registry_data = load_json("data/contracts/PBTRegistry.json")
+    process_registry_data(pbt_registry_data, pbt_durations)
+    plot_durations(
+        data_list=[pbt_durations[key] for key in pbt_durations.keys()],
+        labels=[labels_template[key] for key in pbt_durations.keys()],
+        title="PBT Registry Durations",
+        output_path=os.path.join("plots"),
+        output_filename="pbt_registry_durations.png",
+        x_axis="s",
+    )
+
+    deployment_durations = {
+        "DID Registry": did_durations["deployment"],
+        "NFT Registry": nft_durations["deployment"],
+        "PBT Registry": pbt_durations["deployment"],
+    }
+
+    plot_durations(
+        data_list=[deployment_durations[key] for key in deployment_durations.keys()],
+        labels=deployment_durations.keys(),
+        title="Registry Deployments Durations",
+        output_path=os.path.join("plots"),
+        output_filename="registry_deployments_durations.png",
+        x_axis="s",
+    )
+
+    create_durations = {
+        "DID Registry": did_durations["create"],
+        "NFT Registry": nft_durations["create"],
+        "PBT Registry": pbt_durations["create"],
+    }
+
+    plot_durations(
+        data_list=[create_durations[key] for key in create_durations.keys()],
+        labels=create_durations.keys(),
+        title="Registry Create Durations",
+        output_path=os.path.join("plots"),
+        output_filename="registry_create_durations.png",
+        x_axis="s",
+    )
+
+    read_durations = {
+        "DID Registry": did_durations["read"],
+        "NFT Registry": nft_durations["read"],
+        "PBT Registry": pbt_durations["read"],
+    }
+
+    plot_durations(
+        data_list=[read_durations[key] for key in read_durations.keys()],
+        labels=read_durations.keys(),
+        title="Registry Read Durations",
+        output_path=os.path.join("plots"),
+        output_filename="registry_read_durations.png",
+        x_axis="s",
+    )
+
+    update_durations = {
+        "DID Registry": did_durations["update"],
+        "NFT Registry": nft_durations["update"],
+        "PBT Registry": pbt_durations["update"],
+    }
+
+    plot_durations(
+        data_list=[update_durations[key] for key in update_durations.keys()],
+        labels=update_durations.keys(),
+        title="Registry Update Durations",
+        output_path=os.path.join("plots"),
+        output_filename="registry_update_durations.png",
+        x_axis="s",
+    )
+
+    delete_durations = {
+        "DID Registry": did_durations["delete"],
+        "NFT Registry": nft_durations["delete"],
+        "PBT Registry": pbt_durations["delete"],
+    }
+
+    plot_durations(
+        data_list=[delete_durations[key] for key in delete_durations.keys()],
+        labels=delete_durations.keys(),
+        title="Registry Delete Durations",
+        output_path=os.path.join("plots"),
+        output_filename="registry_delete_durations.png",
+        x_axis="s",
+    )
 
 
 if __name__ == "__main__":
