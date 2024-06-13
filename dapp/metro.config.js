@@ -10,4 +10,7 @@ config.resolver.extraNodeModules = {
   ...require("expo-crypto-polyfills"),
 };
 
+// uncomment the following line to clear cached variables of .env.local
+// config.resetCache = true;
+
 module.exports = config;

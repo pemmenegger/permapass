@@ -4,7 +4,7 @@ import { router } from "expo-router";
 import Title from "../components/ui/Title";
 import Subtitle from "../components/ui/Subtitle";
 import ViewWithHeader from "../components/ViewWithHeader";
-import { Alert, Button, View } from "react-native";
+import { Alert, View } from "react-native";
 import { useHaLoNFCChip } from "../hooks/useHaloNFCChip";
 import { useHaLoNFCMetadataRegistry } from "../hooks/blockchain/useHaLoNFCMetadataRegistry";
 import { useCreation } from "../context/CreationContext";

@@ -34,17 +34,17 @@ async function main() {
   });
 
   await deployContract({
+    contractName: "HaLoNFCMetadataRegistry",
+    shouldExport: true,
+  });
+
+  await deployContract({
     contractName: "NFTRegistry",
     shouldExport: true,
   });
 
   await deployContract({
     contractName: "PBTRegistry",
-    shouldExport: true,
-  });
-
-  await deployContract({
-    contractName: "HaLoNFCMetadataRegistry",
     shouldExport: true,
   });
 }

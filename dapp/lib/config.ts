@@ -27,6 +27,9 @@ const getConfig = (): Config => {
 
   const eventWaitingTimeoutMs = 300000; // 5 minutes
 
+  console.log(`configured ENVIROMENT: ${EXPO_PUBLIC_ENVIRONMENT}`);
+  console.log(`configured WEB_API_URL: ${EXPO_PUBLIC_WEB_API_URL}`);
+
   return {
     EVENT_WAITING_TIMEOUT_MS: eventWaitingTimeoutMs,
     EVENT_WAITING_TIMEOUT_MIN: eventWaitingTimeoutMs / 1000 / 60,
