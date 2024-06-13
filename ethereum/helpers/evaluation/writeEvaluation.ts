@@ -13,7 +13,7 @@ export const writeEvaluation = async (hre: HardhatRuntimeEnvironment, contractNa
   const logger = getLogger(hre, contractName);
   try {
     logger.info(`Writing evaluation results...`);
-    const outputDir = path.resolve(__dirname, "../../../evaluation/data/");
+    const outputDir = path.resolve(__dirname, "../../../evaluation/data/contracts");
     const outputFilePath = path.join(outputDir, `${contractName}.json`);
 
     let existingContent: ExistingEvaluationContent = { contractName };

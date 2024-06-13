@@ -57,8 +57,6 @@ function writeEvaluation(fileName, evaluation) {
       existingContent = JSON.parse(fileContent);
     }
 
-    console.log(`Existing content: ${JSON.stringify(existingContent, null, 2)}`);
-
     const evaluationResults = {
       create: [...existingContent.create, ...evaluation.create],
       update: [...existingContent.update, ...evaluation.update],
@@ -69,8 +67,6 @@ function writeEvaluation(fileName, evaluation) {
     if (!fs.existsSync(evaluationDir)) {
       fs.mkdirSync(evaluationDir, { recursive: true });
     }
-
-    console.log(`New evaluation results: ${formattedEvaluation}`);
 
     fs.writeFileSync(evaluationDataPath, formattedEvaluation, "utf-8");
     console.log(`Writing successful`);
@@ -147,22 +143,27 @@ async function main() {
     });
   };
 
-  const executionCount = 50;
+  const executionCount = 10;
   for (let i = 0; i < executionCount; i++) {
-    console.log(`\nExecution: ${i + 1}/${executionCount}`);
+    console.log(`\n--- Evaluation ${i + 1}/${executionCount} ---`);
+    const start = Date.now();
 
-    console.log("Waiting for 1 second...");
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    console.log("Execute uploads in parallel...");
+    // run concurrently
     await Promise.all([handleCreation(), handleUpdate()]);
-    console.log("Uploads executed");
 
     writeEvaluation(fileName, evaluation);
     evaluation = {
       create: [],
       update: [],
     };
+
+    console.log(`Evaluation completed in ${(Date.now() - start) / 1000}s`);
+
+    if (i < executionCount - 1) {
+      // wait for 1 second before starting the evaluation
+      console.log(`\nWaiting 1 second before starting next evaluation...`);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
   }
 }
 

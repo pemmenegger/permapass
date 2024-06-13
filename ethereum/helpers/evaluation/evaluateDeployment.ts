@@ -7,11 +7,12 @@ import { getLogger } from "./getLogger";
 export const evaluateDeployment = async (
   hre: HardhatRuntimeEnvironment,
   contractName: string,
+  from: Address,
   evaluation: Evaluation
 ) => {
   const logger = getLogger(hre, contractName);
   const publicClient = await hre.viem.getPublicClient();
-  const [walletClient] = await hre.viem.getWalletClients();
+  const walletClient = await hre.viem.getWalletClient(from);
   const contractArtifact = await hre.artifacts.readArtifact(contractName);
 
   let contractAddress: Address | null | undefined;
