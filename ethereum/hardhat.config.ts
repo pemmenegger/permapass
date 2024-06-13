@@ -3,7 +3,6 @@ import "@nomicfoundation/hardhat-toolbox-viem";
 
 import "dotenv/config";
 
-import "./tasks/evaluateArweaveUpload";
 import "./tasks/evaluateDIDRegistry";
 import "./tasks/evaluateHaLoNFCMetadataRegistry";
 import "./tasks/evaluateNFTRegistry";

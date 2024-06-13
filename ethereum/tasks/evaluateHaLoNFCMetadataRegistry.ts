@@ -2,8 +2,8 @@ import { task } from "hardhat/config";
 import { evaluateFunction } from "../helpers/evaluation/evaluateFunction";
 import { evaluateDeployment } from "../helpers/evaluation/evaluateDeployment";
 import { evaluateContract } from "../helpers/evaluation/evaluateContract";
-import { exportContractEvaluation } from "../helpers/evaluation/exportEvaluation";
-import { ContractEvaluation } from "../types";
+import { writeEvaluation } from "../helpers/evaluation/writeEvaluation";
+import { Evaluation } from "../types";
 import { getLogger } from "../helpers/evaluation/getLogger";
 import { getDummyData } from "../helpers/evaluation/getDummyData";
 
@@ -19,7 +19,7 @@ task("evaluateHaLoNFCMetadataRegistry", "Evaluates the HaLo NFC Metadata Registr
   const logger = getLogger(hre, contractName);
   const publicClient = await hre.viem.getPublicClient();
 
-  const evaluation: ContractEvaluation = {
+  const evaluation: Evaluation = {
     deployment: [],
     create: [],
     read: [],
@@ -52,10 +52,11 @@ task("evaluateHaLoNFCMetadataRegistry", "Evaluates the HaLo NFC Metadata Registr
       });
     },
     read: async () => {
-      const { performance } = await evaluateFunction(async () => {
-        const metadataURI = await contract.read.metadataURIs([dummy.chipAddress]);
-        logger.info(`read metadataURI ${metadataURI}`);
+      const { response: metadataURI, performance } = await evaluateFunction(async () => {
+        return await contract.read.metadataURIs([dummy.chipAddress]);
       });
+
+      logger.info(`read metadataURI ${metadataURI}`);
 
       evaluation.read.push({
         functionName: "metadataURIs",
@@ -68,5 +69,5 @@ task("evaluateHaLoNFCMetadataRegistry", "Evaluates the HaLo NFC Metadata Registr
   };
 
   await evaluateContract(hre, contractName, crudFunctions);
-  await exportContractEvaluation(hre, contractName, evaluation);
+  await writeEvaluation(hre, contractName, evaluation);
 });

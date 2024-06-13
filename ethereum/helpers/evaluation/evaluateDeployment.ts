@@ -1,5 +1,5 @@
 import { Abi, Address, Hex } from "viem";
-import { ContractEvaluation } from "../../types";
+import { Evaluation } from "../../types";
 import { evaluateFunction } from "./evaluateFunction";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { getLogger } from "./getLogger";
@@ -7,7 +7,7 @@ import { getLogger } from "./getLogger";
 export const evaluateDeployment = async (
   hre: HardhatRuntimeEnvironment,
   contractName: string,
-  evaluation: ContractEvaluation
+  evaluation: Evaluation
 ) => {
   const logger = getLogger(hre, contractName);
   const publicClient = await hre.viem.getPublicClient();

@@ -1,11 +1,11 @@
 import { task } from "hardhat/config";
-import { ArweaveURI, ContractEvaluation } from "../types";
+import { ArweaveURI, Evaluation } from "../types";
 import { evaluateFunction } from "../helpers/evaluation/evaluateFunction";
 import { evaluateDeployment } from "../helpers/evaluation/evaluateDeployment";
 import { evaluateContract } from "../helpers/evaluation/evaluateContract";
 import { encodePacked, fromHex, keccak256, pad, stringToBytes, toHex, zeroAddress } from "viem";
 import { generatePrivateKey, privateKeyToAccount, sign } from "viem/accounts";
-import { exportContractEvaluation } from "../helpers/evaluation/exportEvaluation";
+import { writeEvaluation } from "../helpers/evaluation/writeEvaluation";
 import { getLogger } from "../helpers/evaluation/getLogger";
 import { getDummyData } from "../helpers/evaluation/getDummyData";
 
@@ -40,7 +40,7 @@ task("evaluateDIDRegistry", "Evaluates the DID Registry contract", async (_taskA
   const publicClient = await hre.viem.getPublicClient();
   const [walletClient] = await hre.viem.getWalletClients();
 
-  const evaluation: ContractEvaluation = {
+  const evaluation: Evaluation = {
     deployment: [],
     create: [],
     read: [],
@@ -187,5 +187,5 @@ task("evaluateDIDRegistry", "Evaluates the DID Registry contract", async (_taskA
   };
 
   await evaluateContract(hre, contractName, crudFunctions);
-  await exportContractEvaluation(hre, contractName, evaluation);
+  await writeEvaluation(hre, contractName, evaluation);
 });

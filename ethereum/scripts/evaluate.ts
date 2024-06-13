@@ -9,7 +9,6 @@ async function main() {
   await hre.run("compile");
   console.log("Contracts compiled");
 
-  await hre.run("evaluateArweaveUpload");
   await hre.run("evaluateDIDRegistry");
   await hre.run("evaluateHaLoNFCMetadataRegistry");
   await hre.run("evaluateNFTRegistry");

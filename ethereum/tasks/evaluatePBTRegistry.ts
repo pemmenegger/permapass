@@ -1,9 +1,9 @@
 import { task } from "hardhat/config";
-import { ContractEvaluation } from "../types";
+import { Evaluation } from "../types";
 import { evaluateFunction } from "../helpers/evaluation/evaluateFunction";
 import { evaluateDeployment } from "../helpers/evaluation/evaluateDeployment";
 import { evaluateContract } from "../helpers/evaluation/evaluateContract";
-import { exportContractEvaluation } from "../helpers/evaluation/exportEvaluation";
+import { writeEvaluation } from "../helpers/evaluation/writeEvaluation";
 import { getLogger } from "../helpers/evaluation/getLogger";
 import { getDummyData } from "../helpers/evaluation/getDummyData";
 
@@ -18,7 +18,7 @@ task("evaluatePBTRegistry", "Evaluates the PBT Registry contract", async (_taskA
   const logger = getLogger(hre, contractName);
   const publicClient = await hre.viem.getPublicClient();
 
-  const evaluation: ContractEvaluation = {
+  const evaluation: Evaluation = {
     deployment: [],
     create: [],
     read: [],
@@ -51,10 +51,11 @@ task("evaluatePBTRegistry", "Evaluates the PBT Registry contract", async (_taskA
       });
     },
     read: async () => {
-      const { performance } = await evaluateFunction(async () => {
-        const tokenURI = await contract.read.tokenURI([BigInt(1)]);
-        logger.info(`read ${tokenURI}`);
+      const { response: tokenURI, performance } = await evaluateFunction(async () => {
+        return await contract.read.tokenURI([BigInt(1)]);
       });
+
+      logger.info(`read ${tokenURI}`);
 
       evaluation.read.push({
         functionName: "tokenURI",
@@ -89,5 +90,5 @@ task("evaluatePBTRegistry", "Evaluates the PBT Registry contract", async (_taskA
   };
 
   await evaluateContract(hre, contractName, crudFunctions);
-  await exportContractEvaluation(hre, contractName, evaluation);
+  await writeEvaluation(hre, contractName, evaluation);
 });

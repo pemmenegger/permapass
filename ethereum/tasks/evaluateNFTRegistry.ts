@@ -2,8 +2,8 @@ import { task } from "hardhat/config";
 import { evaluateFunction } from "../helpers/evaluation/evaluateFunction";
 import { evaluateDeployment } from "../helpers/evaluation/evaluateDeployment";
 import { evaluateContract } from "../helpers/evaluation/evaluateContract";
-import { ContractEvaluation } from "../types";
-import { exportContractEvaluation } from "../helpers/evaluation/exportEvaluation";
+import { Evaluation } from "../types";
+import { writeEvaluation } from "../helpers/evaluation/writeEvaluation";
 import { getLogger } from "../helpers/evaluation/getLogger";
 import { getDummyData } from "../helpers/evaluation/getDummyData";
 
@@ -19,7 +19,7 @@ task("evaluateNFTRegistry", "Evaluates the NFT Registry contract", async (_taskA
   const publicClient = await hre.viem.getPublicClient();
   const [walletClient] = await hre.viem.getWalletClients();
 
-  const evaluation: ContractEvaluation = {
+  const evaluation: Evaluation = {
     deployment: [],
     create: [],
     read: [],
@@ -47,10 +47,11 @@ task("evaluateNFTRegistry", "Evaluates the NFT Registry contract", async (_taskA
       });
     },
     read: async () => {
-      const { performance } = await evaluateFunction(async () => {
-        const tokenURI = await contract.read.tokenURI([BigInt(1)]);
-        logger.info(`read ${tokenURI}`);
+      const { response: tokenURI, performance } = await evaluateFunction(async () => {
+        return await contract.read.tokenURI([BigInt(1)]);
       });
+
+      logger.info(`read ${tokenURI}`);
 
       evaluation.read.push({
         functionName: "tokenURI",
@@ -85,5 +86,5 @@ task("evaluateNFTRegistry", "Evaluates the NFT Registry contract", async (_taskA
   };
 
   await evaluateContract(hre, contractName, crudFunctions);
-  await exportContractEvaluation(hre, contractName, evaluation);
+  await writeEvaluation(hre, contractName, evaluation);
 });
