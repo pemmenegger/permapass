@@ -1,32 +1,16 @@
-# PermaPass Testing Instructions
+# Decentralized Application (dapp)
 
-## Requirements
+This folder contains the code for the decentralized application (dapp) of the PermaPass application. The `dapp` is implemented as React Native application and provides the following functionality:
 
-- iPhone with iOS 14.0 or later
-- Apple ID
+- Creating passports ()
 
-## Setup
+## Usage
 
-1. Ensure your Apple ID email is authorized to test the PermaPass App (via Pascal).
-2. Download and install [TestFlight](https://apps.apple.com/us/app/testflight/id899247664).
-3. Download or update the PermaPass App through TestFlight.
-4. Download a wallet app, such as [MetaMask](https://apps.apple.com/us/app/metamask-blockchain-wallet/id1438144202).
-5. Open the wallet app and create your wallet.
-6. Connect to the Sepolia Test Network.
+Make sure that the `web-api` is running before starting the `dapp`. In a local environment, the `web-api` can be started by running `npm run start` in the `web-api` folder. In a production environment, the `web-api` should be deployed to a server and the `dapp` should be configured to use the deployed `web-api` using the .env file.
 
-### Receiving Sepolia Tokens
-
-- Use your wallet address to receive free Sepolia tokens from these sources:
-
-1. Receive 0.05 Sepolia ETH from the [Google Cloud Faucet](https://cloud.google.com/application/web3/faucet/ethereum/sepolia):
-   - Enter your wallet address and click `Receive 0.05 Sepolia ETH`.
-2. Receive 0.05 Sepolia ETH from the [Sepolia Faucet](https://www.sepoliafaucet.io/):
-   - Enter your wallet address, click `Get Tokens`, and complete the passkey verification.
-
-## Estimated Gas Fees
-
-- NFT-based passports:
-  - `187500` Sepolia Wei, i.e. `0.0000000000001875` Sepolia ETH, for the creation of a new passport
-  - `43500` Sepolia Wei, i.e. `0.0000000000000435` Sepolia ETH, for the update of a passport
-  - `44000` Sepolia Wei, i.e. `0.000000000000044` Sepolia ETH, for the deletion of a passport
-  - reading is free and does not require a connected wallet
+1. Install the required dependencies by running `npm install`.
+2. Execute one of the following commands:
+   - `npm run ios`: Start the dapp on an iOS simulator.
+   - `npm run ios:device`: Start the dapp on your connected iOS device.
+   - `npm run android`: Start the dapp on an Android emulator.
+   - `npm run android:device`: Start the dapp on your connected Android device.
