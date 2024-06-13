@@ -4,10 +4,6 @@ import path from "path";
 import prettier from "prettier";
 import { Abi } from "viem";
 
-/**
- * Exports contract deployment details (address and ABI) to the `app/contracts` directory
- * in the React Native app, allowing the app to interact with the contract.
- */
 export const exportContractDetails = async ({
   contractName,
   contractAbi,
@@ -27,21 +23,18 @@ export const exportContractDetails = async ({
 
   let existingContent = {};
 
-  // read existing content if it exists
   if (fs.existsSync(outputFilePath)) {
     const fileContent = fs.readFileSync(outputFilePath, "utf-8");
     const jsonContent = fileContent.replace(/export\s+const\s+\w+\s+=\s+/, "").replace(/as\s+const;/, "");
     existingContent = eval(`(${jsonContent})`);
   }
 
-  // add the new deployment details
   const deploymentDetails = {
     ...existingContent,
     abi: contractAbi,
     [chainId]: contractAddress,
   };
 
-  // format the details
   const formattedDetails = await prettier.format(
     `export const ${contractName} = ${JSON.stringify(deploymentDetails, null, 2)} as const;`,
     {
@@ -53,7 +46,6 @@ export const exportContractDetails = async ({
     }
   );
 
-  // write the details to the file
   if (!fs.existsSync(outputDir)) {
     fs.mkdirSync(outputDir, { recursive: true });
   }

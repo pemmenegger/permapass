@@ -32,9 +32,7 @@ export function useHaLoNFCChip() {
       const publicClient = getPublicClient(chainId);
 
       const currentBlockNumber = await publicClient.getBlockNumber();
-      console.log(`Current Block Number: ${currentBlockNumber}`);
       const blockNumberUsedInSig = currentBlockNumber - BigInt(1);
-      console.log(`Block Number Used in Signature: ${blockNumberUsedInSig}`);
 
       const block = await publicClient.getBlock({
         blockNumber: blockNumberUsedInSig,
@@ -62,6 +60,10 @@ export function useHaLoNFCChip() {
           digest: commandDigest.startsWith("0x") ? commandDigest.slice(2) : commandDigest,
           keyNo: KEY_NO,
         });
+
+        console.log(`signature - chipAddress: ${signature.etherAddress}`);
+        console.log(`signature - signatureFromChip: ${signature.signature.ether}`);
+        console.log(`signature - blockNumberUsedInSig: ${blockNumberUsedInSig}`);
 
         return {
           chipAddress: signature.etherAddress,

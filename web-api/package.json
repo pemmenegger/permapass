@@ -4,7 +4,8 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "dev": "node ./api/index.mjs"
+    "start": "node ./api/index.mjs",
+    "evaluate": "node ./evaluate.mjs"
   },
   "dependencies": {
     "@irys/sdk": "^0.1.24",

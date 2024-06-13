@@ -1,6 +1,4 @@
 import hre from "hardhat";
-import { evaluateContract } from "../helpers/evaluateContract";
-import { Address } from "viem";
 
 /*
  * Run this script using the following command:
@@ -9,83 +7,32 @@ import { Address } from "viem";
 async function main() {
   console.log("Compiling contracts...");
   await hre.run("compile");
+  console.log("Contracts compiled");
 
-  const NFTRegistryArtifact = await hre.artifacts.readArtifact("NFTRegistry");
-  await evaluateContract({
-    contractName: "NFTRegistry",
-    abi: NFTRegistryArtifact.abi,
-    bytecode: NFTRegistryArtifact.bytecode,
-    functions: {
-      create: async (contractAddress: Address, walletAddress: Address) => {
-        const contract = await hre.viem.getContractAt("NFTRegistry", contractAddress);
-        const txHash = await contract.write.mintNFT([
-          walletAddress,
-          "ar://rgiLrvb-FXtlcbrA5LP-b-ytIkUXXNnk19X-oEhprAs",
-        ]);
-        return txHash;
-      },
-      read: async (contractAddress: Address) => {
-        const contract = await hre.viem.getContractAt("NFTRegistry", contractAddress);
-        const tokenURI = await contract.read.tokenURI([BigInt(1)]);
-        console.log(`NFTRegistry read ${tokenURI}`);
-      },
-      update: async (contractAddress: Address) => {
-        const contract = await hre.viem.getContractAt("NFTRegistry", contractAddress);
-        const txHash = await contract.write.setTokenURI([
-          BigInt(1),
-          "ar://rgiLrvb-FXtlcbrA5LP-b-ytIkUXXNnk19X-ABCDEFG",
-        ]);
-        return txHash;
-      },
-      delete: async (contractAddress: Address) => {
-        const contract = await hre.viem.getContractAt("NFTRegistry", contractAddress);
-        const txHash = await contract.write.burn([BigInt(1)]);
-        return txHash;
-      },
-    },
+  const walletClients = await hre.viem.getWalletClients();
+  if (walletClients.length !== 4) {
+    throw new Error(
+      `4 wallet clients are required. Currently, there are ${walletClients.length} wallet clients configured`
+    );
+  }
+
+  const walletAddresses = walletClients.map((client) => client.account?.address);
+  walletAddresses.forEach((address, index) => {
+    if (!address) {
+      throw new Error(`Wallet Client ${index + 1} address is not set`);
+    }
+    console.log(`Wallet Client ${index + 1}: ${address}`);
   });
 
-  //   const PBTRegistryArtifact = await hre.artifacts.readArtifact("PBTRegistry");
-  //   await evaluateContract({
-  //     contractName: "PBTRegistry",
-  //     abi: PBTRegistryArtifact.abi,
-  //     bytecode: PBTRegistryArtifact.bytecode,
-  //     functions: {
-  //       create: async () => {
-  //         return "0x";
-  //       },
-  //       read: async () => {
-  //         return;
-  //       },
-  //       update: async () => {
-  //         return "0x";
-  //       },
-  //       delete: async () => {
-  //         return "0x";
-  //       },
-  //     },
-  //   });
-
-  //   const DIDRegistryArtifact = await hre.artifacts.readArtifact("DIDRegistry");
-  //   await evaluateContract({
-  //     contractName: "DIDRegistry",
-  //     abi: DIDRegistryArtifact.abi,
-  //     bytecode: DIDRegistryArtifact.bytecode,
-  //     functions: {
-  //       create: async () => {
-  //         return "0x";
-  //       },
-  //       read: async () => {
-  //         return;
-  //       },
-  //       update: async () => {
-  //         return "0x";
-  //       },
-  //       delete: async () => {
-  //         return "0x";
-  //       },
-  //     },
-  //   });
+  const start = Date.now();
+  // run evaluations concurrently
+  await Promise.all([
+    hre.run("evaluateDIDRegistry", { from: walletAddresses[0] }),
+    hre.run("evaluateHaLoNFCMetadataRegistry", { from: walletAddresses[1] }),
+    hre.run("evaluateNFTRegistry", { from: walletAddresses[2] }),
+    hre.run("evaluatePBTRegistry", { from: walletAddresses[3] }),
+  ]);
+  console.log(`Evaluation completed in ${(Date.now() - start) / 1000}s`);
 }
 
 main()
