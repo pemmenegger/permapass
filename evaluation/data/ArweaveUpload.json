@@ -1,0 +1,66 @@
+{
+  "create": [
+    {
+      "durationInMs": 369,
+      "startTimestamp": 1718290801016,
+      "endTimestamp": 1718290801385
+    },
+    {
+      "durationInMs": 305,
+      "startTimestamp": 1718291401120,
+      "endTimestamp": 1718291401425
+    },
+    {
+      "durationInMs": 397,
+      "startTimestamp": 1718292001006,
+      "endTimestamp": 1718292001403
+    },
+    {
+      "durationInMs": 429,
+      "startTimestamp": 1718292601083,
+      "endTimestamp": 1718292601512
+    },
+    {
+      "durationInMs": 298,
+      "startTimestamp": 1718293201048,
+      "endTimestamp": 1718293201346
+    },
+    {
+      "durationInMs": 458,
+      "startTimestamp": 1718293801028,
+      "endTimestamp": 1718293801486
+    }
+  ],
+  "update": [
+    {
+      "durationInMs": 363,
+      "startTimestamp": 1718290801019,
+      "endTimestamp": 1718290801382
+    },
+    {
+      "durationInMs": 419,
+      "startTimestamp": 1718291401122,
+      "endTimestamp": 1718291401541
+    },
+    {
+      "durationInMs": 390,
+      "startTimestamp": 1718292001008,
+      "endTimestamp": 1718292001398
+    },
+    {
+      "durationInMs": 430,
+      "startTimestamp": 1718292601085,
+      "endTimestamp": 1718292601515
+    },
+    {
+      "durationInMs": 307,
+      "startTimestamp": 1718293201050,
+      "endTimestamp": 1718293201357
+    },
+    {
+      "durationInMs": 361,
+      "startTimestamp": 1718293801031,
+      "endTimestamp": 1718293801392
+    }
+  ]
+}
