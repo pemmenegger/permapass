@@ -143,28 +143,15 @@ async function main() {
     });
   };
 
-  const executionCount = 10;
-  for (let i = 0; i < executionCount; i++) {
-    console.log(`\n--- Evaluation ${i + 1}/${executionCount} ---`);
-    const start = Date.now();
-
-    // run concurrently
-    await Promise.all([handleCreation(), handleUpdate()]);
-
-    writeEvaluation(fileName, evaluation);
-    evaluation = {
-      create: [],
-      update: [],
-    };
-
-    console.log(`Evaluation completed in ${(Date.now() - start) / 1000}s`);
-
-    if (i < executionCount - 1) {
-      // wait for 1 second before starting the evaluation
-      console.log(`\nWaiting 1 second before starting next evaluation...`);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-    }
-  }
+  const start = Date.now();
+  // run evaluations concurrently
+  await Promise.all([handleCreation(), handleUpdate()]);
+  writeEvaluation(fileName, evaluation);
+  evaluation = {
+    create: [],
+    update: [],
+  };
+  console.log(`Evaluation completed in ${(Date.now() - start) / 1000}s`);
 }
 
 main()
