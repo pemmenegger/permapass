@@ -1,4 +1,11 @@
-from utils import load_json, plot_durations, plot_gas_used, process_registry_data
+from utils import (
+    load_json,
+    plot_duration_overview,
+    plot_durations,
+    plot_gas_used,
+    plot_gas_used_overview,
+    process_registry_data,
+)
 
 
 def plot_arweave():
@@ -11,7 +18,6 @@ def plot_arweave():
         ],
         labels=["Create", "Read", "Update"],
         title="Arweave",
-        output_path="plots",
         output_filename="arweave.png",
         x_axis="ms",
     )
@@ -32,7 +38,6 @@ def plot_halo_nfc_metadata_registry():
         data_list=[data[key] for key in data.keys()],
         labels=labels.values(),
         title=title,
-        output_path="plots",
         output_filename=f"{output_filename_prefix}_durations.png",
         x_axis="s",
     )
@@ -40,7 +45,6 @@ def plot_halo_nfc_metadata_registry():
         data_list=[data[key] for key in data.keys()],
         labels=labels.values(),
         title=title,
-        output_path="plots",
         output_filename=f"{output_filename_prefix}_gas_used.png",
     )
 
@@ -72,13 +76,18 @@ def plot_digital_identifier_contracts():
         },
     ]
 
+    plot_duration_overview(registry_configs)
+    plot_gas_used_overview(registry_configs)
+
+    # print(registry_configs)
+    # Process data to calculate total durations and individual operation durations
+
     for config in registry_configs:
         registry_data = config["data"]
         plot_durations(
             data_list=[registry_data[key] for key in registry_data.keys()],
             labels=labels.values(),
             title=config["title"],
-            output_path="plots",
             output_filename=f'{config["output_filename_prefix"]}_durations.png',
             x_axis="s",
         )
@@ -86,7 +95,6 @@ def plot_digital_identifier_contracts():
             data_list=[registry_data[key] for key in registry_data.keys()],
             labels=labels.values(),
             title=config["title"],
-            output_path="plots",
             output_filename=f'{config["output_filename_prefix"]}_gas_used.png',
         )
 
@@ -116,7 +124,6 @@ def plot_digital_identifier_contracts():
             ],
             labels=combined_registry_data[action_type].keys(),
             title=f"Registry {action_type.capitalize()}",
-            output_path="plots",
             output_filename=f"combined_durations_{action_type}.png",
             x_axis="s",
         )
@@ -127,7 +134,6 @@ def plot_digital_identifier_contracts():
             ],
             labels=combined_registry_data[action_type].keys(),
             title=f"Registry {action_type.capitalize()}",
-            output_path="plots",
             output_filename=f"combined_gas_used_{action_type}.png",
         )
 
