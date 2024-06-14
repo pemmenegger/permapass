@@ -4,9 +4,13 @@ from utils import load_json, plot_durations, plot_gas_used, process_registry_dat
 def plot_arweave():
     arweave_data = load_json("data/Arweave.json")
     plot_durations(
-        data_list=[arweave_data["create"], arweave_data["update"]],
-        labels=["passport-create.json", "passport-update.json"],
-        title="Arweave Upload Durations via Irys Node 2",
+        data_list=[
+            arweave_data["create"],
+            arweave_data["read"],
+            arweave_data["update"],
+        ],
+        labels=["Create", "Read", "Update"],
+        title="Arweave",
         output_path="plots",
         output_filename="arweave.png",
         x_axis="ms",

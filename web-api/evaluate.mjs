@@ -1,7 +1,7 @@
 import fs from "fs";
 import Irys from "@irys/sdk";
 
-// init irys node
+// init irys node 2
 const irys = new Irys({
   network: "mainnet",
   token: "arweave",
@@ -46,6 +46,7 @@ function writeEvaluation(fileName, evaluation) {
 
     let existingContent = {
       create: [],
+      read: [],
       update: [],
     };
 
@@ -59,6 +60,7 @@ function writeEvaluation(fileName, evaluation) {
 
     const evaluationResults = {
       create: [...existingContent.create, ...evaluation.create],
+      read: [...existingContent.read, ...evaluation.read],
       update: [...existingContent.update, ...evaluation.update],
     };
 
@@ -116,10 +118,11 @@ async function uploadDataToArweave(dataToUpload) {
 async function main() {
   const { creationData, updateData } = loadPassportData();
 
-  const fileName = "ArweaveUpload";
+  const fileName = "Arweave";
 
   let evaluation = {
     create: [],
+    read: [],
     update: [],
   };
 
@@ -130,6 +133,17 @@ async function main() {
     console.log(`Creation data URI: ${creationDataURI}`);
     evaluation.create.push({
       ...creationPerformance,
+    });
+  };
+
+  const handleRead = async () => {
+    const { response: dataRead, performance: readPerformance } = await evaluateFunction(async () => {
+      const response = await fetch("https://arweave.net/CUtrvwfXjjuoePjkpqSDA1C-4KP1QpMxmusXUvNnmXA");
+      return await response.json();
+    });
+    console.log(`dataRead: ${JSON.stringify(dataRead, null, 2)}`);
+    evaluation.read.push({
+      ...readPerformance,
     });
   };
 
@@ -145,10 +159,11 @@ async function main() {
 
   const start = Date.now();
   // run evaluations concurrently
-  await Promise.all([handleCreation(), handleUpdate()]);
+  await Promise.all([handleCreation(), handleRead(), handleUpdate()]);
   writeEvaluation(fileName, evaluation);
   evaluation = {
     create: [],
+    read: [],
     update: [],
   };
   console.log(`Evaluation completed in ${(Date.now() - start) / 1000}s`);
