@@ -1,0 +1,188 @@
+{
+  "create": [
+    {
+      "durationInMs": 258,
+      "startTimestamp": 1718377202471,
+      "endTimestamp": 1718377202729
+    },
+    {
+      "durationInMs": 352,
+      "startTimestamp": 1718377502704,
+      "endTimestamp": 1718377503056
+    },
+    {
+      "durationInMs": 261,
+      "startTimestamp": 1718377802360,
+      "endTimestamp": 1718377802621
+    },
+    {
+      "durationInMs": 369,
+      "startTimestamp": 1718378102090,
+      "endTimestamp": 1718378102459
+    },
+    {
+      "durationInMs": 243,
+      "startTimestamp": 1718378402662,
+      "endTimestamp": 1718378402905
+    },
+    {
+      "durationInMs": 309,
+      "startTimestamp": 1718378702370,
+      "endTimestamp": 1718378702679
+    },
+    {
+      "durationInMs": 408,
+      "startTimestamp": 1718379002170,
+      "endTimestamp": 1718379002578
+    },
+    {
+      "durationInMs": 348,
+      "startTimestamp": 1718379302256,
+      "endTimestamp": 1718379302604
+    },
+    {
+      "durationInMs": 360,
+      "startTimestamp": 1718379602098,
+      "endTimestamp": 1718379602458
+    },
+    {
+      "durationInMs": 340,
+      "startTimestamp": 1718379905623,
+      "endTimestamp": 1718379905963
+    },
+    {
+      "durationInMs": 374,
+      "startTimestamp": 1718380202715,
+      "endTimestamp": 1718380203089
+    },
+    {
+      "durationInMs": 367,
+      "startTimestamp": 1718380502345,
+      "endTimestamp": 1718380502712
+    }
+  ],
+  "read": [
+    {
+      "durationInMs": 202,
+      "startTimestamp": 1718377202473,
+      "endTimestamp": 1718377202675
+    },
+    {
+      "durationInMs": 174,
+      "startTimestamp": 1718377502706,
+      "endTimestamp": 1718377502880
+    },
+    {
+      "durationInMs": 363,
+      "startTimestamp": 1718377802362,
+      "endTimestamp": 1718377802725
+    },
+    {
+      "durationInMs": 170,
+      "startTimestamp": 1718378102092,
+      "endTimestamp": 1718378102262
+    },
+    {
+      "durationInMs": 132,
+      "startTimestamp": 1718378402665,
+      "endTimestamp": 1718378402797
+    },
+    {
+      "durationInMs": 123,
+      "startTimestamp": 1718378702372,
+      "endTimestamp": 1718378702495
+    },
+    {
+      "durationInMs": 133,
+      "startTimestamp": 1718379002173,
+      "endTimestamp": 1718379002306
+    },
+    {
+      "durationInMs": 148,
+      "startTimestamp": 1718379302258,
+      "endTimestamp": 1718379302406
+    },
+    {
+      "durationInMs": 203,
+      "startTimestamp": 1718379602100,
+      "endTimestamp": 1718379602303
+    },
+    {
+      "durationInMs": 147,
+      "startTimestamp": 1718379905625,
+      "endTimestamp": 1718379905772
+    },
+    {
+      "durationInMs": 454,
+      "startTimestamp": 1718380202717,
+      "endTimestamp": 1718380203171
+    },
+    {
+      "durationInMs": 150,
+      "startTimestamp": 1718380502347,
+      "endTimestamp": 1718380502497
+    }
+  ],
+  "update": [
+    {
+      "durationInMs": 271,
+      "startTimestamp": 1718377202497,
+      "endTimestamp": 1718377202768
+    },
+    {
+      "durationInMs": 326,
+      "startTimestamp": 1718377502730,
+      "endTimestamp": 1718377503056
+    },
+    {
+      "durationInMs": 233,
+      "startTimestamp": 1718377802389,
+      "endTimestamp": 1718377802622
+    },
+    {
+      "durationInMs": 434,
+      "startTimestamp": 1718378102117,
+      "endTimestamp": 1718378102551
+    },
+    {
+      "durationInMs": 316,
+      "startTimestamp": 1718378402688,
+      "endTimestamp": 1718378403004
+    },
+    {
+      "durationInMs": 283,
+      "startTimestamp": 1718378702396,
+      "endTimestamp": 1718378702679
+    },
+    {
+      "durationInMs": 299,
+      "startTimestamp": 1718379002198,
+      "endTimestamp": 1718379002497
+    },
+    {
+      "durationInMs": 322,
+      "startTimestamp": 1718379302282,
+      "endTimestamp": 1718379302604
+    },
+    {
+      "durationInMs": 334,
+      "startTimestamp": 1718379602124,
+      "endTimestamp": 1718379602458
+    },
+    {
+      "durationInMs": 420,
+      "startTimestamp": 1718379905649,
+      "endTimestamp": 1718379906069
+    },
+    {
+      "durationInMs": 1362,
+      "startTimestamp": 1718380202741,
+      "endTimestamp": 1718380204103
+    },
+    {
+      "durationInMs": 341,
+      "startTimestamp": 1718380502371,
+      "endTimestamp": 1718380502712
+    }
+  ]
+}

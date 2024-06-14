@@ -1,0 +1,449 @@
+{
+  "11155111": [
+    {
+      "deployment": [
+        {
+          "functionName": "deployContract",
+          "gasUsed": 589220,
+          "effectiveGasPriceInWei": 2358680426,
+          "gasCostsInWei": 1389781680607720,
+          "durationInMs": 13637,
+          "startTimestamp": 1718377202587,
+          "endTimestamp": 1718377216224
+        }
+      ],
+      "create": [
+        {
+          "functionName": "initMetadataURI",
+          "gasUsed": 96786,
+          "effectiveGasPriceInWei": 2361892191,
+          "gasCostsInWei": 228598097598126,
+          "durationInMs": 10096,
+          "startTimestamp": 1718377216229,
+          "endTimestamp": 1718377226325
+        }
+      ],
+      "read": [
+        {
+          "functionName": "metadataURIs",
+          "gasUsed": 0,
+          "effectiveGasPriceInWei": 0,
+          "gasCostsInWei": 0,
+          "durationInMs": 115,
+          "startTimestamp": 1718377226326,
+          "endTimestamp": 1718377226441
+        }
+      ],
+      "update": [],
+      "delete": []
+    },
+    {
+      "deployment": [
+        {
+          "functionName": "deployContract",
+          "gasUsed": 589220,
+          "effectiveGasPriceInWei": 1362515153,
+          "gasCostsInWei": 802821178450660,
+          "durationInMs": 14153,
+          "startTimestamp": 1718377502893,
+          "endTimestamp": 1718377517046
+        }
+      ],
+      "create": [
+        {
+          "functionName": "initMetadataURI",
+          "gasUsed": 96786,
+          "effectiveGasPriceInWei": 1338591895,
+          "gasCostsInWei": 129556955149470,
+          "durationInMs": 21811,
+          "startTimestamp": 1718377517058,
+          "endTimestamp": 1718377538869
+        }
+      ],
+      "read": [
+        {
+          "functionName": "metadataURIs",
+          "gasUsed": 0,
+          "effectiveGasPriceInWei": 0,
+          "gasCostsInWei": 0,
+          "durationInMs": 201,
+          "startTimestamp": 1718377538869,
+          "endTimestamp": 1718377539070
+        }
+      ],
+      "update": [],
+      "delete": []
+    },
+    {
+      "deployment": [
+        {
+          "functionName": "deployContract",
+          "gasUsed": 589220,
+          "effectiveGasPriceInWei": 2539494065,
+          "gasCostsInWei": 1496320692979300,
+          "durationInMs": 14171,
+          "startTimestamp": 1718377802842,
+          "endTimestamp": 1718377817013
+        }
+      ],
+      "create": [
+        {
+          "functionName": "initMetadataURI",
+          "gasUsed": 96786,
+          "effectiveGasPriceInWei": 2514765359,
+          "gasCostsInWei": 243394080036174,
+          "durationInMs": 9415,
+          "startTimestamp": 1718377817020,
+          "endTimestamp": 1718377826435
+        }
+      ],
+      "read": [
+        {
+          "functionName": "metadataURIs",
+          "gasUsed": 0,
+          "effectiveGasPriceInWei": 0,
+          "gasCostsInWei": 0,
+          "durationInMs": 140,
+          "startTimestamp": 1718377826436,
+          "endTimestamp": 1718377826576
+        }
+      ],
+      "update": [],
+      "delete": []
+    },
+    {
+      "deployment": [
+        {
+          "functionName": "deployContract",
+          "gasUsed": 589220,
+          "effectiveGasPriceInWei": 1497564938,
+          "gasCostsInWei": 882395212768360,
+          "durationInMs": 13622,
+          "startTimestamp": 1718378102493,
+          "endTimestamp": 1718378116115
+        }
+      ],
+      "create": [
+        {
+          "functionName": "initMetadataURI",
+          "gasUsed": 96786,
+          "effectiveGasPriceInWei": 1563821352,
+          "gasCostsInWei": 151356013374672,
+          "durationInMs": 9788,
+          "startTimestamp": 1718378116121,
+          "endTimestamp": 1718378125909
+        }
+      ],
+      "read": [
+        {
+          "functionName": "metadataURIs",
+          "gasUsed": 0,
+          "effectiveGasPriceInWei": 0,
+          "gasCostsInWei": 0,
+          "durationInMs": 116,
+          "startTimestamp": 1718378125909,
+          "endTimestamp": 1718378126025
+        }
+      ],
+      "update": [],
+      "delete": []
+    },
+    {
+      "deployment": [
+        {
+          "functionName": "deployContract",
+          "gasUsed": 589220,
+          "effectiveGasPriceInWei": 1892783515,
+          "gasCostsInWei": 1115265902708300,
+          "durationInMs": 13943,
+          "startTimestamp": 1718378402404,
+          "endTimestamp": 1718378416347
+        }
+      ],
+      "create": [
+        {
+          "functionName": "initMetadataURI",
+          "gasUsed": 96786,
+          "effectiveGasPriceInWei": 2052780615,
+          "gasCostsInWei": 198680424603390,
+          "durationInMs": 9405,
+          "startTimestamp": 1718378416350,
+          "endTimestamp": 1718378425755
+        }
+      ],
+      "read": [
+        {
+          "functionName": "metadataURIs",
+          "gasUsed": 0,
+          "effectiveGasPriceInWei": 0,
+          "gasCostsInWei": 0,
+          "durationInMs": 118,
+          "startTimestamp": 1718378425756,
+          "endTimestamp": 1718378425874
+        }
+      ],
+      "update": [],
+      "delete": []
+    },
+    {
+      "deployment": [
+        {
+          "functionName": "deployContract",
+          "gasUsed": 589220,
+          "effectiveGasPriceInWei": 2106409925,
+          "gasCostsInWei": 1241138856008500,
+          "durationInMs": 13884,
+          "startTimestamp": 1718378726625,
+          "endTimestamp": 1718378740509
+        }
+      ],
+      "create": [
+        {
+          "functionName": "initMetadataURI",
+          "gasUsed": 96786,
+          "effectiveGasPriceInWei": 2114881305,
+          "gasCostsInWei": 204690901985730,
+          "durationInMs": 9420,
+          "startTimestamp": 1718378740512,
+          "endTimestamp": 1718378749932
+        }
+      ],
+      "read": [
+        {
+          "functionName": "metadataURIs",
+          "gasUsed": 0,
+          "effectiveGasPriceInWei": 0,
+          "gasCostsInWei": 0,
+          "durationInMs": 152,
+          "startTimestamp": 1718378749933,
+          "endTimestamp": 1718378750085
+        }
+      ],
+      "update": [],
+      "delete": []
+    },
+    {
+      "deployment": [
+        {
+          "functionName": "deployContract",
+          "gasUsed": 589220,
+          "effectiveGasPriceInWei": 1766153359,
+          "gasCostsInWei": 1040652882189980,
+          "durationInMs": 13970,
+          "startTimestamp": 1718379002499,
+          "endTimestamp": 1718379016469
+        }
+      ],
+      "create": [
+        {
+          "functionName": "initMetadataURI",
+          "gasUsed": 96786,
+          "effectiveGasPriceInWei": 1922594884,
+          "gasCostsInWei": 186080268442824,
+          "durationInMs": 9040,
+          "startTimestamp": 1718379016472,
+          "endTimestamp": 1718379025512
+        }
+      ],
+      "read": [
+        {
+          "functionName": "metadataURIs",
+          "gasUsed": 0,
+          "effectiveGasPriceInWei": 0,
+          "gasCostsInWei": 0,
+          "durationInMs": 120,
+          "startTimestamp": 1718379025512,
+          "endTimestamp": 1718379025632
+        }
+      ],
+      "update": [],
+      "delete": []
+    },
+    {
+      "deployment": [
+        {
+          "functionName": "deployContract",
+          "gasUsed": 589220,
+          "effectiveGasPriceInWei": 2173860834,
+          "gasCostsInWei": 1280882280609480,
+          "durationInMs": 17778,
+          "startTimestamp": 1718379321058,
+          "endTimestamp": 1718379338836
+        }
+      ],
+      "create": [
+        {
+          "functionName": "initMetadataURI",
+          "gasUsed": 96786,
+          "effectiveGasPriceInWei": 2404959958,
+          "gasCostsInWei": 232766454494988,
+          "durationInMs": 47131,
+          "startTimestamp": 1718379338843,
+          "endTimestamp": 1718379385974
+        }
+      ],
+      "read": [
+        {
+          "functionName": "metadataURIs",
+          "gasUsed": 0,
+          "effectiveGasPriceInWei": 0,
+          "gasCostsInWei": 0,
+          "durationInMs": 117,
+          "startTimestamp": 1718379385974,
+          "endTimestamp": 1718379386091
+        }
+      ],
+      "update": [],
+      "delete": []
+    },
+    {
+      "deployment": [
+        {
+          "functionName": "deployContract",
+          "gasUsed": 589220,
+          "effectiveGasPriceInWei": 2130612119,
+          "gasCostsInWei": 1255399272757180,
+          "durationInMs": 17969,
+          "startTimestamp": 1718379621060,
+          "endTimestamp": 1718379639029
+        }
+      ],
+      "create": [
+        {
+          "functionName": "initMetadataURI",
+          "gasUsed": 96786,
+          "effectiveGasPriceInWei": 2159332322,
+          "gasCostsInWei": 208993138117092,
+          "durationInMs": 13575,
+          "startTimestamp": 1718379639035,
+          "endTimestamp": 1718379652610
+        }
+      ],
+      "read": [
+        {
+          "functionName": "metadataURIs",
+          "gasUsed": 0,
+          "effectiveGasPriceInWei": 0,
+          "gasCostsInWei": 0,
+          "durationInMs": 192,
+          "startTimestamp": 1718379652611,
+          "endTimestamp": 1718379652803
+        }
+      ],
+      "update": [],
+      "delete": []
+    },
+    {
+      "deployment": [
+        {
+          "functionName": "deployContract",
+          "gasUsed": 589220,
+          "effectiveGasPriceInWei": 2224825972,
+          "gasCostsInWei": 1310911959221840,
+          "durationInMs": 22358,
+          "startTimestamp": 1718379905807,
+          "endTimestamp": 1718379928165
+        }
+      ],
+      "create": [
+        {
+          "functionName": "initMetadataURI",
+          "gasUsed": 96786,
+          "effectiveGasPriceInWei": 2312388012,
+          "gasCostsInWei": 223806786129432,
+          "durationInMs": 9423,
+          "startTimestamp": 1718379928167,
+          "endTimestamp": 1718379937590
+        }
+      ],
+      "read": [
+        {
+          "functionName": "metadataURIs",
+          "gasUsed": 0,
+          "effectiveGasPriceInWei": 0,
+          "gasCostsInWei": 0,
+          "durationInMs": 139,
+          "startTimestamp": 1718379937591,
+          "endTimestamp": 1718379937730
+        }
+      ],
+      "update": [],
+      "delete": []
+    },
+    {
+      "deployment": [
+        {
+          "functionName": "deployContract",
+          "gasUsed": 589220,
+          "effectiveGasPriceInWei": 2273147885,
+          "gasCostsInWei": 1339384196799700,
+          "durationInMs": 15521,
+          "startTimestamp": 1718380202549,
+          "endTimestamp": 1718380218070
+        }
+      ],
+      "create": [
+        {
+          "functionName": "initMetadataURI",
+          "gasUsed": 96786,
+          "effectiveGasPriceInWei": 2410830331,
+          "gasCostsInWei": 233334624416166,
+          "durationInMs": 9578,
+          "startTimestamp": 1718380218075,
+          "endTimestamp": 1718380227653
+        }
+      ],
+      "read": [
+        {
+          "functionName": "metadataURIs",
+          "gasUsed": 0,
+          "effectiveGasPriceInWei": 0,
+          "gasCostsInWei": 0,
+          "durationInMs": 122,
+          "startTimestamp": 1718380227653,
+          "endTimestamp": 1718380227775
+        }
+      ],
+      "update": [],
+      "delete": []
+    },
+    {
+      "deployment": [
+        {
+          "functionName": "deployContract",
+          "gasUsed": 589220,
+          "effectiveGasPriceInWei": 2898892111,
+          "gasCostsInWei": 1708085209643420,
+          "durationInMs": 23721,
+          "startTimestamp": 1718380502728,
+          "endTimestamp": 1718380526449
+        }
+      ],
+      "create": [
+        {
+          "functionName": "initMetadataURI",
+          "gasUsed": 96786,
+          "effectiveGasPriceInWei": 3666294601,
+          "gasCostsInWei": 354845989252386,
+          "durationInMs": 15153,
+          "startTimestamp": 1718380526452,
+          "endTimestamp": 1718380541605
+        }
+      ],
+      "read": [
+        {
+          "functionName": "metadataURIs",
+          "gasUsed": 0,
+          "effectiveGasPriceInWei": 0,
+          "gasCostsInWei": 0,
+          "durationInMs": 124,
+          "startTimestamp": 1718380541606,
+          "endTimestamp": 1718380541730
+        }
+      ],
+      "update": [],
+      "delete": []
+    }
+  ],
+  "contractName": "HaLoNFCMetadataRegistry"
+}
