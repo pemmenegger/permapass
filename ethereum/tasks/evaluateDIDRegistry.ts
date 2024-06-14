@@ -8,6 +8,7 @@ import { generatePrivateKey, privateKeyToAccount, sign } from "viem/accounts";
 import { writeEvaluation } from "../helpers/evaluation/writeEvaluation";
 import { getLogger } from "../helpers/evaluation/getLogger";
 import { getDummyData } from "../helpers/evaluation/getDummyData";
+import { extractGasCosts } from "../helpers/evaluation/extractGasCosts";
 
 const SERVICE_KEY = "did/svc/ProductPassport";
 
@@ -91,9 +92,12 @@ task("evaluateDIDRegistry", "Evaluates the DID Registry contract")
             return await publicClient.waitForTransactionReceipt({ hash: txHash });
           });
 
+        const changeOwnerGasCosts = extractGasCosts(changeOwnerSignedTxReceipt);
         evaluation.create.push({
           functionName: "changeOwnerSigned",
-          gasUsedInWei: Number(changeOwnerSignedTxReceipt.gasUsed),
+          gasUsed: changeOwnerGasCosts.gasUsed,
+          effectiveGasPriceInWei: changeOwnerGasCosts.effectiveGasPriceInWei,
+          gasCostsInWei: changeOwnerGasCosts.gasCostsInWei,
           ...changeOwnerSignedPerformance,
         });
 
@@ -104,9 +108,12 @@ task("evaluateDIDRegistry", "Evaluates the DID Registry contract")
           }
         );
 
+        const setAttributeGasCosts = extractGasCosts(setAttributeTxReceipt);
         evaluation.create.push({
           functionName: "setAttribute",
-          gasUsedInWei: Number(setAttributeTxReceipt.gasUsed),
+          gasUsed: setAttributeGasCosts.gasUsed,
+          effectiveGasPriceInWei: setAttributeGasCosts.effectiveGasPriceInWei,
+          gasCostsInWei: setAttributeGasCosts.gasCostsInWei,
           ...setAttributePerformance,
         });
       },
@@ -158,7 +165,9 @@ task("evaluateDIDRegistry", "Evaluates the DID Registry contract")
 
         evaluation.read.push({
           functionName: "changed",
-          gasUsedInWei: 0,
+          gasUsed: 0,
+          effectiveGasPriceInWei: 0,
+          gasCostsInWei: 0,
           ...performance,
         });
       },
@@ -168,9 +177,12 @@ task("evaluateDIDRegistry", "Evaluates the DID Registry contract")
           return await publicClient.waitForTransactionReceipt({ hash: txHash });
         });
 
+        const { gasUsed, effectiveGasPriceInWei, gasCostsInWei } = extractGasCosts(txReceipt);
         evaluation.update.push({
           functionName: "setTokenURI",
-          gasUsedInWei: Number(txReceipt.gasUsed),
+          gasUsed,
+          effectiveGasPriceInWei,
+          gasCostsInWei,
           ...setTokenPerformance,
         });
       },
@@ -180,9 +192,12 @@ task("evaluateDIDRegistry", "Evaluates the DID Registry contract")
           return await publicClient.waitForTransactionReceipt({ hash: txHash });
         });
 
+        const { gasUsed, effectiveGasPriceInWei, gasCostsInWei } = extractGasCosts(txReceipt);
         evaluation.delete.push({
           functionName: "burn",
-          gasUsedInWei: Number(txReceipt.gasUsed),
+          gasUsed,
+          effectiveGasPriceInWei,
+          gasCostsInWei,
           ...performance,
         });
       },

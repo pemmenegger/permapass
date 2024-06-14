@@ -3,6 +3,7 @@ import { Evaluation } from "../../types";
 import { evaluateFunction } from "./evaluateFunction";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { getLogger } from "./getLogger";
+import { extractGasCosts } from "./extractGasCosts";
 
 export const evaluateDeployment = async (
   hre: HardhatRuntimeEnvironment,
@@ -32,9 +33,12 @@ export const evaluateDeployment = async (
     contractAddress = txReceipt.contractAddress;
     if (!contractAddress) throw new Error("Deployment failed: Contract address is missing.");
 
+    const { gasUsed, effectiveGasPriceInWei, gasCostsInWei } = extractGasCosts(txReceipt);
     evaluation.deployment.push({
       functionName: "deployContract",
-      gasUsedInWei: Number(txReceipt.gasUsed),
+      gasUsed,
+      effectiveGasPriceInWei,
+      gasCostsInWei,
       ...performance,
     });
 

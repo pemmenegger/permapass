@@ -7,6 +7,7 @@ import { writeEvaluation } from "../helpers/evaluation/writeEvaluation";
 import { getLogger } from "../helpers/evaluation/getLogger";
 import { getDummyData } from "../helpers/evaluation/getDummyData";
 import { Address } from "viem";
+import { extractGasCosts } from "../helpers/evaluation/extractGasCosts";
 
 /**
  Example:
@@ -48,9 +49,12 @@ task("evaluatePBTRegistry", "Evaluates the PBT Registry contract")
           return await publicClient.waitForTransactionReceipt({ hash: txHash });
         });
 
+        const { gasUsed, effectiveGasPriceInWei, gasCostsInWei } = extractGasCosts(txReceipt);
         evaluation.create.push({
           functionName: "mintPBT",
-          gasUsedInWei: Number(txReceipt.gasUsed),
+          gasUsed,
+          effectiveGasPriceInWei,
+          gasCostsInWei,
           ...mintPerformance,
         });
       },
@@ -63,7 +67,9 @@ task("evaluatePBTRegistry", "Evaluates the PBT Registry contract")
 
         evaluation.read.push({
           functionName: "tokenURI",
-          gasUsedInWei: 0,
+          gasUsed: 0,
+          effectiveGasPriceInWei: 0,
+          gasCostsInWei: 0,
           ...performance,
         });
       },
@@ -73,9 +79,12 @@ task("evaluatePBTRegistry", "Evaluates the PBT Registry contract")
           return await publicClient.waitForTransactionReceipt({ hash: txHash });
         });
 
+        const { gasUsed, effectiveGasPriceInWei, gasCostsInWei } = extractGasCosts(txReceipt);
         evaluation.update.push({
           functionName: "setTokenURI",
-          gasUsedInWei: Number(txReceipt.gasUsed),
+          gasUsed,
+          effectiveGasPriceInWei,
+          gasCostsInWei,
           ...setTokenPerformance,
         });
       },
@@ -85,9 +94,12 @@ task("evaluatePBTRegistry", "Evaluates the PBT Registry contract")
           return await publicClient.waitForTransactionReceipt({ hash: txHash });
         });
 
+        const { gasUsed, effectiveGasPriceInWei, gasCostsInWei } = extractGasCosts(txReceipt);
         evaluation.delete.push({
           functionName: "burn",
-          gasUsedInWei: Number(txReceipt.gasUsed),
+          gasUsed,
+          effectiveGasPriceInWei,
+          gasCostsInWei,
           ...performance,
         });
       },

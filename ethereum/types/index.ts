@@ -6,7 +6,9 @@ export interface EvaluationPerformance {
 
 interface EvaluationEntry extends EvaluationPerformance {
   functionName: string;
-  gasUsedInWei: number;
+  gasUsed: number;
+  effectiveGasPriceInWei: number;
+  gasCostsInWei: number;
 }
 
 export interface Evaluation {

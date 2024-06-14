@@ -7,6 +7,7 @@ import { Evaluation } from "../types";
 import { getLogger } from "../helpers/evaluation/getLogger";
 import { getDummyData } from "../helpers/evaluation/getDummyData";
 import { Address } from "viem";
+import { extractGasCosts } from "../helpers/evaluation/extractGasCosts";
 
 /**
  Example:
@@ -48,9 +49,12 @@ task("evaluateHaLoNFCMetadataRegistry", "Evaluates the HaLo NFC Metadata Registr
           return await publicClient.waitForTransactionReceipt({ hash: txHash });
         });
 
+        const { gasUsed, effectiveGasPriceInWei, gasCostsInWei } = extractGasCosts(txReceipt);
         evaluation.create.push({
           functionName: "initMetadataURI",
-          gasUsedInWei: Number(txReceipt.gasUsed),
+          gasUsed,
+          effectiveGasPriceInWei,
+          gasCostsInWei,
           ...performance,
         });
       },
@@ -63,7 +67,9 @@ task("evaluateHaLoNFCMetadataRegistry", "Evaluates the HaLo NFC Metadata Registr
 
         evaluation.read.push({
           functionName: "metadataURIs",
-          gasUsedInWei: 0,
+          gasUsed: 0,
+          effectiveGasPriceInWei: 0,
+          gasCostsInWei: 0,
           ...performance,
         });
       },
