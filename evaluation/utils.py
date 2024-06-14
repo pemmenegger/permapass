@@ -8,6 +8,8 @@ import pandas as pd
 OUTPUT_PATH = "plots"
 os.makedirs(OUTPUT_PATH, exist_ok=True)
 
+ETH_CONVERSION = 1e18  # Conversion factor from Wei to Ether
+
 
 def load_json(file_path):
     with open(file_path, "r") as f:
@@ -32,12 +34,12 @@ def process_registry_data(data_path):
             elif len(record[key]) == 1:
                 registry_actions[key].extend(record[key])
             else:
-                gas_used_sum = sum(item["gasUsedInWei"] for item in record[key][1:])
+                gas_costs_sum = sum(item["gasCostsInWei"] for item in record[key][1:])
                 duration_sum = sum(item["durationInMs"] for item in record[key][1:])
                 start_timestamp = record[key][0]["startTimestamp"]
                 registry_actions[key].append(
                     {
-                        "gasUsedInWei": gas_used_sum,
+                        "gasCostsInWei": gas_costs_sum,
                         "durationInMs": duration_sum,
                         "startTimestamp": start_timestamp,
                     }
@@ -68,9 +70,9 @@ def plot_durations(
             .dt.tz_localize("UTC")
             .dt.tz_convert("Europe/Zurich")
         )
-        # Round down to the nearest 10 minutes
+        # Round down to the nearest 5 minutes
         df["formattedTimestamp"] = (
-            df["startTimestamp"].dt.floor("10min").dt.strftime("%H:%M")
+            df["startTimestamp"].dt.floor("5min").dt.strftime("%H:%M")
         )
 
         # Convert duration based on x_axis
@@ -89,7 +91,7 @@ def plot_durations(
             marker="o",
         )
 
-    plt.xlabel("Start Time on 2024-06-13 (HH:MM CEST)")
+    plt.xlabel("Start Time on 2024-06-14 (HH:MM CEST)")
     plt.ylabel(f"Duration ({unit})")
     plt.title(f"{title} Durations")
     plt.xticks(rotation=45)
@@ -117,22 +119,23 @@ def plot_gas_used(
             .dt.tz_localize("UTC")
             .dt.tz_convert("Europe/Zurich")
         )
-        # Round down to the nearest 10 minutes
+        # Round down to the nearest 5 minutes
         df["formattedTimestamp"] = (
-            df["startTimestamp"].dt.floor("10min").dt.strftime("%H:%M")
+            df["startTimestamp"].dt.floor("5min").dt.strftime("%H:%M")
         )
 
-        mean_gas_used = df["gasUsedInWei"].mean()
-        unit = "wei"
+        df["gasCostsInEther"] = df["gasCostsInWei"] / ETH_CONVERSION
+        mean_gas_costs = df["gasCostsInEther"].mean()
+        unit = "Ether"
 
         plt.plot(
             df["formattedTimestamp"],
-            df["gasUsedInWei"],
-            label=f"{label} (mean: {mean_gas_used:.2f} {unit})",
+            df["gasCostsInEther"],
+            label=f"{label} (mean: {mean_gas_costs:.6f} {unit})",
             marker="o",
         )
 
-    plt.xlabel("Start Time on 2024-06-13 (HH:MM CEST)")
+    plt.xlabel("Start Time on 2024-06-14 (HH:MM CEST)")
     plt.ylabel(f"Gas Used ({unit})")
     plt.title(f"{title} Gas Used")
     plt.xticks(rotation=45)
@@ -237,9 +240,9 @@ def plot_gas_used_overview(registry_configs, output_filename="mean_crud_gas_used
         titles.append(title)
 
         for operation in operation_gas_used.keys():
-            gas_used = [item["gasUsedInWei"] for item in entry["data"][operation]]
-            if gas_used:
-                mean_gas_used = np.mean(gas_used)
+            gas_costs = [item["gasCostsInWei"] for item in entry["data"][operation]]
+            if gas_costs:
+                mean_gas_used = np.mean(gas_costs) / ETH_CONVERSION
             else:
                 mean_gas_used = 0
             operation_gas_used[operation].append(mean_gas_used)
@@ -266,7 +269,7 @@ def plot_gas_used_overview(registry_configs, output_filename="mean_crud_gas_used
             ax.text(
                 rect.get_x() + rect.get_width() / 2.0,
                 rect.get_y() + height / 2.0,
-                f"{mean:.0f}",
+                f"{mean:.6f}",
                 ha="center",
                 va="center",
                 fontsize=9,
@@ -278,7 +281,7 @@ def plot_gas_used_overview(registry_configs, output_filename="mean_crud_gas_used
         ax.text(
             x[i],
             bottoms[i] + 0.1,
-            f"Total: {total:.0f} Wei",
+            f"Total: {total:.6f} Ether",
             ha="center",
             va="bottom",
             fontsize=10,
@@ -286,7 +289,7 @@ def plot_gas_used_overview(registry_configs, output_filename="mean_crud_gas_used
             fontweight="bold",
         )
 
-    ax.set_ylabel("Gas Used (Wei)")
+    ax.set_ylabel("Gas Used (Ether)")
     ax.set_title("Mean CRUD Operation Gas Used for Registry Contracts")
     ax.set_xticks(x)
     ax.set_xticklabels(titles)
