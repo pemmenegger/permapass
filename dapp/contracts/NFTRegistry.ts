@@ -1,6 +1,6 @@
 export const NFTRegistry = {
   "31337": "0x624f79f4e0994fb67555a34aa5ef8abf108ead2b",
-  "11155111": "0x8bb37efc17f4587c7898354571649b68d09b6f66",
+  "11155111": "0x294d8241ed397bb2004d7ee814321a32a463f0a4",
   abi: [
     {
       inputs: [],
