@@ -64,10 +64,76 @@ def plot_performance(
     plt.close()
 
 
-def plot_performance_comparison(
-    registry_configs,
-    output_filename="performance_comparison.png",
+def plot_stacked_bar_chart(
+    data,
+    labels,
+    title,
+    xlabels,
+    output_filename,
+    show_legend_below=False,
 ):
+    fig, ax = plt.subplots(figsize=(16, 10))
+
+    x = range(len(xlabels))
+    bottoms = np.zeros(len(xlabels))
+
+    for i, label in enumerate(labels):
+        values = [data[key][i] for key in xlabels]
+        bars = ax.bar(x, values, bottom=bottoms, label=label)
+        for j, bar in enumerate(bars):
+            height = bar.get_height()
+            if height != 0:
+                ax.text(
+                    bar.get_x() + bar.get_width() / 2,
+                    bottoms[j] + height / 2,
+                    f"{height:.2f}",
+                    ha="center",
+                    va="center",
+                )
+            bottoms[j] += height
+
+    total_durations = {key: sum(data[key]) for key in xlabels}
+    for i, (key, total) in enumerate(total_durations.items()):
+        ax.text(
+            x[i],
+            bottoms[i] + 0.005 * max(bottoms),
+            f"Total:\n{total:.2f} Seconds",
+            ha="center",
+            va="bottom",
+            fontsize=10,
+            color="black",
+        )
+
+    ax.set_title(title)
+    ax.set_ylabel("Duration (Seconds)")
+    ax.set_xticks(x)
+    ax.set_xticklabels(xlabels)
+
+    handles, labels = ax.get_legend_handles_labels()
+
+    if show_legend_below:
+        ax.legend(
+            reversed(handles),
+            reversed(labels),
+            ncol=1,
+            loc="upper center",
+            bbox_to_anchor=(0.5, -0.05),
+        )
+    else:
+        ax.legend(
+            reversed(handles),
+            reversed(labels),
+            ncol=1,
+        )
+
+    plt.savefig(
+        os.path.join(OUTPUT_PATH, output_filename),
+        bbox_inches="tight",
+    )
+    plt.close()
+
+
+def plot_contracts_performance(registry_configs):
     titles = []
     operation_performance = {
         "deployment": [],
@@ -82,73 +148,42 @@ def plot_performance_comparison(
         titles.append(title)
 
         for operation in operation_performance.keys():
-            if operation not in operation_performance:
-                continue
             durations = [item["durationInMs"] for item in entry["data"][operation]]
-            if durations:
-                mean_duration = np.mean(durations) / 1000
-            else:
-                mean_duration = 0
+            mean_duration = np.mean(durations) / 1000 if durations else 0
             operation_performance[operation].append(mean_duration)
 
-    df = pd.DataFrame(operation_performance, index=titles)
-    df["total"] = df.sum(axis=1)
-
-    x = np.arange(len(titles))
-    width = 0.4
-
-    fig, ax = plt.subplots(figsize=(16, 10))
-
-    bottoms = np.zeros(len(titles))
+    # Creating the correct data structure
+    data = {title: [] for title in titles}
     for operation in operation_performance.keys():
-        bar = ax.bar(
-            x,
-            df[operation],
-            width,
-            bottom=bottoms,
-            label=operation.capitalize(),
-        )
-        for rect, mean in zip(bar, df[operation]):
-            height = rect.get_height()
-            ax.text(
-                rect.get_x() + rect.get_width() / 2.0,
-                rect.get_y() + height / 2.0,
-                f"{mean:.2f}",
-                ha="center",
-                va="center",
-                fontsize=9,
-                color="black",
-            )
-        bottoms += df[operation].values
+        for i, title in enumerate(titles):
+            data[title].append(operation_performance[operation][i])
 
-    for i, total in enumerate(df["total"]):
-        ax.text(
-            x[i],
-            bottoms[i] + 0.1,
-            f"Total:\n{total:.2f} Seconds",
-            ha="center",
-            va="bottom",
-            fontsize=10,
-            color="black",
-            fontweight="bold",
-        )
+    labels = list(operation_performance.keys())
+    title = "Performance Comparison of Registry Contracts using Means"
+    xlabels = titles
 
-    ax.set_title("Performance Comparison of Registry Contracts using Means")
-    ax.set_ylabel("Duration (Seconds)")
-    ax.set_xticks(x)
-    ax.set_xticklabels(titles)
-
-    handles, labels = ax.get_legend_handles_labels()
-    ax.legend(
-        reversed(handles),
-        reversed(labels),
-        ncol=1,
-        bbox_to_anchor=(0.69, 0.92),
-        loc="center",
+    plot_stacked_bar_chart(
+        data,
+        labels,
+        title,
+        xlabels,
+        output_filename="performance_contract_comparison.png",
     )
 
-    plt.savefig(
-        os.path.join(OUTPUT_PATH, output_filename),
-        bbox_inches="tight",
+
+def plot_passport_types_performance(
+    data,
+    labels,
+    title,
+    output_filename,
+):
+    xlabels = list(data.keys())
+
+    plot_stacked_bar_chart(
+        data,
+        labels,
+        title,
+        xlabels,
+        output_filename,
+        show_legend_below=True,
     )
-    plt.close()
