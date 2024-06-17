@@ -7,3 +7,4 @@ app/android
 # app/contracts
 evaluation/.venv
 evaluation/__pycache__
+evaluation/utils/__pycache__

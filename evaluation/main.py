@@ -1,25 +1,20 @@
-from utils import (
-    load_json,
-    plot_duration_overview,
-    plot_durations,
-    plot_gas_used,
-    plot_gas_used_overview,
-    process_registry_data,
-)
+from utils.costs import plot_gas_costs, plot_gas_costs_comparison
+from utils.performance import plot_performance, plot_performance_comparison
+from utils.preprocessing import load_json, process_registry_data
 
 
 def plot_arweave():
     arweave_data = load_json("data/Arweave.json")
-    plot_durations(
+    plot_performance(
         data_list=[
             arweave_data["create"],
             arweave_data["read"],
             arweave_data["update"],
         ],
         labels=["Create", "Read", "Update"],
-        title="Arweave",
-        output_filename="arweave.png",
-        x_axis="ms",
+        title="Arweave Performance",
+        output_filename="performance_arweave.png",
+        x_axis="s",
     )
 
 
@@ -31,21 +26,21 @@ def plot_halo_nfc_metadata_registry():
     }
 
     data = process_registry_data("data/contracts/HaloNFCMetadataRegistry.json")
-    title = "Halo NFC Metadata Registry"
-    output_filename_prefix = "halo_nfc_metadata_registry"
+    title = "HaloNFCMetadataRegistry.sol"
+    output_filename_suffix = "halo_nfc_metadata_registry"
 
-    plot_durations(
+    plot_performance(
         data_list=[data[key] for key in data.keys()],
         labels=labels.values(),
         title=title,
-        output_filename=f"{output_filename_prefix}_durations.png",
+        output_filename=f"performance_{output_filename_suffix}.png",
         x_axis="s",
     )
-    plot_gas_used(
+    plot_gas_costs(
         data_list=[data[key] for key in data.keys()],
         labels=labels.values(),
         title=title,
-        output_filename=f"{output_filename_prefix}_gas_used.png",
+        output_filename=f"gas_costs_{output_filename_suffix}.png",
     )
 
 
@@ -60,42 +55,39 @@ def plot_digital_identifier_contracts():
 
     registry_configs = [
         {
-            "title": "DID Registry",
-            "output_filename_prefix": "did_registry",
+            "title": "DIDRegistry.sol",
+            "output_filename_suffix": "did_registry",
             "data": process_registry_data("data/contracts/DIDRegistry.json"),
         },
         {
-            "title": "NFT Registry",
-            "output_filename_prefix": "nft_registry",
+            "title": "NFTRegistry.sol",
+            "output_filename_suffix": "nft_registry",
             "data": process_registry_data("data/contracts/NFTRegistry.json"),
         },
         {
-            "title": "PBT Registry",
-            "output_filename_prefix": "pbt_registry",
+            "title": "PBTRegistry.sol",
+            "output_filename_suffix": "pbt_registry",
             "data": process_registry_data("data/contracts/PBTRegistry.json"),
         },
     ]
 
-    plot_duration_overview(registry_configs)
-    plot_gas_used_overview(registry_configs)
-
-    # print(registry_configs)
-    # Process data to calculate total durations and individual operation durations
+    plot_performance_comparison(registry_configs)
+    plot_gas_costs_comparison(registry_configs)
 
     for config in registry_configs:
         registry_data = config["data"]
-        plot_durations(
+        plot_performance(
             data_list=[registry_data[key] for key in registry_data.keys()],
             labels=labels.values(),
-            title=config["title"],
-            output_filename=f'{config["output_filename_prefix"]}_durations.png',
+            title=f'{config["title"]} Performance',
+            output_filename=f'performance_{config["output_filename_suffix"]}.png',
             x_axis="s",
         )
-        plot_gas_used(
+        plot_gas_costs(
             data_list=[registry_data[key] for key in registry_data.keys()],
             labels=labels.values(),
-            title=config["title"],
-            output_filename=f'{config["output_filename_prefix"]}_gas_used.png',
+            title=f'{config["title"]} Gas Costs',
+            output_filename=f'gas_costs_{config["output_filename_suffix"]}.png',
         )
 
     combined_registry_data = {
@@ -117,24 +109,24 @@ def plot_digital_identifier_contracts():
     }
 
     for action_type in combined_registry_data:
-        plot_durations(
+        plot_performance(
             data_list=[
                 combined_registry_data[action_type][key]
                 for key in combined_registry_data[action_type].keys()
             ],
             labels=combined_registry_data[action_type].keys(),
-            title=f"Registry {action_type.capitalize()}",
-            output_filename=f"combined_durations_{action_type}.png",
+            title=f"Performance Comparison of {action_type.capitalize()} Operation",
+            output_filename=f"performance_comparison_{action_type}.png",
             x_axis="s",
         )
-        plot_gas_used(
+        plot_gas_costs(
             data_list=[
                 combined_registry_data[action_type][key]
                 for key in combined_registry_data[action_type].keys()
             ],
             labels=combined_registry_data[action_type].keys(),
-            title=f"Registry {action_type.capitalize()}",
-            output_filename=f"combined_gas_used_{action_type}.png",
+            title=f"Gas Costs Comparison of {action_type.capitalize()} Operation",
+            output_filename=f"gas_costs_comparison_{action_type}.png",
         )
 
 
