@@ -3,7 +3,7 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from utils.constants import OUTPUT_PATH
+from utils.helpers import OUTPUT_PATH
 
 
 def plot_performance(
@@ -171,7 +171,7 @@ def plot_contracts_performance(registry_configs):
     )
 
 
-def plot_passport_types_performance(
+def plot_passport_types_operation_performance(
     data,
     labels,
     title,
@@ -187,3 +187,55 @@ def plot_passport_types_performance(
         output_filename,
         show_legend_below=True,
     )
+
+
+def plot_passport_types_performance(performance_data):
+    labels = performance_data[0]["data"].keys()
+    operations = [entry["operation"] for entry in performance_data]
+
+    data_dict = {label: {operation: [] for operation in operations} for label in labels}
+    for entry in performance_data:
+        operation = entry["operation"]
+        for label in labels:
+            data_dict[label][operation] = entry["data"][label]
+
+    x = np.arange(len(labels))
+    width = 0.2
+
+    fig, ax = plt.subplots(figsize=(16, 10))
+
+    for i, operation in enumerate(operations):
+        y = [np.sum(data_dict[label][operation]) for label in labels]
+        bars = ax.bar(x + i * width, y, width, label=operation)
+
+        for bar in bars:
+            height = bar.get_height()
+
+            # ax.text(
+            #     bar.get_x() + bar.get_width() / 2,
+            #     height / 2,
+            #     f"{height:.2f}",
+            #     ha="center",
+            #     va="center",
+            # )
+
+            # ax.annotate(
+            #     f"{height:.2f}",
+            #     xy=(bar.get_x() + bar.get_width() / 2, height),
+            #     xytext=(0, 2),
+            #     textcoords="offset points",
+            #     ha="center",
+            #     va="bottom",
+            # )
+
+    ax.set_ylabel("Duration (Seconds)")
+    ax.set_title("Performance by Passport Type and Operation")
+    ax.set_xticks(x + width * 1.5)
+    ax.set_xticklabels(labels)
+    ax.legend()
+
+    plt.savefig(
+        os.path.join(OUTPUT_PATH, "performance_passport_types.png"),
+        bbox_inches="tight",
+    )
+    plt.close()

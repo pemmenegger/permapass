@@ -1,10 +1,12 @@
-from utils.costs import (
+from utils.gas_costs import (
     plot_contracts_gas_costs,
     plot_gas_costs,
     plot_passport_types_gas_costs,
+    plot_passport_types_operation_gas_costs,
 )
 from utils.performance import (
     plot_contracts_performance,
+    plot_passport_types_operation_performance,
     plot_passport_types_performance,
     plot_performance,
 )
@@ -169,12 +171,14 @@ def plot_passport_types(
         data = operation_data["data"]
         labels = operation_data["labels"]
 
-        plot_passport_types_performance(
+        plot_passport_types_operation_performance(
             data,
             labels,
             f"Mean Durations for {operation} Operations",
             output_filename=f"performance_passport_types_{operation.lower()}.png",
         )
+
+    plot_passport_types_performance(performance_data)
 
     gast_costs_data = process_passport_type_gas_costs_data(
         did_registry_data,
@@ -188,12 +192,14 @@ def plot_passport_types(
         data = operation_data["data"]
         labels = operation_data["labels"]
 
-        plot_passport_types_gas_costs(
+        plot_passport_types_operation_gas_costs(
             data,
             labels,
             f"Mean Gas Costs for {operation} Operations",
             output_filename=f"gas_costs_passport_types_{operation.lower()}.png",
         )
+
+    plot_passport_types_gas_costs(gast_costs_data)
 
 
 def main():
