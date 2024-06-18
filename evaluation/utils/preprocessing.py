@@ -62,6 +62,11 @@ def process_registry_data(data_path):
     return registry_actions
 
 
+deployment_labels = [
+    "1. Blockchain: Registry Contract Deployment",
+    "2. Blockchain: HaLo NFC Metadata Registry Contract Deployment",
+]
+
 create_labels = [
     "1. Arweave: Upload Passport Data",
     "2. Blockchain: Create Identifier on Registry Contract",
@@ -100,6 +105,25 @@ def process_passport_type_performance_data(
     )
     nft_registry_duration_mean = compute_duration_mean(nft_registry_data)
     pbt_registry_duration_mean = compute_duration_mean(pbt_registry_data)
+
+    depolyment_data = {
+        "QR Code x NFT": [
+            nft_registry_duration_mean["deployment"],
+            0,
+        ],
+        "QR Code x DID": [
+            did_registry_duration_mean["deployment"],
+            0,
+        ],
+        "HaLo NFC x PBT": [
+            pbt_registry_duration_mean["deployment"],
+            halo_nfc_metadata_registry_duration_mean["deployment"],
+        ],
+        "HaLo NFC x DID": [
+            did_registry_duration_mean["deployment"],
+            halo_nfc_metadata_registry_duration_mean["deployment"],
+        ],
+    }
 
     create_data = {
         "QR Code x NFT": [
@@ -191,6 +215,11 @@ def process_passport_type_performance_data(
 
     return [
         {
+            "operation": "Deployment",
+            "data": depolyment_data,
+            "labels": deployment_labels,
+        },
+        {
             "operation": "Create",
             "data": create_data,
             "labels": create_labels,
@@ -225,6 +254,25 @@ def process_passport_type_gas_costs_data(
     )
     nft_registry_gas_costs_mean = compute_gas_costs_mean(nft_registry_data)
     pbt_registry_gas_costs_mean = compute_gas_costs_mean(pbt_registry_data)
+
+    deployment_data = {
+        "QR Code x NFT": [
+            nft_registry_gas_costs_mean["deployment"],
+            0,
+        ],
+        "QR Code x DID": [
+            did_registry_gas_costs_mean["deployment"],
+            0,
+        ],
+        "HaLo NFC x PBT": [
+            pbt_registry_gas_costs_mean["deployment"],
+            halo_nfc_metadata_registry_gas_costs_mean["deployment"],
+        ],
+        "HaLo NFC x DID": [
+            did_registry_gas_costs_mean["deployment"],
+            halo_nfc_metadata_registry_gas_costs_mean["deployment"],
+        ],
+    }
 
     create_data = {
         "QR Code x NFT": [
@@ -315,6 +363,11 @@ def process_passport_type_gas_costs_data(
     }
 
     return [
+        {
+            "operation": "Deployment",
+            "data": deployment_data,
+            "labels": deployment_labels,
+        },
         {
             "operation": "Create",
             "data": create_data,

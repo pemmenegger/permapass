@@ -191,7 +191,13 @@ def plot_passport_types_operation_performance(
 
 def plot_passport_types_performance(performance_data):
     labels = performance_data[0]["data"].keys()
-    operations = [entry["operation"] for entry in performance_data]
+
+    to_exclude = ["Deployment"]
+    operations = [
+        entry["operation"]
+        for entry in performance_data
+        if entry["operation"] not in to_exclude
+    ]
 
     data_dict = {label: {operation: [] for operation in operations} for label in labels}
     for entry in performance_data:
