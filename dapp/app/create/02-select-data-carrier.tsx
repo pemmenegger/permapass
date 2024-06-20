@@ -32,7 +32,7 @@ export default function Page() {
         />
         <StepOption
           title="HaLo NFC Chip"
-          subtitle="If you have HaLo NFC Chips available, you can write the "
+          subtitle="Use a HaLo NFC Chip to link to the digital identifier where the passport data can be retrieved."
           isSelected={dataCarrier == "nfc"}
           onPress={() => setDataCarrier("nfc")}
         />

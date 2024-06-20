@@ -1,6 +1,20 @@
 # Web API
 
-This folder contains the web API code for the PermaPass application. The web API extends the `dapp` by providing functionality that cannot be implemented directly within the `dapp` React Native repository, such as:
+This folder contains the web API code for the PermaPass prototype. The web API is built using [Express.js](https://expressjs.com) and provides functionalities for the `dapp` folder that are not supported by React Native.
+
+## Structure
+
+The main files and folders in this directory are:
+
+| Path         | Description                                                                               |
+| ------------ | ----------------------------------------------------------------------------------------- |
+| ./api        | Contains the file `index.mjs` that runs the Express.js server exposing the API endpoints. |
+| evaluate.mjs | Evaluates the Web API using the Arweave Irys Node 2.                                      |
+| vercel.json  | Configuration for deploying the Web API to Vercel.                                        |
+
+## Functionalities
+
+The Web API provides the following functionalities:
 
 ### Uploading Data to the Arweave Mainnet
 
@@ -17,9 +31,26 @@ To read DID documents, we use Veramo packages. The `@arx-research/libhalo` packa
 - [Veramo Packages](https://veramo.io/docs/basics/introduction)
 - [libhalo Repository](https://github.com/arx-research/libhalo)
 
-## Usage
+## Running Locally
 
-1. Install the dependencies with `npm install`.
-2. Run one of the following commands:
-   - `npm run start`: Start the web API locally.
-   - `npm run evaluate`: Evaluate the Arweave upload functionality.
+Navigate to this directory and install the Node dependencies:
+
+```bash
+npm install
+```
+
+### Starting the Web API
+
+To start the Web API:
+
+```bash
+npm run start
+```
+
+### Running the Evaluation Script
+
+To evaluate the Web API:
+
+```bash
+npm run evaluate
+```

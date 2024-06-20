@@ -30,14 +30,14 @@ export default function Page() {
         {state.userInput.dataCarrier == "nfc" ? (
           <StepOption
             title="Physical Backed Token"
-            subtitle="Physical Backed Token (PBT) is a new Ethereum token standard based off of ERC721. It ties a physical item to a digital token."
+            subtitle="Physical Backed Tokens (PBTs) link physical assets to unique digital tokens using the ERC-5791 standard."
             isSelected={digitalIdentifier == "pbt"}
             onPress={() => setDigitalIdentifier("pbt")}
           />
         ) : (
           <StepOption
             title="Non-Fungible Token"
-            subtitle="Non-Fungible Tokens (NFTs) are unique digital assets on a blockchain."
+            subtitle="Non-Fungible Tokens (NFTs) are unique digital assets on a blockchain using the ERC-721 standard."
             isSelected={digitalIdentifier == "nft"}
             onPress={() => setDigitalIdentifier("nft")}
           />
