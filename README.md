@@ -14,12 +14,12 @@ This repository represents the technical implementation of the PermaPass prototy
 
 The repository is divided into the following main directories:
 
-| Directory                  | Description                                                                                                               | Technologies                                                                 |
-| -------------------------- | ------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| [dapp](./dapp)             | Native Smartphone App enabling interactions with physical data carriers and its digital identities stored on blockchains. | [React Native](https://reactnative.dev) and [Expo](https://docs.expo.dev)    |
-| [ethereum](./ethereum)     | Smart contract implementations of digital identities                                                                      | [Solidity](https://docs.soliditylang.org) and [Hardhat](https://hardhat.org) |
-| [evaluation](./evaluation) | Evaluation data and plots resulted in executing evaluation scripts                                                        | [Python](https://vuejs.org) with [Matplotlib](https://matplotlib.org)        |
-| [web-api](./web-api)       | An API that supports the `dapp` with functionalities that were required but not supported by React Native                 | [Express.js](https://expressjs.com)                                          |
+| Directory                  | Description                                                                                                                                        | Technologies                                                                 |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| [dapp](./dapp)             | React Native Smartphone App enabling interactions with physical data carriers and their digital identities stored on an EVM-compatible blockchain. | [React Native](https://reactnative.dev) and [Expo](https://docs.expo.dev)    |
+| [ethereum](./ethereum)     | Smart contract implementations of digital identities.                                                                                              | [Solidity](https://docs.soliditylang.org) and [Hardhat](https://hardhat.org) |
+| [evaluation](./evaluation) | Evaluation data and plots resulted in executing evaluation scripts.                                                                                | [Python](https://vuejs.org) with [Matplotlib](https://matplotlib.org)        |
+| [web-api](./web-api)       | An API that supports the `dapp` with functionalities that were required but not supported by React Native.                                         | [Express.js](https://expressjs.com)                                          |
 
 Details on the individual components can be found in the respective `README.md` files of the corresponding directory.
 

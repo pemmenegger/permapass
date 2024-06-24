@@ -6,17 +6,21 @@ This folder contains the code for the decentralized application (dapp) of the Pe
 
 The main files and folders in this directory are:
 
-| Path         | Description                                                                                                                                                                                 |
-| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ./app        | Contains the app screens that can be navigated through. The starting scren of the App is `index.tsx`. The `_layout.tsx` files define the basic layout for every screen in this subdirectory |
-| ./assets     | Contains the images, fonts, and icons used in the App.                                                                                                                                      |
-| ./components | Contains the reusable components used in the App.                                                                                                                                           |
-| ./context    | Contains react native context providers such as `CreationContext.tsx` and `ModalContext.tsx` to hold a global state for during runntime.                                                    |
-| ./hooks      | Contains custom react native hooks used in the App.                                                                                                                                         |
-| ./lib        | Contains config properties, utility functions, and the API client to communicate with the Web API.                                                                                          |
-| app.json     | Configuration for the Expo app.                                                                                                                                                             |
+| Path         | Description                                                                                                                                                                                   |
+| ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ./app        | Contains the app screens that can be navigated through. The starting screen of the App is `index.tsx`. The `_layout.tsx` files define the basic layout for every screen in this subdirectory. |
+| ./assets     | Contains the images, fonts, and icons used in the App.                                                                                                                                        |
+| ./components | Contains the reusable components used in the App.                                                                                                                                             |
+| ./context    | Contains react native context providers such as `CreationContext.tsx` and `ModalContext.tsx` to hold a global state for during runntime.                                                      |
+| ./hooks      | Contains custom react native hooks used in the App.                                                                                                                                           |
+| ./lib        | Contains config properties, utility functions, and the API client to communicate with the Web API.                                                                                            |
+| app.json     | Configuration for the Expo app.                                                                                                                                                               |
 
 ## Functionalities
+
+### Wallet Connection (Demo)
+
+https://gist.github.com/assets/29231304/8b7a8f22-4e24-44ce-b5fb-aebeeb36dd85.mp4
 
 The dapp provides the following functionalities:
 

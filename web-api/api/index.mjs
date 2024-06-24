@@ -4,7 +4,7 @@ import { DIDResolverPlugin } from "@veramo/did-resolver";
 import { getResolver as ethrDidResolver } from "ethr-did-resolver";
 import { ethers } from "ethers";
 
-// init irys node
+// init irys node 2
 const irys = new Irys({
   network: "mainnet",
   token: "arweave",
@@ -28,6 +28,14 @@ app.get("/", (req, res) => {
   res.send("Web API running...");
 });
 
+/**
+ * @endpoint GET /did
+ * @description Resolve a DID to retrieve its DID Document. Supports 'sepolia' and 'hardhat' networks.
+ * @query {string} didUrl - The DID URL to resolve (e.g., did:ethr:sepolia:0x123...).
+ * @query {string} registryAddress - Address of the DIDRegistry contract.
+ * @example
+ * curl -X GET "http://localhost:3000/did?didUrl=did:ethr:sepolia:0x123...&registryAddress=0xabc..."
+ */
 app.get("/did", async (req, res) => {
   const { didUrl, registryAddress } = req.query;
 
@@ -35,12 +43,12 @@ app.get("/did", async (req, res) => {
     return res.status(400).json({ error: "didUrl is required" });
   }
 
+  if (!registryAddress) {
+    return res.status(400).json({ error: "registryAddress is required" });
+  }
+
   const network = didUrl.split(":")[2];
-  if (network === "hardhat") {
-    if (!registryAddress) {
-      return res.status(400).json({ error: "registryAddress is required for hardhat DIDs" });
-    }
-  } else if (network !== "sepolia" && network !== "hardhat") {
+  if (network !== "sepolia" && network !== "hardhat") {
     return res.status(400).json({ error: "Only sepolia and hardhat networks are currently supported" });
   }
 
@@ -48,7 +56,7 @@ app.get("/did", async (req, res) => {
     {
       name: "sepolia",
       provider: new ethers.JsonRpcProvider(`https://sepolia.infura.io/v3/2Nxca4S9yIKHNyPZ0JetWFvHyO6`),
-      registry: registryAddress || "0x03d5003bf0e79C5F5223588F347ebA39AfbC3818",
+      registry: registryAddress,
       chainId: 11155111,
     },
     {
@@ -67,6 +75,13 @@ app.get("/did", async (req, res) => {
   res.json(doc.didDocument);
 });
 
+/**
+ * @endpoint POST /arweave
+ * @description Upload data to Arweave mainnet using the Irys Node 2.
+ * @body {object} - JSON body with the data to be uploaded.
+ * @example
+ * curl -X POST http://localhost:3000/arweave -H "Content-Type: application/json" -d '{"data": "your data here"}'
+ */
 app.post("/arweave", async (req, res) => {
   try {
     if (!req.body) {
