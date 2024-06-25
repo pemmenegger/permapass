@@ -30,6 +30,11 @@ contract HaLoNFCMetadataRegistry {
         uint256 blockNumberUsedInSig,
         string memory metadataURI
     ) external {
+        // Revert if the metadataURI has already been set
+        if (bytes(metadataURIs[chipAddress]).length > 0) {
+            revert AlreadySet();
+        }
+
         // The blockNumberUsedInSig must be in a previous block because the blockhash of the current
         // block does not exist yet.
         if (block.number <= blockNumberUsedInSig) {
@@ -52,10 +57,6 @@ contract HaLoNFCMetadataRegistry {
             revert InvalidSignature();
         }
 
-        // Revert if the metadataURI has already been set
-        if (bytes(metadataURIs[chipAddr]).length > 0) {
-            revert AlreadySet();
-        }
         metadataURIs[chipAddr] = metadataURI;
     }
 }
