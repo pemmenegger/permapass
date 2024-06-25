@@ -49,13 +49,13 @@ def plot_performance(
             marker="o",
         )
 
-    plt.title(f"{title} (2024-06-14 on Sepolia)")
-    plt.xlabel("Execution Time (HH:MM CEST)")
-    plt.ylabel(f"Duration ({unit})")
+    plt.title(f"{title} (2024-06-14 on Sepolia)", fontsize=18)
+    plt.xlabel("Execution Time (HH:MM CEST)", fontsize=14)
+    plt.ylabel(f"Duration ({unit})", fontsize=14)
 
-    plt.legend(ncol=1)
+    plt.legend(ncol=1, fontsize=14)
     plt.grid(True, which="both", linestyle="--", linewidth=0.5)
-    plt.tick_params(axis="both", which="major", labelsize=10)
+    plt.tick_params(axis="both", which="major", labelsize=14)
 
     plt.savefig(
         os.path.join(OUTPUT_PATH, output_filename),
@@ -89,6 +89,7 @@ def plot_stacked_bar_chart(
                     f"{height:.2f}",
                     ha="center",
                     va="center",
+                    fontsize=14,
                 )
             bottoms[j] += height
 
@@ -96,18 +97,22 @@ def plot_stacked_bar_chart(
     for i, (key, total) in enumerate(total_durations.items()):
         ax.text(
             x[i],
-            bottoms[i] + 0.005 * max(bottoms),
+            bottoms[i] + 0.007 * max(bottoms),
             f"Total:\n{total:.2f} Seconds",
             ha="center",
             va="bottom",
-            fontsize=10,
+            fontsize=14,
             color="black",
         )
 
-    ax.set_title(title)
-    ax.set_ylabel("Duration (Seconds)")
+    max_height = max(bottoms)
+    ax.set_ylim(0, max_height * 1.1)
+
+    ax.set_title(title, fontsize=18)
+    ax.set_ylabel("Duration (Seconds)", fontsize=14)
     ax.set_xticks(x)
-    ax.set_xticklabels(xlabels)
+    ax.set_xticklabels(xlabels, fontsize=14)
+    ax.tick_params(axis="y", labelsize=14)
 
     handles, labels = ax.get_legend_handles_labels()
 
@@ -118,12 +123,14 @@ def plot_stacked_bar_chart(
             ncol=1,
             loc="upper center",
             bbox_to_anchor=(0.5, -0.05),
+            fontsize=14,
         )
     else:
         ax.legend(
             reversed(handles),
             reversed(labels),
             ncol=1,
+            fontsize=14,
         )
 
     plt.savefig(
@@ -159,6 +166,7 @@ def plot_contracts_performance(registry_configs):
             data[title].append(operation_performance[operation][i])
 
     labels = list(operation_performance.keys())
+    labels = [label.capitalize() for label in labels]
     title = "Performance Comparison of Registry Contracts using Means"
     xlabels = titles
 
@@ -223,6 +231,7 @@ def plot_passport_types_performance(performance_data):
             #     f"{height:.2f}",
             #     ha="center",
             #     va="center",
+            #     fontsize=14,
             # )
 
             # ax.annotate(
@@ -234,11 +243,12 @@ def plot_passport_types_performance(performance_data):
             #     va="bottom",
             # )
 
-    ax.set_ylabel("Duration (Seconds)")
-    ax.set_title("Performance by Passport Type and Operation")
+    ax.set_ylabel("Duration (Seconds)", fontsize=14)
+    ax.set_title("Performance by Passport Type and Operation", fontsize=18)
     ax.set_xticks(x + width * 1.5)
     ax.set_xticklabels(labels)
-    ax.legend()
+    ax.tick_params(axis="both", labelsize=14)
+    ax.legend(fontsize=14)
 
     plt.savefig(
         os.path.join(OUTPUT_PATH, "performance_passport_types.png"),

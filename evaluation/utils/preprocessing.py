@@ -63,7 +63,7 @@ def process_registry_data(data_path):
 
 
 deployment_labels = [
-    "1. Blockchain: Registry Contract Deployment",
+    "1. Blockchain: NFT, PBT, or DID Registry Contract Deployment",
     "2. Blockchain: HaLo NFC Metadata Registry Contract Deployment",
 ]
 

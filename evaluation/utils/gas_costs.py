@@ -33,15 +33,16 @@ def plot_gas_costs(data_list, labels, title, output_filename):
         )
 
     secax = ax.secondary_yaxis("right", functions=(eth_to_usd, usd_to_eth))
-    secax.set_ylabel("USD")
+    secax.set_ylabel("USD", fontsize=14)
 
-    ax.set_title(f"{title} (2024-06-14 on Sepolia)")
-    ax.set_xlabel("Execution Time (HH:MM CEST)")
-    ax.set_ylabel(unit_eth)
+    ax.set_title(f"{title} (2024-06-14 on Sepolia)", fontsize=18)
+    ax.set_xlabel("Execution Time (HH:MM CEST)", fontsize=14)
+    ax.set_ylabel(unit_eth, fontsize=14)
 
-    ax.legend(ncol=1)
+    ax.legend(ncol=1, fontsize=14)
     ax.grid(True, which="both", linestyle="--", linewidth=0.5)
-    ax.tick_params(axis="both", which="major", labelsize=10)
+    ax.tick_params(axis="both", which="major", labelsize=14)
+    secax.tick_params(axis="both", which="major", labelsize=14)
 
     plt.savefig(
         os.path.join(OUTPUT_PATH, output_filename),
@@ -78,6 +79,7 @@ def _plot_stacked_bar_chart(
                     f"{height:.6f}",
                     ha="center",
                     va="center",
+                    fontsize=14,
                 )
             bottoms[j] += height
 
@@ -85,21 +87,26 @@ def _plot_stacked_bar_chart(
     for i, (key, total) in enumerate(total_gas_costs.items()):
         ax.text(
             x[i],
-            bottoms[i] + 0.005 * max(bottoms),
+            bottoms[i] + 0.007 * max(bottoms),
             f"Total:\n{total:.6f} Sepolia ETH = {eth_to_usd(total):.2f} USD",
             ha="center",
             va="bottom",
-            fontsize=10,
+            fontsize=14,
             color="black",
         )
 
-    secax = ax.secondary_yaxis("right", functions=(eth_to_usd, usd_to_eth))
-    secax.set_ylabel("USD")
+    max_height = max(bottoms)
+    ax.set_ylim(0, max_height * 1.1)
 
-    ax.set_title(title)
-    ax.set_ylabel("Sepolia ETH")
+    secax = ax.secondary_yaxis("right", functions=(eth_to_usd, usd_to_eth))
+    secax.set_ylabel("USD", fontsize=14)
+
+    ax.set_title(title, fontsize=18)
+    ax.set_ylabel("Sepolia ETH", fontsize=14)
     ax.set_xticks(x)
     ax.set_xticklabels(xlabels)
+    ax.tick_params(axis="both", labelsize=14)
+    secax.tick_params(axis="both", which="major", labelsize=14)
 
     handles, labels = ax.get_legend_handles_labels()
 
@@ -110,12 +117,14 @@ def _plot_stacked_bar_chart(
             ncol=1,
             loc="upper center",
             bbox_to_anchor=(0.5, -0.05),
+            fontsize=14,
         )
     else:
         ax.legend(
             reversed(handles),
             reversed(labels),
             ncol=1,
+            fontsize=14,
         )
 
     plt.tight_layout()
@@ -151,6 +160,7 @@ def plot_contracts_gas_costs(registry_configs):
             data[title].append(operation_gas_costs[operation][i])
 
     labels = list(operation_gas_costs.keys())
+    labels = [label.capitalize() for label in labels]
     title = "Gas Costs Comparison of Registry Contracts using Means"
     xlabels = titles
 
@@ -213,9 +223,10 @@ def plot_passport_types_gas_costs(gas_costs_data):
             # ax.text(
             #     bar.get_x() + bar.get_width() / 2,
             #     height / 2,
-            #     f"{height:.2f}",
+            #     f"{height:.6f}",
             #     ha="center",
             #     va="center",
+            #     fontsize=14,
             # )
 
             # ax.annotate(
@@ -225,16 +236,19 @@ def plot_passport_types_gas_costs(gas_costs_data):
             #     textcoords="offset points",
             #     ha="center",
             #     va="bottom",
+            #     fontsize=14,
             # )
 
     secax = ax.secondary_yaxis("right", functions=(eth_to_usd, usd_to_eth))
-    secax.set_ylabel("USD")
+    secax.set_ylabel("USD", fontsize=14)
 
-    ax.set_title("Gas Costs by Passport Type and Operation")
-    ax.set_ylabel("Sepolia ETH")
+    ax.set_title("Gas Costs by Passport Type and Operation", fontsize=18)
+    ax.set_ylabel("Sepolia ETH", fontsize=14)
     ax.set_xticks(x + width * 1.5)
-    ax.set_xticklabels(labels)
-    ax.legend()
+    ax.set_xticklabels(labels, fontsize=14)
+    ax.tick_params(axis="both", labelsize=14)
+    ax.legend(fontsize=14)
+    secax.tick_params(axis="both", which="major", labelsize=14)
 
     plt.savefig(
         os.path.join(OUTPUT_PATH, "gas_costs_passport_types.png"),
