@@ -26,9 +26,10 @@ def plot_arweave(arweave_data):
             arweave_data["update"],
         ],
         labels=["Create", "Read", "Update"],
-        title="Arweave Performance",
+        title="Performance of Arweave Interactions using Irys Node 2",
         output_filename="performance_arweave.png",
         x_axis="s",
+        is_arweave=True,
     )
 
 
@@ -48,7 +49,7 @@ def plot_halo_nfc_metadata_registry(halo_nfc_metadata_registry_data):
             for key in halo_nfc_metadata_registry_data.keys()
         ],
         labels=labels.values(),
-        title=title,
+        title=f"Performance of {title}",
         output_filename=f"performance_{output_filename_suffix}.png",
         x_axis="s",
     )
@@ -58,7 +59,7 @@ def plot_halo_nfc_metadata_registry(halo_nfc_metadata_registry_data):
             for key in halo_nfc_metadata_registry_data.keys()
         ],
         labels=labels.values(),
-        title=title,
+        title=f"Gas Costs of {title}",
         output_filename=f"gas_costs_{output_filename_suffix}.png",
     )
 
@@ -68,10 +69,10 @@ def plot_digital_identifier_contracts(
 ):
     labels = {
         "deployment": "Deployment",
-        "create": "Create",
-        "read": "Read",
+        "create": "Creation",
+        "read": "Reading",
         "update": "Update",
-        "delete": "Delete",
+        "delete": "Deletion",
     }
 
     registry_configs = [
@@ -92,22 +93,22 @@ def plot_digital_identifier_contracts(
         },
     ]
 
-    plot_contracts_performance(registry_configs)
-    plot_contracts_gas_costs(registry_configs)
+    # plot_contracts_performance(registry_configs)
+    # plot_contracts_gas_costs(registry_configs)
 
     for config in registry_configs:
         registry_data = config["data"]
         plot_performance(
             data_list=[registry_data[key] for key in registry_data.keys()],
             labels=labels.values(),
-            title=f'{config["title"]} Performance',
+            title=f'Performance of {config["title"]}',
             output_filename=f'performance_{config["output_filename_suffix"]}.png',
             x_axis="s",
         )
         plot_gas_costs(
             data_list=[registry_data[key] for key in registry_data.keys()],
             labels=labels.values(),
-            title=f'{config["title"]} Gas Costs',
+            title=f'Gas Costs of {config["title"]}',
             output_filename=f'gas_costs_{config["output_filename_suffix"]}.png',
         )
 
@@ -129,6 +130,14 @@ def plot_digital_identifier_contracts(
         },
     }
 
+    title_mapping = {
+        "deployment": "Deployment",
+        "create": "Creation",
+        "read": "Reading",
+        "update": "Update",
+        "delete": "Deletion",
+    }
+
     for action_type in combined_registry_data:
         plot_performance(
             data_list=[
@@ -136,8 +145,8 @@ def plot_digital_identifier_contracts(
                 for key in combined_registry_data[action_type].keys()
             ],
             labels=combined_registry_data[action_type].keys(),
-            title=f"Performance Comparison of {action_type.capitalize()} Operations",
-            output_filename=f"performance_comparison_{action_type}.png",
+            title=f"Performance of Passport {title_mapping[action_type]} by Registry Contracts",
+            output_filename=f"performance_contracts_{title_mapping[action_type].lower()}.png",
             x_axis="s",
         )
         plot_gas_costs(
@@ -146,8 +155,8 @@ def plot_digital_identifier_contracts(
                 for key in combined_registry_data[action_type].keys()
             ],
             labels=combined_registry_data[action_type].keys(),
-            title=f"Gas Costs Comparison of {action_type.capitalize()} Operations",
-            output_filename=f"gas_costs_comparison_{action_type}.png",
+            title=f"Gas Costs for Passport {title_mapping[action_type]} by Registry Contracts",
+            output_filename=f"gas_costs_contracts_{title_mapping[action_type].lower()}.png",
         )
 
 
@@ -174,7 +183,7 @@ def plot_passport_types(
         plot_passport_types_operation_performance(
             data,
             labels,
-            f"Mean Durations for {operation} Operations",
+            f"Performance of Passport {operation} by Passport Types",
             output_filename=f"performance_passport_types_{operation.lower()}.png",
         )
 
@@ -195,7 +204,7 @@ def plot_passport_types(
         plot_passport_types_operation_gas_costs(
             data,
             labels,
-            f"Mean Gas Costs for {operation} Operations",
+            f"Gas Costs for Passport {operation} by Passport Types",
             output_filename=f"gas_costs_passport_types_{operation.lower()}.png",
         )
 

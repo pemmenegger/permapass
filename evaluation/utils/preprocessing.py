@@ -220,12 +220,12 @@ def process_passport_type_performance_data(
             "labels": deployment_labels,
         },
         {
-            "operation": "Create",
+            "operation": "Creation",
             "data": create_data,
             "labels": create_labels,
         },
         {
-            "operation": "Read",
+            "operation": "Reading",
             "data": read_data,
             "labels": read_labels,
         },
@@ -235,7 +235,7 @@ def process_passport_type_performance_data(
             "labels": update_labels,
         },
         {
-            "operation": "Delete",
+            "operation": "Deletion",
             "data": delete_data,
             "labels": delete_labels,
         },
@@ -369,12 +369,12 @@ def process_passport_type_gas_costs_data(
             "labels": deployment_labels,
         },
         {
-            "operation": "Create",
+            "operation": "Creation",
             "data": create_data,
             "labels": create_labels,
         },
         {
-            "operation": "Read",
+            "operation": "Reading",
             "data": read_data,
             "labels": read_labels,
         },
@@ -384,7 +384,7 @@ def process_passport_type_gas_costs_data(
             "labels": update_labels,
         },
         {
-            "operation": "Delete",
+            "operation": "Deletion",
             "data": delete_data,
             "labels": delete_labels,
         },
