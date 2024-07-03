@@ -3,7 +3,7 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from utils.helpers import OUTPUT_PATH
+from utils.helpers import LABEL_SIZE, OUTPUT_PATH, TITLE_SIZE
 
 
 def plot_performance(
@@ -49,13 +49,13 @@ def plot_performance(
             marker="o",
         )
 
-    plt.title(f"{title} (2024-06-14 on Sepolia)", fontsize=18)
-    plt.xlabel("Execution Time (HH:MM CEST)", fontsize=14)
-    plt.ylabel(f"Duration ({unit})", fontsize=14)
+    plt.title(f"{title} (2024-06-14 on Sepolia)", fontsize=TITLE_SIZE)
+    plt.xlabel("Execution Time (HH:MM CEST)", fontsize=LABEL_SIZE)
+    plt.ylabel(f"Duration ({unit})", fontsize=LABEL_SIZE)
 
-    plt.legend(ncol=1, fontsize=14)
+    plt.legend(ncol=1, fontsize=LABEL_SIZE)
     plt.grid(True, which="both", linestyle="--", linewidth=0.5)
-    plt.tick_params(axis="both", which="major", labelsize=14)
+    plt.tick_params(axis="both", which="major", labelsize=LABEL_SIZE)
 
     plt.savefig(
         os.path.join(OUTPUT_PATH, output_filename),
@@ -89,7 +89,7 @@ def plot_stacked_bar_chart(
                     f"{height:.2f}",
                     ha="center",
                     va="center",
-                    fontsize=14,
+                    fontsize=LABEL_SIZE,
                 )
             bottoms[j] += height
 
@@ -101,18 +101,18 @@ def plot_stacked_bar_chart(
             f"Total:\n{total:.2f} Seconds",
             ha="center",
             va="bottom",
-            fontsize=14,
+            fontsize=LABEL_SIZE,
             color="black",
         )
 
     max_height = max(bottoms)
     ax.set_ylim(0, max_height * 1.1)
 
-    ax.set_title(title, fontsize=18)
-    ax.set_ylabel("Duration (Seconds)", fontsize=14)
+    ax.set_title(title, fontsize=TITLE_SIZE)
+    ax.set_ylabel("Duration (Seconds)", fontsize=LABEL_SIZE)
     ax.set_xticks(x)
-    ax.set_xticklabels(xlabels, fontsize=14)
-    ax.tick_params(axis="y", labelsize=14)
+    ax.set_xticklabels(xlabels, fontsize=LABEL_SIZE)
+    ax.tick_params(axis="y", labelsize=LABEL_SIZE)
 
     handles, labels = ax.get_legend_handles_labels()
 
@@ -123,14 +123,14 @@ def plot_stacked_bar_chart(
             ncol=1,
             loc="upper center",
             bbox_to_anchor=(0.5, -0.05),
-            fontsize=14,
+            fontsize=LABEL_SIZE,
         )
     else:
         ax.legend(
             reversed(handles),
             reversed(labels),
             ncol=1,
-            fontsize=14,
+            fontsize=LABEL_SIZE,
         )
 
     plt.savefig(
@@ -200,7 +200,7 @@ def plot_passport_types_operation_performance(
 def plot_passport_types_performance(performance_data):
     labels = performance_data[0]["data"].keys()
 
-    to_exclude = ["Deployment"]
+    to_exclude = []
     operations = [
         entry["operation"]
         for entry in performance_data
@@ -214,7 +214,7 @@ def plot_passport_types_performance(performance_data):
             data_dict[label][operation] = entry["data"][label]
 
     x = np.arange(len(labels))
-    width = 0.2
+    width = 0.175
 
     fig, ax = plt.subplots(figsize=(16, 10))
 
@@ -231,24 +231,25 @@ def plot_passport_types_performance(performance_data):
             #     f"{height:.2f}",
             #     ha="center",
             #     va="center",
-            #     fontsize=14,
+            #     fontsize=LABEL_SIZE,
             # )
 
-            # ax.annotate(
-            #     f"{height:.2f}",
-            #     xy=(bar.get_x() + bar.get_width() / 2, height),
-            #     xytext=(0, 2),
-            #     textcoords="offset points",
-            #     ha="center",
-            #     va="bottom",
-            # )
+            ax.annotate(
+                f"{height:.2f}",
+                xy=(bar.get_x() + bar.get_width() / 2, height),
+                xytext=(0, 2),
+                textcoords="offset points",
+                ha="center",
+                va="bottom",
+                fontsize=LABEL_SIZE,
+            )
 
-    ax.set_ylabel("Duration (Seconds)", fontsize=14)
-    ax.set_title("Performance by Passport Type and Operation", fontsize=18)
+    ax.set_ylabel("Duration (Seconds)", fontsize=LABEL_SIZE)
+    ax.set_title("Performance by Passport Type and Operation", fontsize=TITLE_SIZE)
     ax.set_xticks(x + width * 1.5)
     ax.set_xticklabels(labels)
-    ax.tick_params(axis="both", labelsize=14)
-    ax.legend(fontsize=14)
+    ax.tick_params(axis="both", labelsize=LABEL_SIZE)
+    ax.legend(fontsize=LABEL_SIZE)
 
     plt.savefig(
         os.path.join(OUTPUT_PATH, "performance_passport_types.png"),
