@@ -265,7 +265,7 @@ def plot_passport_types_performance(performance_data):
             data_dict[label][operation] = entry["data"][label]
 
     x = np.arange(len(labels))
-    width = 0.19
+    width = 0.18
 
     fig, ax = plt.subplots(figsize=(16, 8))
 
@@ -274,22 +274,19 @@ def plot_passport_types_performance(performance_data):
         y = [np.sum(data_dict[label][operation]) for label in labels]
         bars = ax.bar(x + i * width, y, width, label=operation)
 
+        adjustment = 0
+        if i == 1:
+            adjustment = 3.5
+        if i == 3:
+            adjustment = -4
+
         for bar in bars:
             height = bar.get_height()
-
-            # ax.text(
-            #     bar.get_x() + bar.get_width() / 2,
-            #     height / 2,
-            #     f"{height:.2f}",
-            #     ha="center",
-            #     va="center",
-            #     fontsize=PERFORMANCE_LABEL_SIZE,
-            # )
 
             ax.annotate(
                 f"{height:.2f}",
                 xy=(bar.get_x() + bar.get_width() / 2, height),
-                xytext=(0, 2),
+                xytext=(0 + adjustment, 2),
                 textcoords="offset points",
                 ha="center",
                 va="bottom",
@@ -312,7 +309,7 @@ def plot_passport_types_performance(performance_data):
             fontsize=PERFORMANCE_TITLE_SIZE,
             pad=X_PAD,
         )
-    ax.set_xticks(x + width * 1.5)
+    ax.set_xticks(x + width * 2)
     ax.set_xticklabels(labels, fontsize=PERFORMANCE_LABEL_SIZE)
     ax.tick_params(
         axis="both",

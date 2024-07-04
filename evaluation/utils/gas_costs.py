@@ -291,15 +291,6 @@ def plot_passport_types_gas_costs(gas_costs_data):
 
             usd = eth_to_usd(height)
 
-            # ax.text(
-            #     bar.get_x() + bar.get_width() / 2,
-            #     height / 2,
-            #     f"{usd:.2f}\nUSD",
-            #     ha="center",
-            #     va="center",
-            #     fontsize=GAS_COSTS_LABEL_SIZE,
-            # )
-
             ax.annotate(
                 f"{usd:.2f}",
                 xy=(bar.get_x() + bar.get_width() / 2, height),
