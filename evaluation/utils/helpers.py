@@ -10,6 +10,8 @@ PERFORMANCE_TITLE_SIZE = 20
 X_PAD = 10
 Y_PAD = 5
 
+SHOW_TITLE = False
+
 ETH_CONVERSION = 1e18
 # mainnet price on 2024-06-14 24:00 coingecko
 ETH_TO_USD = 3465.32

@@ -7,6 +7,7 @@ from utils.helpers import (
     GAS_COSTS_LABEL_SIZE,
     GAS_COSTS_TITLE_SIZE,
     OUTPUT_PATH,
+    SHOW_TITLE,
     X_PAD,
     Y_PAD,
     eth_to_usd,
@@ -48,11 +49,12 @@ def plot_gas_costs(data_list, labels, title, output_filename):
         labelpad=X_PAD,
     )
 
-    ax.set_title(
-        title,
-        fontsize=GAS_COSTS_TITLE_SIZE,
-        pad=X_PAD,
-    )
+    if SHOW_TITLE:
+        ax.set_title(
+            title,
+            fontsize=GAS_COSTS_TITLE_SIZE,
+            pad=X_PAD,
+        )
     ax.set_xlabel(
         "Execution Time on Sepolia (2024-06-14 HH:MM CEST)",
         fontsize=GAS_COSTS_LABEL_SIZE,
@@ -149,11 +151,12 @@ def _plot_stacked_bar_chart(
         labelpad=X_PAD,
     )
 
-    ax.set_title(
-        title,
-        fontsize=GAS_COSTS_TITLE_SIZE,
-        pad=X_PAD,
-    )
+    if SHOW_TITLE:
+        ax.set_title(
+            title,
+            fontsize=GAS_COSTS_TITLE_SIZE,
+            pad=X_PAD,
+        )
     ax.set_ylabel(
         "Sepolia ETH (SETH)",
         fontsize=GAS_COSTS_LABEL_SIZE,
@@ -161,6 +164,7 @@ def _plot_stacked_bar_chart(
     )
     ax.set_xticks(x)
     ax.set_xticklabels(xlabels, fontsize=GAS_COSTS_LABEL_SIZE)
+
     ax.tick_params(
         axis="both",
         labelsize=GAS_COSTS_LABEL_SIZE,
@@ -297,7 +301,7 @@ def plot_passport_types_gas_costs(gas_costs_data):
             # )
 
             ax.annotate(
-                f"{usd:.2f}\nUSD",
+                f"{usd:.2f}",
                 xy=(bar.get_x() + bar.get_width() / 2, height),
                 xytext=(0, 2),
                 textcoords="offset points",
@@ -317,11 +321,12 @@ def plot_passport_types_gas_costs(gas_costs_data):
         labelpad=X_PAD,
     )
 
-    ax.set_title(
-        "Gas Costs by Passport Types",
-        fontsize=GAS_COSTS_TITLE_SIZE,
-        pad=X_PAD,
-    )
+    if SHOW_TITLE:
+        ax.set_title(
+            "Gas Costs by Passport Types",
+            fontsize=GAS_COSTS_TITLE_SIZE,
+            pad=X_PAD,
+        )
     ax.set_ylabel(
         "Sepolia ETH (SETH)",
         fontsize=GAS_COSTS_LABEL_SIZE,

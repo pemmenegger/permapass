@@ -7,6 +7,7 @@ from utils.helpers import (
     OUTPUT_PATH,
     PERFORMANCE_LABEL_SIZE,
     PERFORMANCE_TITLE_SIZE,
+    SHOW_TITLE,
     X_PAD,
     Y_PAD,
 )
@@ -57,12 +58,12 @@ def plot_performance(
             label=f"{label} (Mean: {mean_duration:.2f} {unit})",
             marker="o",
         )
-
-    plt.title(
-        title,
-        fontsize=PERFORMANCE_TITLE_SIZE,
-        pad=X_PAD,
-    )
+    if SHOW_TITLE:
+        plt.title(
+            title,
+            fontsize=PERFORMANCE_TITLE_SIZE,
+            pad=X_PAD,
+        )
     plt.xlabel(
         f'Execution Time {"on Sepolia " if not is_arweave else ""}(2024-06-14 HH:MM CEST)',
         fontsize=PERFORMANCE_LABEL_SIZE,
@@ -113,24 +114,36 @@ def _plot_stacked_bar_chart(
         bars = ax.bar(x, values, bottom=bottoms, label=label)
         for j, bar in enumerate(bars):
             height = bar.get_height()
+
+            adjustment = 0
+            if round(height, 2) == 0.33:
+                adjustment = 0.3
+
             if height != 0:
                 ax.text(
                     bar.get_x() + bar.get_width() / 2,
-                    bottoms[j] + height / 2,
+                    bottoms[j] + height / 2 + adjustment,
                     f"{height:.2f}",
                     ha="center",
                     va="center",
                     fontsize=PERFORMANCE_LABEL_SIZE,
                 )
+
             bottoms[j] += height
 
     total_durations = {key: sum(data[key]) for key in xlabels}
     for i, (key, total) in enumerate(total_durations.items()):
         data_count = sum(1 for value in data[key] if value > 0)
+
         if data_count > 1:
+
+            adjustment = 0
+            if round(data[key][-1], 2) == 0:
+                adjustment = 0.8
+
             ax.text(
                 x[i],
-                bottoms[i] + 0.007 * max(bottoms),
+                bottoms[i] + 0.007 * max(bottoms) + adjustment,
                 f"Total: {total:.2f}",
                 ha="center",
                 va="bottom",
@@ -141,11 +154,12 @@ def _plot_stacked_bar_chart(
     max_height = max(bottoms)
     ax.set_ylim(0, max_height * 1.15)
 
-    ax.set_title(
-        title,
-        fontsize=PERFORMANCE_TITLE_SIZE,
-        pad=X_PAD,
-    )
+    if SHOW_TITLE:
+        ax.set_title(
+            title,
+            fontsize=PERFORMANCE_TITLE_SIZE,
+            pad=X_PAD,
+        )
     ax.set_ylabel(
         "Duration (Seconds)",
         fontsize=PERFORMANCE_LABEL_SIZE,
@@ -154,7 +168,7 @@ def _plot_stacked_bar_chart(
     ax.set_xticks(x)
     ax.set_xticklabels(xlabels, fontsize=PERFORMANCE_LABEL_SIZE)
     ax.tick_params(
-        axis="y",
+        axis="both",
         labelsize=PERFORMANCE_LABEL_SIZE,
         pad=Y_PAD,
     )
@@ -203,7 +217,6 @@ def plot_contracts_performance(registry_configs):
             mean_duration = np.mean(durations) / 1000 if durations else 0
             operation_performance[operation].append(mean_duration)
 
-    # Creating the correct data structure
     data = {title: [] for title in titles}
     for operation in operation_performance.keys():
         for i, title in enumerate(titles):
@@ -252,7 +265,7 @@ def plot_passport_types_performance(performance_data):
             data_dict[label][operation] = entry["data"][label]
 
     x = np.arange(len(labels))
-    width = 0.175
+    width = 0.19
 
     fig, ax = plt.subplots(figsize=(16, 8))
 
@@ -292,11 +305,13 @@ def plot_passport_types_performance(performance_data):
         fontsize=PERFORMANCE_LABEL_SIZE,
         labelpad=X_PAD,
     )
-    ax.set_title(
-        "Performances by Passport Types",
-        fontsize=PERFORMANCE_TITLE_SIZE,
-        pad=X_PAD,
-    )
+
+    if SHOW_TITLE:
+        ax.set_title(
+            "Performances by Passport Types",
+            fontsize=PERFORMANCE_TITLE_SIZE,
+            pad=X_PAD,
+        )
     ax.set_xticks(x + width * 1.5)
     ax.set_xticklabels(labels, fontsize=PERFORMANCE_LABEL_SIZE)
     ax.tick_params(
