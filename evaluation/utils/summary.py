@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 from matplotlib.colors import LinearSegmentedColormap
-from utils.helpers import OUTPUT_PATH
+from utils.helpers import OUTPUT_PATH, PERFORMANCE_LABEL_SIZE, Y_PAD
 
 x_labels = ["QR Code x NFT", "QR Code x DID", "HaLo NFC x PBT", "HaLo NFC x DID"]
 y_labels = [
@@ -87,7 +87,7 @@ cmap = LinearSegmentedColormap.from_list(
 
 
 def plot_summary():
-    plt.figure(figsize=(12, 8))
+    plt.figure(figsize=(16, 16))
     ax = sns.heatmap(
         normalized_data,
         xticklabels=x_labels,
@@ -96,17 +96,27 @@ def plot_summary():
         cbar=True,
         annot=data,
         fmt="",
-        annot_kws={"size": 10},
+        annot_kws={"size": PERFORMANCE_LABEL_SIZE},
         mask=mask,
+        cbar_kws={"shrink": 0.5},
     )
 
     ax.tick_params(left=False, bottom=False)
 
     cbar = ax.collections[0].colorbar
     cbar.set_ticks([0, 0.5, 1])
-    cbar.set_ticklabels(["Relatively Bad", "Neutral", "Relatively Good"])
+    cbar.set_ticklabels(
+        ["Unfavorable\n(row-wise)", "Neutral\n(row-wise)", "Favorable\n(row-wise)"],
+        fontsize=PERFORMANCE_LABEL_SIZE,
+    )
 
     plt.yticks(rotation=0)
+
+    plt.tick_params(
+        axis="both",
+        labelsize=PERFORMANCE_LABEL_SIZE,
+        pad=Y_PAD,
+    )
 
     plt.savefig(
         os.path.join(OUTPUT_PATH, "evaluation_summary.png"),
