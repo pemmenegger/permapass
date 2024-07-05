@@ -16,6 +16,7 @@ from utils.preprocessing import (
     process_passport_type_performance_data,
     process_registry_data,
 )
+from utils.summary import plot_summary
 
 
 def plot_arweave(arweave_data):
@@ -232,6 +233,7 @@ def main():
         nft_registry_data,
         pbt_registry_data,
     )
+    plot_summary()
 
 
 if __name__ == "__main__":
