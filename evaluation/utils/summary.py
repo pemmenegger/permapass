@@ -6,7 +6,12 @@ import seaborn as sns
 from matplotlib.colors import LinearSegmentedColormap
 from utils.helpers import OUTPUT_PATH, PERFORMANCE_LABEL_SIZE, Y_PAD
 
-x_labels = ["QR Code x NFT", "QR Code x DID", "HaLo NFC x PBT", "HaLo NFC x DID"]
+x_labels = [
+    "QR Code x NFT",
+    "QR Code x DID",
+    "HaLo NFC x PBT",
+    "HaLo NFC x DID",
+]
 y_labels = [
     "Performance: Deployment",
     "Performance: Creation",
@@ -16,7 +21,6 @@ y_labels = [
     "",  # Spacer
     "Costs: Deployment",
     "Costs: Creation",
-    "Costs: Reading",
     "Costs: Updating",
     "Costs: Deleting",
     "Costs: Hardware",
@@ -37,16 +41,30 @@ data = [
     ["", "", "", ""],  # Spacer
     ["11.60 USD", "7.95 USD", "17.97 USD", "12.24 USD"],
     ["1.45 USD", "0.28 USD", "2.60 USD", "1.03 USD"],
-    ["0 USD", "0 USD", "0 USD", "0 USD"],
     ["0.33 USD", "0.28 USD", "0.33 USD", "0.28 USD"],
     ["0.35 USD", "0.27 USD", "0.25 USD", "0.27 USD"],
     ["0 USD", "0 USD", "40 USD", "40 USD"],
     ["", "", "", ""],  # Spacer
-    ["better", "better", "worse", "worse"],
+    [
+        "0 # Hardware\nIndependent",
+        "0 # Hardware\nIndependent",
+        "1 # Hardware\nDependent",
+        "1 # Hardware\nDependent",
+    ],
     ["", "", "", ""],  # Spacer
-    ["better", "better", "worse", "worse"],
+    [
+        "0 # Easier\nMetadata Exchange",
+        "0 # Easier\nMetadata Exchange",
+        "1 # Harder\nMetadata Exchange",
+        "1 # Harder\nMetadata Exchange",
+    ],
     ["", "", "", ""],  # Spacer
-    ["worse", "worse", "better", "better"],
+    [
+        "1 # Least\nTamper-Proof",
+        "1 # Least\nTamper-Proof",
+        "0 # Most\nTamper-Proof",
+        "0.5 # Moderately\nTamper-Proof",
+    ],
 ]
 
 
@@ -57,10 +75,8 @@ def convert_to_numeric(item):
         return float(item.replace("s", ""))
     elif item.endswith("USD"):
         return float(item.replace(" USD", ""))
-    elif item == "better":
-        return 0
-    elif item == "worse":
-        return 1
+    elif len(item.split(" # ")) > 1:
+        return float(item.split(" # ")[0])
     else:
         return float(item)
 
@@ -94,7 +110,10 @@ def plot_summary():
         yticklabels=y_labels,
         cmap=cmap,
         cbar=True,
-        annot=data,
+        annot=[
+            [cell.split(" # ")[1] if "#" in cell else cell for cell in row]
+            for row in data
+        ],
         fmt="",
         annot_kws={"size": PERFORMANCE_LABEL_SIZE},
         mask=mask,
