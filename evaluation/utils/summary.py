@@ -23,7 +23,6 @@ y_labels = [
     "Costs: Creation",
     "Costs: Updating",
     "Costs: Deleting",
-    "Costs: Hardware",
     "",  # Spacer
     "Scalability",
     "",  # Spacer
@@ -43,7 +42,6 @@ data = [
     ["1.45 USD", "0.28 USD", "2.60 USD", "1.03 USD"],
     ["0.33 USD", "0.28 USD", "0.33 USD", "0.28 USD"],
     ["0.35 USD", "0.27 USD", "0.25 USD", "0.27 USD"],
-    ["0 USD", "0 USD", "40 USD", "40 USD"],
     ["", "", "", ""],  # Spacer
     [
         "0 # Hardware\nIndependent",
@@ -84,25 +82,27 @@ def convert_to_numeric(item):
 numeric_data = [[convert_to_numeric(item) * -1 for item in row] for row in data]
 numeric_data = np.array(numeric_data)
 
-normalized_data = np.zeros_like(numeric_data, dtype=float)
-for i in range(numeric_data.shape[0]):
-    min_val = np.nanmin(numeric_data[i])
-    max_val = np.nanmax(numeric_data[i])
-    if min_val != max_val:
-        normalized_data[i] = (numeric_data[i] - min_val) / (max_val - min_val)
-    else:
-        normalized_data[i] = 0.5
-    # Set NaN values to neutral (0.5) for the blank rows
-    normalized_data[i] = np.where(np.isnan(numeric_data[i]), 0.5, normalized_data[i])
-
-mask = np.isnan(numeric_data)
-
-cmap = LinearSegmentedColormap.from_list(
-    "relative_coloring", ["red", "yellow", "green"]
-)
-
 
 def plot_summary():
+    normalized_data = np.zeros_like(numeric_data, dtype=float)
+    for i in range(numeric_data.shape[0]):
+        min_val = np.nanmin(numeric_data[i])
+        max_val = np.nanmax(numeric_data[i])
+        if min_val != max_val:
+            normalized_data[i] = (numeric_data[i] - min_val) / (max_val - min_val)
+        else:
+            normalized_data[i] = 0.5
+        # Set NaN values to neutral (0.5) for the blank rows
+        normalized_data[i] = np.where(
+            np.isnan(numeric_data[i]), 0.5, normalized_data[i]
+        )
+
+    mask = np.isnan(numeric_data)
+
+    cmap = LinearSegmentedColormap.from_list(
+        "relative_coloring", ["red", "yellow", "green"]
+    )
+
     plt.figure(figsize=(16, 16))
     ax = sns.heatmap(
         normalized_data,
