@@ -262,7 +262,7 @@ def plot_passport_types_operation_gas_costs(
 def plot_passport_types_gas_costs(gas_costs_data):
     labels = gas_costs_data[0]["data"].keys()
 
-    to_exclude = ["Reading"]
+    to_exclude = ["Deployment", "Reading"]
     operations = [
         entry["operation"]
         for entry in gas_costs_data

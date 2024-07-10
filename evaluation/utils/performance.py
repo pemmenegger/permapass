@@ -251,7 +251,7 @@ def plot_passport_types_operation_performance(
 def plot_passport_types_performance(performance_data):
     labels = performance_data[0]["data"].keys()
 
-    to_exclude = []
+    to_exclude = ["Deployment"]
     operations = [
         entry["operation"]
         for entry in performance_data
@@ -275,10 +275,10 @@ def plot_passport_types_performance(performance_data):
         bars = ax.bar(x + i * width, y, width, label=operation)
 
         adjustment = 0
-        if i == 1:
-            adjustment = 3.5
+        if i == 2:
+            adjustment = -2
         if i == 3:
-            adjustment = -4
+            adjustment = 2
 
         for bar in bars:
             height = bar.get_height()

@@ -1,71 +1,11 @@
-import os
-
-import matplotlib.pyplot as plt
 import numpy as np
-import seaborn as sns
-from matplotlib.colors import LinearSegmentedColormap
-from utils.helpers import OUTPUT_PATH, PERFORMANCE_LABEL_SIZE, Y_PAD
-
-DELIMITER = "*"
+from utils.helpers import DELIMITER, plot_heatmap
 
 x_labels = [
     "QR Code x NFT",
     "QR Code x DID",
     "HaLo NFC x PBT",
     "HaLo NFC x DID",
-]
-
-y_labels = [
-    "Performance: Deployment",
-    "Performance: Creation",
-    "Performance: Reading",
-    "Performance: Updating",
-    "Performance: Deleting",
-    "",  # Spacer
-    "Costs: Deployment",
-    "Costs: Creation",
-    "Costs: Updating",
-    "Costs: Deleting",
-    "",  # Spacer
-    "Scalability",
-    "",  # Spacer
-    "Interoperability",
-    "",  # Spacer
-    "Security",
-]
-
-data = [
-    ["16.39s", "16.25s", "32.02s", "32.47s"],
-    ["14.55s", "14.62s", "30.13s", "29.10s"],
-    ["0.54s", "0.86s", "0.75s", "1.00s"],
-    ["14.18s", "13.15s", "13.67s", "13.15s"],
-    ["13.55s", "17.45s", "13.20s", "17.45s"],
-    ["", "", "", ""],  # Spacer
-    ["11.60 USD", "7.95 USD", "17.97 USD", "12.24 USD"],
-    ["1.45 USD", "0.28 USD", "2.60 USD", "1.03 USD"],
-    ["0.33 USD", "0.28 USD", "0.33 USD", "0.28 USD"],
-    ["0.35 USD", "0.27 USD", "0.25 USD", "0.27 USD"],
-    ["", "", "", ""],  # Spacer
-    [
-        f"0{DELIMITER}Hardware\nIndependent",
-        f"0{DELIMITER}Hardware\nIndependent",
-        f"1{DELIMITER}Hardware\nDependent",
-        f"1{DELIMITER}Hardware\nDependent",
-    ],
-    ["", "", "", ""],  # Spacer
-    [
-        f"0{DELIMITER}Easier\nMetadata Exchange",
-        f"0{DELIMITER}Easier\nMetadata Exchange",
-        f"1{DELIMITER}Harder\nMetadata Exchange",
-        f"1{DELIMITER}Harder\nMetadata Exchange",
-    ],
-    ["", "", "", ""],  # Spacer
-    [
-        f"1{DELIMITER}Least\nTamper-Proof",
-        f"1{DELIMITER}Least\nTamper-Proof",
-        f"0{DELIMITER}Most\nTamper-Proof",
-        f"0.5{DELIMITER}Moderately\nTamper-Proof",
-    ],
 ]
 
 
@@ -82,66 +22,125 @@ def convert_to_numeric(item):
         return float(item)
 
 
-numeric_data = [[convert_to_numeric(item) * -1 for item in row] for row in data]
-numeric_data = np.array(numeric_data)
+def plot_performance_summary():
+    y_labels = [
+        "Infrastructure Deployment",
+        "",  # Spacer
+        "",  # Spacer
+        "Passport Creation",
+        "",  # Spacer
+        "Passport Reading",
+        "",  # Spacer
+        "Passport Update",
+        "",  # Spacer
+        "Passport Deletion",
+    ]
+
+    data = [
+        ["16.39s", "16.25s", "32.02s", "32.47s"],
+        ["", "", "", ""],  # Spacer
+        ["", "", "", ""],  # Spacer
+        ["14.55s", "14.62s", "30.13s", "29.10s"],
+        ["", "", "", ""],  # Spacer
+        ["0.54s", "0.86s", "0.75s", "1.00s"],
+        ["", "", "", ""],  # Spacer
+        ["14.18s", "13.15s", "13.67s", "13.15s"],
+        ["", "", "", ""],  # Spacer
+        ["13.55s", "17.45s", "13.20s", "17.45s"],
+    ]
+
+    numeric_data = [[convert_to_numeric(item) * -1 for item in row] for row in data]
+    numeric_data = np.array(numeric_data)
+
+    plot_heatmap(
+        data,
+        numeric_data,
+        x_labels,
+        y_labels,
+        "summary_performance.png",
+    )
+
+
+def plot_costs_summary():
+    y_labels = [
+        "Infrastructure Deployment",
+        "",  # Spacer
+        "",  # Spacer
+        "Passport Creation",
+        "",  # Spacer
+        "Passport Update",
+        "",  # Spacer
+        "Passport Deletion",
+    ]
+
+    data = [
+        ["11.60 USD", "7.95 USD", "17.97 USD", "12.24 USD"],
+        ["", "", "", ""],  # Spacer
+        ["", "", "", ""],  # Spacer
+        ["1.45 USD", "0.28 USD", "2.60 USD", "1.03 USD"],
+        ["", "", "", ""],  # Spacer
+        ["0.33 USD", "0.28 USD", "0.33 USD", "0.28 USD"],
+        ["", "", "", ""],  # Spacer
+        ["0.35 USD", "0.27 USD", "0.25 USD", "0.27 USD"],
+    ]
+
+    numeric_data = [[convert_to_numeric(item) * -1 for item in row] for row in data]
+    numeric_data = np.array(numeric_data)
+
+    plot_heatmap(
+        data,
+        numeric_data,
+        x_labels,
+        y_labels,
+        "summary_costs.png",
+    )
+
+
+def plot_theoretical_criteria_summary():
+    y_labels = [
+        "Scalability",
+        "",  # Spacer
+        "Interoperability",
+        "",  # Spacer
+        "Security",
+    ]
+
+    data = [
+        [
+            f"0{DELIMITER}Hardware\nIndependent",
+            f"0{DELIMITER}Hardware\nIndependent",
+            f"1{DELIMITER}Hardware\nDependent",
+            f"1{DELIMITER}Hardware\nDependent",
+        ],
+        ["", "", "", ""],  # Spacer
+        [
+            f"0{DELIMITER}Easier\nMetadata Exchange",
+            f"0{DELIMITER}Easier\nMetadata Exchange",
+            f"1{DELIMITER}Harder\nMetadata Exchange",
+            f"1{DELIMITER}Harder\nMetadata Exchange",
+        ],
+        ["", "", "", ""],  # Spacer
+        [
+            f"1{DELIMITER}Least\nTamper-Proof",
+            f"1{DELIMITER}Least\nTamper-Proof",
+            f"0{DELIMITER}Most\nTamper-Proof",
+            f"0.5{DELIMITER}Moderately\nTamper-Proof",
+        ],
+    ]
+
+    numeric_data = [[convert_to_numeric(item) * -1 for item in row] for row in data]
+    numeric_data = np.array(numeric_data)
+
+    plot_heatmap(
+        data,
+        numeric_data,
+        x_labels,
+        y_labels,
+        "summary_theoretical_criteria.png",
+    )
 
 
 def plot_summary():
-    normalized_data = np.zeros_like(numeric_data, dtype=float)
-    for i in range(numeric_data.shape[0]):
-        min_val = np.nanmin(numeric_data[i])
-        max_val = np.nanmax(numeric_data[i])
-        if min_val != max_val:
-            normalized_data[i] = (numeric_data[i] - min_val) / (max_val - min_val)
-        else:
-            normalized_data[i] = 0.5
-        # Set NaN values to neutral (0.5) for the blank rows
-        normalized_data[i] = np.where(
-            np.isnan(numeric_data[i]), 0.5, normalized_data[i]
-        )
-
-    mask = np.isnan(numeric_data)
-
-    cmap = LinearSegmentedColormap.from_list(
-        "relative_coloring", ["red", "yellow", "green"]
-    )
-
-    plt.figure(figsize=(16, 16))
-    ax = sns.heatmap(
-        normalized_data,
-        xticklabels=x_labels,
-        yticklabels=y_labels,
-        cmap=cmap,
-        cbar=True,
-        annot=[
-            [cell.split(DELIMITER)[1] if DELIMITER in cell else cell for cell in row]
-            for row in data
-        ],
-        fmt="",
-        annot_kws={"size": PERFORMANCE_LABEL_SIZE},
-        mask=mask,
-        cbar_kws={"shrink": 0.5},
-    )
-
-    ax.tick_params(left=False, bottom=False)
-
-    cbar = ax.collections[0].colorbar
-    cbar.set_ticks([0, 0.5, 1])
-    cbar.set_ticklabels(
-        ["Unfavorable\n(row-wise)", "Neutral\n(row-wise)", "Favorable\n(row-wise)"],
-        fontsize=PERFORMANCE_LABEL_SIZE,
-    )
-
-    plt.yticks(rotation=0)
-
-    plt.tick_params(
-        axis="both",
-        labelsize=PERFORMANCE_LABEL_SIZE,
-        pad=Y_PAD,
-    )
-
-    plt.savefig(
-        os.path.join(OUTPUT_PATH, "evaluation_summary.png"),
-        bbox_inches="tight",
-    )
-    plt.close()
+    plot_performance_summary()
+    plot_costs_summary()
+    plot_theoretical_criteria_summary()
