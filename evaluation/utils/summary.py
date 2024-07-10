@@ -6,12 +6,15 @@ import seaborn as sns
 from matplotlib.colors import LinearSegmentedColormap
 from utils.helpers import OUTPUT_PATH, PERFORMANCE_LABEL_SIZE, Y_PAD
 
+DELIMITER = "*"
+
 x_labels = [
     "QR Code x NFT",
     "QR Code x DID",
     "HaLo NFC x PBT",
     "HaLo NFC x DID",
 ]
+
 y_labels = [
     "Performance: Deployment",
     "Performance: Creation",
@@ -44,24 +47,24 @@ data = [
     ["0.35 USD", "0.27 USD", "0.25 USD", "0.27 USD"],
     ["", "", "", ""],  # Spacer
     [
-        "0 # Hardware\nIndependent",
-        "0 # Hardware\nIndependent",
-        "1 # Hardware\nDependent",
-        "1 # Hardware\nDependent",
+        f"0{DELIMITER}Hardware\nIndependent",
+        f"0{DELIMITER}Hardware\nIndependent",
+        f"1{DELIMITER}Hardware\nDependent",
+        f"1{DELIMITER}Hardware\nDependent",
     ],
     ["", "", "", ""],  # Spacer
     [
-        "0 # Easier\nMetadata Exchange",
-        "0 # Easier\nMetadata Exchange",
-        "1 # Harder\nMetadata Exchange",
-        "1 # Harder\nMetadata Exchange",
+        f"0{DELIMITER}Easier\nMetadata Exchange",
+        f"0{DELIMITER}Easier\nMetadata Exchange",
+        f"1{DELIMITER}Harder\nMetadata Exchange",
+        f"1{DELIMITER}Harder\nMetadata Exchange",
     ],
     ["", "", "", ""],  # Spacer
     [
-        "1 # Least\nTamper-Proof",
-        "1 # Least\nTamper-Proof",
-        "0 # Most\nTamper-Proof",
-        "0.5 # Moderately\nTamper-Proof",
+        f"1{DELIMITER}Least\nTamper-Proof",
+        f"1{DELIMITER}Least\nTamper-Proof",
+        f"0{DELIMITER}Most\nTamper-Proof",
+        f"0.5{DELIMITER}Moderately\nTamper-Proof",
     ],
 ]
 
@@ -73,8 +76,8 @@ def convert_to_numeric(item):
         return float(item.replace("s", ""))
     elif item.endswith("USD"):
         return float(item.replace(" USD", ""))
-    elif len(item.split(" # ")) > 1:
-        return float(item.split(" # ")[0])
+    elif len(item.split(DELIMITER)) > 1:
+        return float(item.split(DELIMITER)[0])
     else:
         return float(item)
 
@@ -111,7 +114,7 @@ def plot_summary():
         cmap=cmap,
         cbar=True,
         annot=[
-            [cell.split(" # ")[1] if "#" in cell else cell for cell in row]
+            [cell.split(DELIMITER)[1] if DELIMITER in cell else cell for cell in row]
             for row in data
         ],
         fmt="",
