@@ -16,30 +16,6 @@ The main files and folders in this directory are:
 | ./lib        | Contains config properties, utility functions, and the API client to communicate with the Web API.                                                                                            |
 | app.json     | Configuration for the Expo app.                                                                                                                                                               |
 
-## Functionalities
-
-### Wallet Connection (Demo)
-
-https://gist.github.com/assets/29231304/8b7a8f22-4e24-44ce-b5fb-aebeeb36dd85.mp4
-
-The dapp provides the following functionalities:
-
-### Creating Passports
-
-asdf
-
-### Reading Passports
-
-asdf
-
-### Updating Passports
-
-asdf
-
-### Deleting Passports
-
-asdf
-
 ## Running Locally
 
 Before running the App locally make sure the `web-api` is running, a local Hardhat node is running, and the smart contracts are deployed on the local Hardhat network.
