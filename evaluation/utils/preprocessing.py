@@ -63,31 +63,31 @@ def process_registry_data(data_path):
 
 
 deployment_labels = [
-    "1. Blockchain: NFT, PBT, or DID Registry Contract Deployment",
-    "2. Blockchain: HaLo NFC Metadata Registry Contract Deployment",
+    "1. Sepolia: NFT, PBT, or DID Registry Contract Deployment",
+    "2. Sepolia: HaLo NFC Metadata Registry Contract Deployment",
 ]
 
 create_labels = [
     "1. Arweave: Upload Passport Data",
-    "2. Blockchain: Create Identifier on Registry Contract",
+    "2. Sepolia: Create Identifier on Registry Contract",
     "3. Arweave: Upload Passport Metadata",
-    "4. Blockchain: Store MetadataURI on HaLo NFC Metadata Registry Contract",
+    "4. Sepolia: Store MetadataURI on HaLo NFC Metadata Registry Contract",
 ]
 
 read_labels = [
-    "1. Blockchain: Read MetadataURI from Registry Contract",
+    "1. Sepolia: Read MetadataURI from Registry Contract",
     "2. Arweave: Read Passport Metadata",
-    "3. Blockchain: Read PassportURI from Registry Contract",
+    "3. Sepolia: Read PassportURI from Registry Contract",
     "4. Arweave: Read Passport Data",
 ]
 
 update_labels = [
     "1. Arweave: Upload Passport Data",
-    "2. Blockchain: Update Identifier on Registry Contract",
+    "2. Sepolia: Update Identifier on Registry Contract",
 ]
 
 delete_labels = [
-    "1. Blockchain: Delete Identifier on Registry Contract",
+    "1. Sepolia: Delete Identifier on Registry Contract",
 ]
 
 
