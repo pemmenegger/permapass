@@ -1,6 +1,6 @@
 export const HaLoNFCMetadataRegistry = {
   "31337": "0x406a64147e7b7a41782c458e2b87d939e2a8bbbf",
-  "11155111": "0xfc1559cee2079920aa392db0bac3f713cce80d4f",
+  "11155111": "0x3586d98b8433ab0f377f745567880901602948a3",
   abi: [
     {
       inputs: [],
